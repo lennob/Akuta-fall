@@ -1,0 +1,1206 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Case Builder • Lennyshemsida</title>
+    <style>
+      :root {
+        --bg: #f4f6fb;
+        --panel: #ffffff;
+        --panel-soft: #edf1fb;
+        --text: #0f172a;
+        --muted: #64748b;
+        --accent: #2563eb;
+        --danger: #dc2626;
+        --radius: 16px;
+        --border: rgba(15, 23, 42, 0.14);
+        --shadow: 0 30px 80px rgba(15, 23, 42, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family:
+          "Inter",
+          "Segoe UI",
+          system-ui,
+          sans-serif;
+        background: linear-gradient(180deg, #f4f6fb 0%, #e5ecfb 100%);
+        color: var(--text);
+        min-height: 100vh;
+        padding: 22px;
+      }
+
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .page {
+        max-width: 1100px;
+        margin: 0 auto;
+        display: grid;
+        gap: 16px;
+      }
+
+      header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      header h1 {
+        margin: 0;
+        font-size: 22px;
+      }
+
+      header p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .pad {
+        padding: 16px;
+      }
+
+      label {
+        display: block;
+        font-size: 13px;
+        color: var(--muted);
+        margin: 12px 0 6px;
+      }
+
+      input[type="text"],
+      textarea,
+      select {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--panel-soft);
+        color: var(--text);
+        padding: 10px 12px;
+        font-size: 14px;
+        font-family: inherit;
+      }
+
+      textarea {
+        resize: vertical;
+      }
+
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .spacer {
+        flex: 1;
+      }
+
+      button {
+        border: 1px solid var(--border);
+        background: var(--panel-soft);
+        color: var(--text);
+        padding: 10px 12px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      button.primary {
+        border-color: rgba(37, 99, 235, 0.35);
+        background: rgba(37, 99, 235, 0.12);
+      }
+
+      button.danger {
+        border-color: rgba(220, 38, 38, 0.35);
+        background: rgba(220, 38, 38, 0.12);
+        color: #7f1d1d;
+      }
+
+      .status {
+        font-size: 13px;
+        color: var(--muted);
+        margin: 10px 0 0;
+      }
+
+      .load-row {
+        display: grid;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .load-group {
+        border: 1px dashed var(--border);
+        border-radius: 14px;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.85);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .load-group label {
+        font-weight: 900;
+        color: var(--text);
+      }
+
+      .load-row .row {
+        margin-top: 0;
+        flex-wrap: nowrap;
+      }
+
+      #loadCaseSelect {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        padding: 10px 12px;
+        font-weight: 700;
+      }
+
+      #loadCaseStatus {
+        margin-top: 4px;
+        font-weight: 700;
+      }
+      #loadCaseStatus[data-state="warn"] {
+        color: #c2410c;
+      }
+      #loadCaseStatus[data-state="error"] {
+        color: #991b1b;
+      }
+      #loadCaseStatus[data-state="success"] {
+        color: #164e63;
+      }
+
+      details {
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        overflow: hidden;
+        background: var(--panel);
+      }
+
+      summary {
+        cursor: pointer;
+        padding: 12px 14px;
+        background: var(--panel-soft);
+        font-weight: 800;
+      }
+
+      .box-body {
+        padding: 12px 14px 14px;
+      }
+
+      .subbox {
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 12px;
+        background: #ffffff;
+        margin-top: 10px;
+      }
+
+      .subbox-title {
+        font-weight: 800;
+        font-size: 14px;
+        margin: 0 0 8px;
+      }
+
+      .subbox-label {
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 10px 0 6px;
+      }
+
+      .subbox-label:first-of-type {
+        margin-top: 0;
+      }
+
+      textarea[readonly] {
+        opacity: 0.95;
+      }
+
+      .subbox-controls {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px dashed var(--border);
+      }
+
+      @media (min-width: 700px) {
+        .subbox-controls {
+          grid-template-columns: 1fr 1fr;
+          align-items: end;
+        }
+      }
+
+      .control-inline {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--panel-soft);
+      }
+
+      .control-inline input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--accent);
+      }
+
+      .control-inline span {
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .tier-group {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .tier-options {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      @media (min-width: 900px) {
+        .tier-options {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      .tier-option {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--panel-soft);
+      }
+
+      .tier-option input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--accent);
+      }
+
+      .tier-option .name {
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      .subbox-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      @media (min-width: 900px) {
+        .subbox-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      .hint {
+        font-size: 13px;
+        color: var(--muted);
+        padding: 12px;
+        border-radius: 14px;
+        background: rgba(15, 23, 42, 0.04);
+        border: 1px solid var(--border);
+      }
+
+      .file-row {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: 1fr;
+        align-items: start;
+      }
+
+      @media (min-width: 900px) {
+        .file-row {
+          grid-template-columns: 1.5fr 1fr;
+        }
+      }
+
+      .preview {
+        border: 1px dashed var(--border);
+        border-radius: 12px;
+        padding: 10px;
+        background: #ffffff;
+        overflow: hidden;
+      }
+
+      .preview img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <div>
+          <h1>Case Builder</h1>
+          <p>Skapa ett fall och exportera som JSON (lokalt).</p>
+        </div>
+        <p><a href="./index.html">← Tillbaka</a></p>
+      </header>
+
+      <div class="card">
+        <div class="pad">
+        <div class="row load-row">
+          <div class="load-group">
+            <label for="loadCaseSelect">Ladda befintligt fall</label>
+            <select id="loadCaseSelect">
+              <option value="">Välj fall...</option>
+            </select>
+            <div class="row">
+              <button type="button" id="loadCaseBtn">Ladda fall</button>
+              <button type="button" id="clearLoadBtn" class="danger">Rensa laddning</button>
+            </div>
+          </div>
+          <div class="load-group">
+            <label for="loadCaseFile">eller ladda upp JSON</label>
+            <input id="loadCaseFile" type="file" accept=".json,application/json" />
+          </div>
+        </div>
+        <p class="status" id="loadCaseStatus" aria-live="polite"></p>
+
+        <div class="hint">
+          En statisk webbsida kan inte skriva filer direkt in i din projektmapp utan extra
+            behörigheter/server. Den här sidan skapar därför en JSON-fil (och ev. bilder) som du
+            laddar ner och sedan lägger i projektets mappar (t.ex. `cases/` och `assets/`).
+          </div>
+
+          <label for="title">1. Title</label>
+          <input id="title" type="text" placeholder="Fall 1 • ..." />
+
+          <label for="caseText">2. text about the case</label>
+          <textarea id="caseText" rows="8" placeholder="S: ...&#10;B: ...&#10;A: ..."></textarea>
+
+          <div id="boxes"></div>
+
+          <div class="row">
+            <button type="button" class="primary" id="exportJsonBtn">Exportera JSON</button>
+            <button type="button" id="exportImagesBtn">Ladda ner valda bilder</button>
+            <div class="spacer"></div>
+            <button type="button" class="danger" id="resetBtn">Rensa</button>
+          </div>
+          <p class="status" id="status" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const BOX_DEFS = [
+        {
+          id: "oversikt",
+          label: "översikt",
+          subboxes: [
+            "Skyddskläder, handskar, förkläde.",
+            "Undersök tecken till hjärtstopp",
+            "Tecken till katastrofal blödning",
+          ],
+        },
+        {
+          id: "airway",
+          label: "airway",
+          subboxes: [
+            "Inspektera ansikte",
+            "Inspektera hals",
+            "Inspektera munnen och svalg med ficklampa",
+            "Lyssna på andning",
+          ],
+        },
+        {
+          id: "breathing",
+          label: "breathing",
+          subboxes: [
+            "Beräkna och bedöm andningsfrekvens",
+            "Bedöm saturation (%)",
+            "Inspektion av bröstkorg, avseende symmetriska andningsrörelser, synliga skador",
+            "Auskultation över lungfälten",
+            "Palpation av bröstkorgen",
+          ],
+        },
+        {
+          id: "circulation",
+          label: "circulation",
+          subboxes: [
+            "Bestäm hjärtfrekvens",
+            "Bestäm blodtryck",
+            "Bestäm kapillär återfyllnadstid",
+            "Bedömning av perifera pulsationer bilateralt",
+            "Bedömning av perifer cirkulation",
+            "Palpation av buk, becken och lårben",
+            "Ordination av venösa infarter",
+            "Ordination av blodgas ± glukos",
+          ],
+        },
+        {
+          id: "disability",
+          label: "disability",
+          subboxes: [
+            "Bedömning av medvetandegrad (RLS/GCS)",
+            "Undersökning av ögon",
+            "Undersökning av grov kraft i armar och ben",
+            "Undersökning av sensorik armar och ben",
+            "Ordination av kapillär glukos",
+          ],
+        },
+        {
+          id: "exposure",
+          label: "exposure",
+          subboxes: ["bestämning av kroppstemperatur", "inspektion av kroppens fram- och baksida"],
+        },
+        {
+          id: "blodgas",
+          label: "blodgas",
+          subboxes: [
+            "Undersöker och tolkar acidemi/alkalemi",
+            "Respiratorisk/metabol genes, kompensation",
+            "Övriga värden (Na, K, Hb, Cl, Ca, glukos, laktat, FCOHb",
+          ],
+          allowImage: true,
+          imageFolderHint: "assets/blodgas/",
+        },
+        {
+          id: "ekg",
+          label: "ekg",
+          subboxes: ["Frekvens", "Rytm", "QRS", "STT-sträcka", "QT-tid"],
+          allowImage: true,
+          imageFolderHint: "assets/ekg/",
+        },
+        {
+          id: "handlaggning",
+          label: "handläggning",
+          subboxes: [
+            "Bedömer behov av riktad klinisk undersökning (Ultraljud, PR, Nackstelhet)",
+            "Initierar adekvat behandling",
+            "Re-evaluerar (Övervakar och utvärderar effekter av åtgärder)",
+          ],
+        },
+        {
+          id: "signout",
+          label: "signout",
+          subboxes: [
+            "Formulerar arbetsdiagnos",
+            "Planerar vidare behandling",
+            "Bedömer övervakningsbehov och vårdnivå",
+          ],
+        },
+      ];
+
+      const elTitle = document.getElementById("title");
+      const elCaseText = document.getElementById("caseText");
+      const elBoxes = document.getElementById("boxes");
+      const elStatus = document.getElementById("status");
+      const exportJsonBtn = document.getElementById("exportJsonBtn");
+      const exportImagesBtn = document.getElementById("exportImagesBtn");
+      const resetBtn = document.getElementById("resetBtn");
+
+      const selectedImagesByBoxId = new Map();
+      const selectedEcgByBoxId = new Map();
+      const ECG_HANDOFF_KEY = "lenny.ecgLab.handoff.v1";
+      const selectedBlodgasByBoxId = new Map();
+      const BLODGAS_HANDOFF_KEY = "lenny.blodgasLab.handoff.v1";
+      const existingImagePaths = new Map();
+      const caseSelect = document.getElementById("loadCaseSelect");
+      const loadCaseBtn = document.getElementById("loadCaseBtn");
+      const clearLoadBtn = document.getElementById("clearLoadBtn");
+      const loadCaseFileInput = document.getElementById("loadCaseFile");
+      const loadCaseStatus = document.getElementById("loadCaseStatus");
+
+      function slugify(value) {
+        return String(value || "")
+          .toLowerCase()
+          .trim()
+          .replace(/å/g, "a")
+          .replace(/ä/g, "a")
+          .replace(/ö/g, "o")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "")
+          .slice(0, 80);
+      }
+
+      function safeText(value) {
+        return String(value ?? "");
+      }
+
+      function downloadBlob(blob, filename) {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function setStatus(text) {
+        elStatus.textContent = text || "";
+      }
+
+      function captureDraftFromDom() {
+        const draft = {
+          special: {},
+          studentAction: {},
+          tiers: {},
+          critical: {},
+        };
+        for (const el of document.querySelectorAll("[data-box-id]")) {
+          const boxId = el.dataset.boxId;
+          const subIndex = el.dataset.subIndex;
+          const kind = el.dataset.kind;
+          if (!boxId || subIndex === undefined || subIndex === null) continue;
+          const key = `${boxId}.${subIndex}`;
+
+          if (kind === "special") draft.special[key] = String(el.value || "");
+          if (kind === "studentAction") draft.studentAction[key] = String(el.value || "");
+          if (kind === "tier") {
+            if (!Array.isArray(draft.tiers[key])) draft.tiers[key] = [];
+            if (el.checked) draft.tiers[key].push(String(el.value || ""));
+          }
+          if (kind === "critical") draft.critical[key] = Boolean(el.checked);
+        }
+        return draft;
+      }
+
+      function renderBoxes() {
+        const draft = captureDraftFromDom();
+        elBoxes.replaceChildren();
+
+        for (const box of BOX_DEFS) {
+          const details = document.createElement("details");
+          details.open = false;
+
+          const summary = document.createElement("summary");
+          summary.textContent = `3. ${box.label}`;
+          details.appendChild(summary);
+
+          const body = document.createElement("div");
+          body.className = "box-body";
+
+          if (box.allowImage) {
+            const fileRow = document.createElement("div");
+            fileRow.className = "file-row";
+            const left = document.createElement("div");
+            const right = document.createElement("div");
+            right.className = "preview";
+
+            const imageLabel = document.createElement("label");
+            imageLabel.textContent = `Bild (${box.label})`;
+            const input = document.createElement("input");
+            input.type = "file";
+            input.accept = "image/*";
+            input.dataset.boxId = box.id;
+
+            const hint = document.createElement("p");
+            hint.className = "status";
+            hint.textContent =
+              box.id === "ekg"
+                ? `Tips: använd EKG-labb (JSON) för att koppla EKG direkt till ekg-steget. Bild kan användas som fallback i "${box.imageFolderHint}".`
+                : box.id === "blodgas"
+                  ? `Tips: använd Blodgas-labb (JSON) för att koppla blodgas direkt till blodgas-steget. Bild kan användas som fallback i "${box.imageFolderHint}".`
+                  : `Tips: lägg filen i "${box.imageFolderHint}" och låt JSON peka på filnamnet.`;
+
+            input.addEventListener("change", () => {
+              const file = input.files && input.files[0] ? input.files[0] : null;
+              selectedImagesByBoxId.set(box.id, file);
+              if (file) selectedEcgByBoxId.delete(box.id);
+              if (file && box.id === "blodgas") selectedBlodgasByBoxId.delete("blodgas");
+              right.replaceChildren();
+              if (file) {
+                const img = document.createElement("img");
+                img.alt = `${box.label} bild`;
+                img.src = URL.createObjectURL(file);
+                right.appendChild(img);
+              } else {
+                right.textContent = "Ingen bild vald.";
+              }
+            });
+
+            if (box.id === "ekg") {
+              const btnRow = document.createElement("div");
+              btnRow.className = "row";
+
+              const openLab = document.createElement("button");
+              openLab.type = "button";
+              openLab.textContent = "Öppna EKG-labb";
+              openLab.addEventListener("click", () => {
+                const url = new URL("./ecg-lab.html", window.location.href);
+                url.searchParams.set("handoff", "case-builder");
+                url.searchParams.set("box", "ekg");
+                window.open(url.toString(), "_blank", "noopener,noreferrer");
+              });
+
+              const fetchLab = document.createElement("button");
+              fetchLab.type = "button";
+              fetchLab.textContent = "Hämta från EKG-labb";
+              fetchLab.addEventListener("click", () => {
+                applyEcgHandoffIfPresent(true);
+              });
+
+              btnRow.append(openLab, fetchLab);
+              left.append(btnRow);
+            }
+
+            if (box.id === "blodgas") {
+              const btnRow = document.createElement("div");
+              btnRow.className = "row";
+
+              const openLab = document.createElement("button");
+              openLab.type = "button";
+              openLab.textContent = "Öppna Blodgas-labb";
+              openLab.addEventListener("click", () => {
+                const url = new URL("./blodgas.html", window.location.href);
+                url.searchParams.set("handoff", "case-builder");
+                url.searchParams.set("box", "blodgas");
+                window.open(url.toString(), "_blank", "noopener,noreferrer");
+              });
+
+              const fetchLab = document.createElement("button");
+              fetchLab.type = "button";
+              fetchLab.textContent = "Hämta från Blodgas-labb";
+              fetchLab.addEventListener("click", () => {
+                applyBlodgasHandoffIfPresent(true);
+              });
+
+              btnRow.append(openLab, fetchLab);
+              left.append(btnRow);
+            }
+
+            left.append(imageLabel, input, hint);
+            if (box.id === "ekg" && selectedEcgByBoxId.has("ekg")) {
+              const payload = selectedEcgByBoxId.get("ekg");
+              const p = document.createElement("p");
+              p.className = "status";
+              p.textContent = `EKG kopplat via JSON (${String(payload && payload.schema ? payload.schema : "")}).`;
+              right.appendChild(p);
+            } else if (box.id === "blodgas" && selectedBlodgasByBoxId.has("blodgas")) {
+              const payload = selectedBlodgasByBoxId.get("blodgas");
+              const p = document.createElement("p");
+              p.className = "status";
+              p.textContent = `Blodgas kopplat via JSON (${String(payload && payload.schema ? payload.schema : "")}).`;
+              right.appendChild(p);
+            } else if (selectedImagesByBoxId.get(box.id)) {
+              const file = selectedImagesByBoxId.get(box.id);
+              const img = document.createElement("img");
+              img.alt = `${box.label} bild`;
+              img.src = URL.createObjectURL(file);
+              right.appendChild(img);
+            } else if (existingImagePaths.has(box.id)) {
+              const p = document.createElement("p");
+              p.className = "status";
+              p.textContent = `Filen ${existingImagePaths.get(box.id)} finns i projektet.`;
+              right.appendChild(p);
+            } else {
+              right.textContent = "Ingen bild vald.";
+            }
+            fileRow.append(left, right);
+            body.appendChild(fileRow);
+          }
+
+          const subboxWrap = document.createElement("div");
+          subboxWrap.className = "subbox-grid";
+
+          box.subboxes.forEach((subboxName, idx) => {
+            const sub = document.createElement("div");
+            sub.className = "subbox";
+
+            const title = document.createElement("p");
+            title.className = "subbox-title";
+            title.textContent = `Subbox ${idx + 1}`;
+
+            const standardLabel = document.createElement("div");
+            standardLabel.className = "subbox-label";
+            standardLabel.textContent = "Standard";
+
+            const standard = document.createElement("textarea");
+            standard.rows = 2;
+            standard.readOnly = true;
+            standard.value = subboxName;
+            standard.dataset.boxId = box.id;
+            standard.dataset.subIndex = String(idx);
+            standard.dataset.kind = "prompt";
+
+            const specialLabel = document.createElement("div");
+            specialLabel.className = "subbox-label";
+            specialLabel.textContent = "Vad du ska säga (valfritt)";
+            const special = document.createElement("textarea");
+            special.rows = 2;
+            special.dataset.boxId = box.id;
+            special.dataset.subIndex = String(idx);
+            special.dataset.kind = "special";
+            {
+              const key = `${box.id}.${idx}`;
+              special.value = String(draft.special[key] || "");
+            }
+
+            const studentActionLabel = document.createElement("div");
+            studentActionLabel.className = "subbox-label";
+            studentActionLabel.textContent = "Vad student ska göra (valfritt)";
+
+            const studentAction = document.createElement("textarea");
+            studentAction.rows = 2;
+            studentAction.dataset.boxId = box.id;
+            studentAction.dataset.subIndex = String(idx);
+            studentAction.dataset.kind = "studentAction";
+            {
+              const key = `${box.id}.${idx}`;
+              studentAction.value = String(draft.studentAction[key] || "");
+            }
+
+            const controls = document.createElement("div");
+            controls.className = "subbox-controls";
+
+            const tierWrap = document.createElement("div");
+            tierWrap.className = "tier-group";
+            const tierLabel = document.createElement("div");
+            tierLabel.className = "subbox-label";
+            tierLabel.textContent = "Gradering";
+
+            const tierOptions = document.createElement("div");
+            tierOptions.className = "tier-options";
+
+            const tierName = `tier-${box.id}-${idx}`;
+            const tierDefs = [
+              { value: "basic", label: "Basic", weight: "1" },
+              { value: "middle", label: "Middle", weight: "3" },
+              { value: "high", label: "High", weight: "15" },
+            ];
+
+            for (const def of tierDefs) {
+              const opt = document.createElement("label");
+              opt.className = "tier-option";
+              const radio = document.createElement("input");
+              radio.type = "checkbox";
+              radio.name = tierName;
+              radio.value = def.value;
+              radio.dataset.boxId = box.id;
+              radio.dataset.subIndex = String(idx);
+              radio.dataset.kind = "tier";
+              {
+                const key = `${box.id}.${idx}`;
+                const existing = draft.tiers[key];
+                const list = Array.isArray(existing) ? existing : null;
+                radio.checked = list && list.length ? list.includes(def.value) : def.value === "basic";
+              }
+
+              const name = document.createElement("span");
+              name.className = "name";
+              name.textContent = def.label;
+
+              opt.append(radio, name);
+              tierOptions.append(opt);
+            }
+
+            tierWrap.append(tierLabel, tierOptions);
+
+            const criticalWrap = document.createElement("label");
+            criticalWrap.className = "control-inline";
+            const critical = document.createElement("input");
+            critical.type = "checkbox";
+            critical.dataset.boxId = box.id;
+            critical.dataset.subIndex = String(idx);
+            critical.dataset.kind = "critical";
+            {
+              const key = `${box.id}.${idx}`;
+              critical.checked = Boolean(draft.critical[key]);
+            }
+            const criticalText = document.createElement("span");
+            criticalText.textContent = "Kritisk";
+            criticalWrap.append(critical, criticalText);
+
+            controls.append(tierWrap, criticalWrap);
+
+            sub.append(
+              title,
+              standardLabel,
+              standard,
+              specialLabel,
+              special,
+              studentActionLabel,
+              studentAction,
+              controls
+            );
+            subboxWrap.appendChild(sub);
+          });
+
+          body.appendChild(subboxWrap);
+          details.appendChild(body);
+          elBoxes.appendChild(details);
+        }
+      }
+
+      function collectCaseData() {
+        const title = elTitle.value.trim();
+        const caseText = elCaseText.value.trim();
+
+        const boxes = {};
+        for (const box of BOX_DEFS) {
+          boxes[box.id] = {
+            label: box.label,
+            image: null,
+            ecg: null,
+            blodgas: null,
+            subboxes: box.subboxes.map((name) => ({
+              name,
+              studentAction: "",
+              specialCase: "",
+              tiers: ["basic"],
+              critical: false,
+            })),
+          };
+        }
+
+        for (const el of document.querySelectorAll("[data-box-id]")) {
+          const boxId = el.dataset.boxId;
+          const subIndex = Number(el.dataset.subIndex);
+          const kind = el.dataset.kind;
+          if (!boxes[boxId] || !boxes[boxId].subboxes[subIndex]) continue;
+          if (kind === "prompt") continue;
+          if (kind === "special") boxes[boxId].subboxes[subIndex].specialCase = String(el.value || "").trim();
+          if (kind === "studentAction")
+            boxes[boxId].subboxes[subIndex].studentAction = String(el.value || "").trim();
+          if (kind === "tier") {
+            const entry = boxes[boxId].subboxes[subIndex];
+            const tiers = Array.isArray(entry.tiers) ? entry.tiers : [];
+            const val = String(el.value || "").trim();
+            const normalized = val === "basic" || val === "middle" || val === "high" ? val : "";
+            if (!normalized) continue;
+            if (el.checked) {
+              if (!tiers.includes(normalized)) tiers.push(normalized);
+            } else {
+              const idxToRemove = tiers.indexOf(normalized);
+              if (idxToRemove >= 0) tiers.splice(idxToRemove, 1);
+            }
+            entry.tiers = tiers.length ? tiers : ["basic"];
+          }
+          if (kind === "critical") boxes[boxId].subboxes[subIndex].critical = Boolean(el.checked);
+        }
+
+        for (const box of BOX_DEFS) {
+          if (!box.allowImage) continue;
+          const file = selectedImagesByBoxId.get(box.id);
+          if (!file) continue;
+          const safeName = `${slugify(title) || "case"}-${box.id}-${slugify(file.name) || "image"}`.replace(
+            /\.jpg-jpeg$/i,
+            ".jpg"
+          );
+          boxes[box.id].image = {
+            filename: safeName,
+            suggestedPath: `${box.imageFolderHint}${safeName}`,
+            originalName: file.name,
+            mime: file.type || "image/*",
+          };
+        }
+
+        if (selectedEcgByBoxId.has("ekg")) {
+          boxes.ekg.image = null;
+          boxes.ekg.ecg = selectedEcgByBoxId.get("ekg");
+        }
+
+        if (selectedBlodgasByBoxId.has("blodgas")) {
+          boxes.blodgas.image = null;
+          boxes.blodgas.blodgas = selectedBlodgasByBoxId.get("blodgas");
+        }
+
+        return {
+          schemaVersion: 3,
+          title,
+          caseText,
+          boxes,
+        };
+      }
+
+      function exportJson() {
+        const data = collectCaseData();
+        if (!data.title) {
+          setStatus("Titel krävs för export.");
+          return;
+        }
+        const filename = `case-${slugify(data.title) || "untitled"}.json`;
+        downloadBlob(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }), filename);
+        setStatus(`Exporterade ${filename}. Lägg den i "cases/".`);
+      }
+
+      async function exportImages() {
+        const data = collectCaseData();
+        const images = [];
+        for (const box of BOX_DEFS) {
+          if (!box.allowImage) continue;
+          if (box.id === "ekg" && selectedEcgByBoxId.has("ekg")) continue;
+          if (box.id === "blodgas" && selectedBlodgasByBoxId.has("blodgas")) continue;
+          const file = selectedImagesByBoxId.get(box.id);
+          const meta = data.boxes[box.id]?.image;
+          if (file && meta?.filename) images.push({ file, filename: meta.filename, folder: box.imageFolderHint });
+        }
+
+        if (!images.length) {
+          setStatus("Inga bilder valda.");
+          return;
+        }
+
+        for (const img of images) {
+          downloadBlob(img.file, img.filename);
+        }
+        setStatus(
+          `Laddade ner ${images.length} bild(er). Lägg dem i respektive mapp (t.ex. assets/ekg/ och assets/blodgas/).`
+        );
+      }
+
+      function resetAll() {
+        if (!confirm("Rensa allt i formuläret?")) return;
+        document
+          .querySelectorAll("textarea")
+          .forEach((t) => (t.readOnly ? null : (t.value = "")));
+        document
+          .querySelectorAll("input[type=\"checkbox\"][data-kind=\"tier\"]")
+          .forEach((r) => (r.checked = r.value === "basic"));
+        document.querySelectorAll("input[type=\"checkbox\"][data-kind=\"critical\"]").forEach((c) => (c.checked = false));
+        elTitle.value = "";
+        elCaseText.value = "";
+        selectedImagesByBoxId.clear();
+        selectedEcgByBoxId.clear();
+        selectedBlodgasByBoxId.clear();
+        document.querySelectorAll("input[type=\"file\"]").forEach((i) => (i.value = ""));
+        document.querySelectorAll(".preview").forEach((p) => (p.textContent = "Ingen bild vald."));
+        setStatus("");
+      }
+
+      function applyEcgHandoffIfPresent(verbose) {
+        try {
+          const raw = localStorage.getItem(ECG_HANDOFF_KEY);
+          if (!raw) {
+            if (verbose) setStatus("Ingen EKG-data hittades från labbet.");
+            return false;
+          }
+          const env = JSON.parse(raw);
+          if (!env || env.target !== "case-builder" || env.boxId !== "ekg") {
+            if (verbose) setStatus("Hittade EKG-data, men den var inte för Case Builder / ekg.");
+            return false;
+          }
+          const payload = env.payload;
+          if (!payload || payload.schema !== "ekg-lab.v1" || !payload.settings) {
+            if (verbose) setStatus("EKG-data hade fel format.");
+            return false;
+          }
+
+          selectedEcgByBoxId.set("ekg", payload);
+          selectedImagesByBoxId.set("ekg", null);
+          localStorage.removeItem(ECG_HANDOFF_KEY);
+          renderBoxes();
+          setStatus("Kopplade EKG (JSON) till ekg-steget.");
+          return true;
+        } catch {
+          if (verbose) setStatus("Kunde inte läsa EKG-data från labbet.");
+          return false;
+        }
+      }
+
+      function applyBlodgasHandoffIfPresent(verbose) {
+        try {
+          const raw = localStorage.getItem(BLODGAS_HANDOFF_KEY);
+          if (!raw) {
+            if (verbose) setStatus("Ingen blodgas-data hittades från labbet.");
+            return false;
+          }
+          const env = JSON.parse(raw);
+          if (!env || env.target !== "case-builder" || env.boxId !== "blodgas") {
+            if (verbose) setStatus("Hittade blodgas-data, men den var inte för Case Builder / blodgas.");
+            return false;
+          }
+          const payload = env.payload;
+          if (!payload || payload.schema !== "blodgas-lab.v1" || !payload.sections) {
+            if (verbose) setStatus("Blodgas-data hade fel format.");
+            return false;
+          }
+
+          selectedBlodgasByBoxId.set("blodgas", payload);
+          selectedImagesByBoxId.set("blodgas", null);
+          localStorage.removeItem(BLODGAS_HANDOFF_KEY);
+          renderBoxes();
+          setStatus("Kopplade blodgas (JSON) till blodgas-steget.");
+          return true;
+        } catch {
+          if (verbose) setStatus("Kunde inte läsa blodgas-data från labbet.");
+          return false;
+        }
+      }
+
+      function setLoadStatus(message, state = "info") {
+        if (!loadCaseStatus) return;
+        loadCaseStatus.textContent = message;
+        loadCaseStatus.dataset.state = state;
+      }
+
+      async function fetchJson(path) {
+        const res = await fetch(path, { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      }
+
+      async function populateCaseSelect() {
+        if (!caseSelect) return;
+        if (location.protocol === "file:") {
+          setLoadStatus("Starta en enkel http-server (t.ex. python -m http.server) för att läsa cases/.","warn");
+          caseSelect.disabled = true;
+          return;
+        }
+        try {
+          const index = await fetchJson("./cases/index.json");
+          const files = Array.isArray(index?.cases) ? index.cases : [];
+          caseSelect.replaceChildren();
+          caseSelect.appendChild(new Option("Välj fall...", ""));
+          for (const filename of files) {
+            caseSelect.appendChild(new Option(filename, filename));
+          }
+          caseSelect.disabled = !files.length;
+          setLoadStatus(files.length ? "Välj ett fall för att ladda det." : "No cases found in cases/index.json.", files.length ? "info" : "warn");
+        } catch (err) {
+          setLoadStatus(`Kunde inte läsa case-lista: ${safeText(err?.message)}`, "error");
+        }
+      }
+
+      function fillSubboxFields(boxes) {
+        if (!boxes) return;
+        Object.entries(boxes).forEach(([boxId, box]) => {
+          const subboxes = Array.isArray(box.subboxes) ? box.subboxes : [];
+          subboxes.forEach((sub, idx) => {
+            const specialEl = document.querySelector(
+              `[data-kind="special"][data-box-id="${boxId}"][data-sub-index="${idx}"]`
+            );
+            if (specialEl) specialEl.value = safeText(sub.specialCase || "");
+            const actionEl = document.querySelector(
+              `[data-kind="studentAction"][data-box-id="${boxId}"][data-sub-index="${idx}"]`
+            );
+            if (actionEl) actionEl.value = safeText(sub.studentAction || "");
+
+            const tierEls = document.querySelectorAll(
+              `[data-kind="tier"][data-box-id="${boxId}"][data-sub-index="${idx}"]`
+            );
+            const tiers = Array.isArray(sub.tiers) && sub.tiers.length ? sub.tiers : ["basic"];
+            tierEls.forEach((tierEl) => {
+              tierEl.checked = tiers.includes(tierEl.value) || (!sub.tiers && tierEl.value === "basic");
+            });
+
+            const criticalEl = document.querySelector(
+              `[data-kind="critical"][data-box-id="${boxId}"][data-sub-index="${idx}"]`
+            );
+            if (criticalEl) criticalEl.checked = Boolean(sub.critical);
+          });
+        });
+      }
+
+      function applyCaseData(data, label) {
+        if (!data) return;
+        elTitle.value = safeText(data.title);
+        elCaseText.value = safeText(data.caseText || data.text || "");
+        existingImagePaths.clear();
+        selectedImagesByBoxId.clear();
+        selectedEcgByBoxId.clear();
+        selectedBlodgasByBoxId.clear();
+        const boxes = data.boxes || {};
+        Object.entries(boxes).forEach(([boxId, box]) => {
+          if (box.image && box.image.suggestedPath) {
+            existingImagePaths.set(boxId, box.image.suggestedPath);
+          }
+          if (boxId === "ekg" && box.ecg) {
+            selectedEcgByBoxId.set("ekg", box.ecg);
+          }
+          if (boxId === "blodgas" && box.blodgas) {
+            selectedBlodgasByBoxId.set("blodgas", box.blodgas);
+          }
+        });
+        renderBoxes();
+        fillSubboxFields(boxes);
+        setStatus(`Laddade ${label || data.title || "fallet"}.`);
+        setLoadStatus(`Laddade ${data.title || label || "fallet"}.`, "success");
+      }
+
+      async function loadCaseFromSelector() {
+        const filename = caseSelect?.value;
+        if (!filename) {
+          setLoadStatus("Välj ett fall att ladda.", "warn");
+          return;
+        }
+        try {
+          const data = await fetchJson(`./cases/${filename}`);
+          applyCaseData(data, filename);
+        } catch (err) {
+          setLoadStatus(`Kunde inte läsa ${filename}: ${safeText(err?.message)}`, "error");
+        }
+      }
+
+      function clearLoadedCase() {
+        existingImagePaths.clear();
+        selectedImagesByBoxId.clear();
+        selectedEcgByBoxId.clear();
+        selectedBlodgasByBoxId.clear();
+        elTitle.value = "";
+        elCaseText.value = "";
+        renderBoxes();
+        setLoadStatus("Rensade laddning.", "info");
+      }
+
+      if (loadCaseBtn) loadCaseBtn.addEventListener("click", loadCaseFromSelector);
+      if (clearLoadBtn) clearLoadBtn.addEventListener("click", clearLoadedCase);
+      if (loadCaseFileInput)
+        loadCaseFileInput.addEventListener("change", (event) => {
+          const file = event.target.files && event.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = () => {
+            try {
+              const json = JSON.parse(reader.result);
+              applyCaseData(json, file.name);
+            } catch (err) {
+              setLoadStatus("Kunde inte läsa filen: " + safeText(err?.message), "error");
+            }
+          };
+          reader.readAsText(file);
+        });
+
+      populateCaseSelect();
+
+      renderBoxes();
+      exportJsonBtn.addEventListener("click", exportJson);
+      exportImagesBtn.addEventListener("click", exportImages);
+      resetBtn.addEventListener("click", resetAll);
+      window.addEventListener("focus", () => applyEcgHandoffIfPresent(false));
+      window.addEventListener("focus", () => applyBlodgasHandoffIfPresent(false));
+    </script>
+  </body>
+</html>

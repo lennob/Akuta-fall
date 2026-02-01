@@ -1,0 +1,450 @@
+{
+  "schemaVersion": 3,
+  "title": "Fall D",
+  "caseText": "S: Trafikolycka. Kvinna 40 år cyklat och blivit påkörd av bil, slängts av cykeln\nB: Hypertyreos. Kolecystektomerad. \nA: Inkommer på spineboard. Fått 500 ml Ringer via ambulansen. Får syrgas 3 L via grimma och saturerar sig 99%. Höger ben är blödande och felställt.",
+  "boxes": {
+    "oversikt": {
+      "label": "översikt",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "skyddskläder, handskar, förkläde.",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "undersök tecken till hjärtstopp",
+          "studentAction": "Tala till patienten, lyssna efter andning känna efter puls",
+          "specialCase": "Inga tecken till hjärtstopp",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true
+        },
+        {
+          "name": "tecken till katastrofal blödning",
+          "studentAction": "",
+          "specialCase": "Vid höger ben syns en öppet sår, ingen katastrofal blödning",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true
+        }
+      ]
+    },
+    "airway": {
+      "label": "airway",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "Inspektera ansikte",
+          "studentAction": "",
+          "specialCase": "Inga tecken till skador i ansikte eller hals",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Inspektera hals",
+          "studentAction": "Ordinera immobilisering av nacke, då smärtor från ben kan maskera skada i nacke",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true
+        },
+        {
+          "name": "inspektera munnen och svalg med ficklampa",
+          "studentAction": "",
+          "specialCase": "Ingen främmande kropp",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true
+        },
+        {
+          "name": "Lyssna på andning",
+          "studentAction": "",
+          "specialCase": "Normala andningsljud",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "breathing": {
+      "label": "breathing",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "beräkna och bedöm andningsfrekvens",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Bedöm saturation (%)",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "inspektion av bröstkorg, avseende symmetriska andningsrörelser, synliga skador",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Auskultation över lungfälten",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Palpation av bröstkorgen",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "circulation": {
+      "label": "circulation",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "Bestäm hjärtfrekvens",
+          "studentAction": "",
+          "specialCase": "Puls 140/min",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "bestäm blodtryck",
+          "studentAction": "Ordinerar en påse 0-negativt blod - efter 1 påse blod stiger trycket till 77/57, efter 2 påsar 78/57",
+          "specialCase": "BP 75/56",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true
+        },
+        {
+          "name": "bestäm kapillär återfyllnadstid",
+          "studentAction": "",
+          "specialCase": "Kapillär återfyllnad 5 sek",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "bedömning av perifera pulsationer bilaturalt",
+          "studentAction": "",
+          "specialCase": "Inga pulsar i radialis, svaga pulsar i femoralis",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "bedömning av perifer cirkulation",
+          "studentAction": "",
+          "specialCase": "Kall perifert",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Palpation av buk, becken och lårben",
+          "studentAction": "Ordinera bäckengördel",
+          "specialCase": "Patienten har kraftiga smärtor vid palpation av bäcken",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true
+        },
+        {
+          "name": "ordination av venösa infarter",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true
+        },
+        {
+          "name": "ordination av blodgas ± glukos",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true
+        }
+      ]
+    },
+    "disability": {
+      "label": "disability",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "bedömning av medvetandegrad (RLS/GCS)",
+          "studentAction": "",
+          "specialCase": "Patienten svarar normalt på tilltal, aningen trött (RLS 1-2/GCS 13-15)",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "undersökning av ögon",
+          "studentAction": "",
+          "specialCase": "Pupiller ua, ljusreagerande, centrerade.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "undersökning av grov kraft i armar och ben",
+          "studentAction": "",
+          "specialCase": "Sensorik/motorik ua övre, har för ont i benen för att testa nedre.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "undersökning av sensorik armar och ben",
+          "studentAction": "",
+          "specialCase": "Sensorik/motorik ua övre, har för ont i benen för att testa nedre.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "ordination av kapillär glukos",
+          "studentAction": "",
+          "specialCase": "Glukos är 9,8 mmol/L",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "exposure": {
+      "label": "exposure",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "bestämning av kroppstemperatur",
+          "studentAction": "Ordinerar varma filtar",
+          "specialCase": "Temperatur är 35,2 grader",
+          "tiers": [
+            "basic",
+            "middle"
+          ],
+          "critical": false
+        },
+        {
+          "name": "inspektion av kroppens fram- och baksida",
+          "studentAction": "Per rectum, bladderscan, ordinera KAD",
+          "specialCase": "Öppen fraktur hö underben, hänger lite konstigt. Sår vä ben, ingen katastrofal blödning. Nedsatt sfinktertonus vid per rektum (om student gör PR). 400 ml i blåsan (Om student gör bladderscan).",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true
+        }
+      ]
+    },
+    "blodgas": {
+      "label": "blodgas",
+      "image": {
+        "filename": "fall-d-blodgas-skarmbild-2026-01-24-220024-png",
+        "suggestedPath": "assets/blodgas/fall-d-blodgas-skarmbild-2026-01-24-220024-png",
+        "originalName": "Skärmbild 2026-01-24 220024.png",
+        "mime": "image/png"
+      },
+      "subboxes": [
+        {
+          "name": "Undersöker och tolkar acidemi/alkalemi",
+          "studentAction": "",
+          "specialCase": "Patienten har en acidemi",
+          "tiers": [
+            "basic",
+            "high"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Respiratorisk/metabol genes, kompensation",
+          "studentAction": "",
+          "specialCase": "Metabol acidos utan respiratorisk kompensation",
+          "tiers": [
+            "basic",
+            "high"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Övriga värden (Na, K, Hb, Cl, Ca, glukos, laktat, FCOHb",
+          "studentAction": "Bedömer att patienten har lågt Hb, lågt calcium (ev. som effekt av tillfört blod)",
+          "specialCase": "",
+          "tiers": [
+            "basic",
+            "high"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "ekg": {
+      "label": "ekg",
+      "image": {
+        "filename": "fall-d-ekg-skarmbild-2026-01-24-220313-png",
+        "suggestedPath": "assets/ekg/fall-d-ekg-skarmbild-2026-01-24-220313-png",
+        "originalName": "Skärmbild 2026-01-24 220313.png",
+        "mime": "image/png"
+      },
+      "subboxes": [
+        {
+          "name": "Frekvens",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Rytm",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "QRS",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "STT-sträcka",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "QT-tid",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "handlaggning": {
+      "label": "handläggning",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "Bedömer behov av riktad klinisk undersökning (Ultraljud, PR, Nackstelhet)",
+          "studentAction": "Ordinerar BAS + blodgruppering, koagulation",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Initierar adekvat behandling",
+          "studentAction": "Bedömer att patienten är instabil och ska skickas till operation omedelbart",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true
+        },
+        {
+          "name": "Re-evaluerar (Övervakar och utvärderar effekter av åtgärder)",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "signout": {
+      "label": "signout",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "Formulerar arbetsdiagnos",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Planerar vidare behandling",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Bedömer övervakningsbehov och vårdnivå",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    }
+  }
+}

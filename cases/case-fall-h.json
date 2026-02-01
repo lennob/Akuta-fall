@@ -1,0 +1,447 @@
+{
+  "schemaVersion": 3,
+  "title": "Fall H",
+  "caseText": "S: 32-årig kvinna, krampanfall. Ambulans inkommer om 1 minut.\nB: Frisk, medicinfri\nA: Patient som i hemmet plötsligt börjat krampa, bevittnades av sambo. Medvetslös efter kramperna. Ambulans inkom vid andra anfallet med generaliserade kramper, gav 10 mg Stesolid och körde mot akuten.",
+  "boxes": {
+    "oversikt": {
+      "label": "översikt",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "Skyddskläder, handskar, förkläde.",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersök tecken till hjärtstopp",
+          "studentAction": "Finner inget tecken till hjärtstopp",
+          "specialCase": "Patienten är medvetslös men andas och har en tydlig puls i carotis.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Tecken till katastrofal blödning",
+          "studentAction": "",
+          "specialCase": "Inga tecken till katastrofal blödning.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "airway": {
+      "label": "airway",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "Inspektera ansikte",
+          "studentAction": "",
+          "specialCase": "Inga tecken på skador",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Inspektera hals",
+          "studentAction": "",
+          "specialCase": "Inga tecken på skador",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Inspektera munnen och svalg med ficklampa",
+          "studentAction": "",
+          "specialCase": "Tungbett som inte blöder mycket annars u.a",
+          "tiers": [
+            "basic",
+            "middle"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Lyssna på andning",
+          "studentAction": "",
+          "specialCase": "Normala andningsljud, inga tecken på övre luftvägspåverkan",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "breathing": {
+      "label": "breathing",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "Beräkna och bedöm andningsfrekvens",
+          "studentAction": "",
+          "specialCase": "AF 22",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Bedöm saturation (%)",
+          "studentAction": "",
+          "specialCase": "Saturation 95% med 3 L syrgas med näsgrimma",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Inspektion av bröstkorg, avseende symmetriska andningsrörelser, synliga skador",
+          "studentAction": "",
+          "specialCase": "Liksidiga andningsrörelser, inga synliga skador.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Auskultation över lungfälten",
+          "studentAction": "",
+          "specialCase": "Man hör svaga bilaterala andningsljud.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Palpation av bröstkorgen",
+          "studentAction": "",
+          "specialCase": "Ingen smärta vid palpation",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "circulation": {
+      "label": "circulation",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "Bestäm hjärtfrekvens",
+          "studentAction": "",
+          "specialCase": "Hjärtfrekvens 120/min",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Bestäm blodtryck",
+          "studentAction": "",
+          "specialCase": "BP 135/70",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Bestäm kapillär återfyllnadstid",
+          "studentAction": "",
+          "specialCase": "Kapillär återfyllnad <2s",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Bedömning av perifera pulsationer bilateralt",
+          "studentAction": "",
+          "specialCase": "Liksidiga pulsar i radialis/femoralis",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Bedömning av perifer cirkulation",
+          "studentAction": "",
+          "specialCase": "Normalt",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Palpation av buk, becken och lårben",
+          "studentAction": "",
+          "specialCase": "Inspektion/palpation över buk/bäcken/lårben u.a.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Ordination av venösa infarter",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Ordination av blodgas ± glukos",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "disability": {
+      "label": "disability",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "Bedömning av medvetandegrad (RLS/GCS)",
+          "studentAction": "Ska tolka RLS 4",
+          "specialCase": "Svarar inte på tilltal. Vid smärtstimulering lokaliserar patienten smärtan (RLS 4)",
+          "tiers": [
+            "basic",
+            "middle"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersökning av ögon",
+          "studentAction": "",
+          "specialCase": "Pupiller medelvida, centrerade med normal ljusreaktion",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersökning av grov kraft i armar och ben",
+          "studentAction": "",
+          "specialCase": "Grovmotorik och sensorik u.a (reagerar lite när man nyper på armarna).",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersökning av sensorik armar och ben",
+          "studentAction": "",
+          "specialCase": "Grovmotorik och sensorik u.a (reagerar lite när man nyper på armarna).",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Ordination av kapillär glukos",
+          "studentAction": "",
+          "specialCase": "Glukos kommer på blodgasen",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "exposure": {
+      "label": "exposure",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "bestämning av kroppstemperatur",
+          "studentAction": "Ordinerar varma täcken",
+          "specialCase": "Temperatur 35,5°",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "inspektion av kroppens fram- och baksida",
+          "studentAction": "",
+          "specialCase": "Undersökning med stockvändning u.a.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "blodgas": {
+      "label": "blodgas",
+      "image": {
+        "filename": "fall-h-blodgas-image-3-jpg",
+        "suggestedPath": "assets/blodgas/fall-h-blodgas-image-3-jpg",
+        "originalName": "image (3).jpg",
+        "mime": "image/jpeg"
+      },
+      "subboxes": [
+        {
+          "name": "Undersöker och tolkar acidemi/alkalemi",
+          "studentAction": "Identifierar acidemi",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Respiratorisk/metabol genes, kompensation",
+          "studentAction": "Identifierar kombinerad respiratorisk och metabol acidos",
+          "specialCase": "",
+          "tiers": [
+            "basic",
+            "middle"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Övriga värden (Na, K, Hb, Cl, Ca, glukos, laktat, FCOHb",
+          "studentAction": "Identifierar tydligt förhöjt laktat, förenligt med postiktalt tillstånd efter generaliserat epileptiskt anfall. Ska spontant nämna glukosbedömning",
+          "specialCase": "",
+          "tiers": [
+            "basic",
+            "middle"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "ekg": {
+      "label": "ekg",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "Frekvens",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Rytm",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "QRS",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "STT-sträcka",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "QT-tid",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "handlaggning": {
+      "label": "handläggning",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "Bedömer behov av riktad klinisk undersökning (Ultraljud, PR, Nackstelhet)",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Initierar adekvat behandling",
+          "studentAction": "Ska ordagrannt beskriva “generella kramper” → ska inom 60 s från symtomdebut spontant ordinera ≥10 mg Diazepam/Stesolid → detta stillar kramper",
+          "specialCase": "Nu ska patienten börja krampa igen med generella skakningar (Du ska säga “Patienten börjar krampa, med skakningar i hela kroppen”).",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Re-evaluerar (Övervakar och utvärderar effekter av åtgärder)",
+          "studentAction": "Ska spontant göra en reevaluering där man ska identifera en hypoventilering (<10) → Ska ordinera ventilation med mask och blåsa 15 L syrgas\nIdentifierar urinavgång som kramprelaterat",
+          "specialCase": "Du ser att patienten har en spontan urinavgång",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true
+        }
+      ]
+    },
+    "signout": {
+      "label": "signout",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "Formulerar arbetsdiagnos",
+          "studentAction": "Identifierar krampanfall utan känd epilepsi",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Planerar vidare behandling",
+          "studentAction": "Ordinerar CT-hjärna som nästa steg i utredning",
+          "specialCase": "",
+          "tiers": [
+            "basic",
+            "middle"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Bedömer övervakningsbehov och vårdnivå",
+          "studentAction": "Kontaktar narkos för ev. intubationsbehov och inläggning på IVA",
+          "specialCase": "",
+          "tiers": [
+            "basic",
+            "middle"
+          ],
+          "critical": false
+        }
+      ]
+    }
+  }
+}

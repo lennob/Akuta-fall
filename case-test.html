@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Case Test • Lennyshemsida</title>
+    <style>
+      :root {
+        --bg: #f4f6fb;
+        --panel: #ffffff;
+        --panel-soft: #edf1fb;
+        --text: #0f172a;
+        --muted: #64748b;
+        --accent: #2563eb;
+        --radius: 16px;
+        --border: rgba(15, 23, 42, 0.14);
+        --shadow: 0 30px 80px rgba(15, 23, 42, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family:
+          "Inter",
+          "Segoe UI",
+          system-ui,
+          sans-serif;
+        background: linear-gradient(180deg, #f4f6fb 0%, #e5ecfb 100%);
+        color: var(--text);
+        min-height: 100vh;
+        padding: 22px;
+      }
+
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .page {
+        max-width: 1100px;
+        margin: 0 auto;
+        display: grid;
+        gap: 16px;
+      }
+
+      header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      header h1 {
+        margin: 0;
+        font-size: 22px;
+      }
+
+      header p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .pad {
+        padding: 16px;
+      }
+
+      .hint {
+        font-size: 13px;
+        color: var(--muted);
+        padding: 12px;
+        border-radius: 14px;
+        background: rgba(15, 23, 42, 0.04);
+        border: 1px solid var(--border);
+      }
+
+      label {
+        display: block;
+        font-size: 13px;
+        color: var(--muted);
+        margin: 12px 0 6px;
+      }
+
+      input[type="file"] {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--panel-soft);
+        color: var(--text);
+        padding: 10px 12px;
+        font-size: 14px;
+      }
+
+      button {
+        border: 1px solid var(--border);
+        background: var(--panel-soft);
+        color: var(--text);
+        padding: 10px 12px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      button.primary {
+        border-color: rgba(37, 99, 235, 0.35);
+        background: rgba(37, 99, 235, 0.12);
+      }
+
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .spacer {
+        flex: 1;
+      }
+
+      .status {
+        margin: 12px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .case-title {
+        margin: 0;
+        font-size: 20px;
+      }
+
+      .case-text {
+        white-space: pre-wrap;
+        background: rgba(15, 23, 42, 0.03);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 12px;
+        color: var(--text);
+        line-height: 1.45;
+      }
+
+      details {
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        overflow: hidden;
+        background: var(--panel);
+        margin-top: 10px;
+      }
+
+      summary {
+        cursor: pointer;
+        padding: 12px 14px;
+        background: var(--panel-soft);
+        font-weight: 800;
+        text-transform: capitalize;
+      }
+
+      .box-body {
+        padding: 12px 14px 14px;
+      }
+
+      .sub {
+        padding: 10px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        margin-top: 10px;
+        background: #fff;
+      }
+
+      .sub strong {
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      .sub .special {
+        margin-top: 6px;
+        color: #7f1d1d;
+        background: rgba(220, 38, 38, 0.08);
+        border: 1px solid rgba(220, 38, 38, 0.2);
+        border-radius: 10px;
+        padding: 8px;
+        white-space: pre-wrap;
+      }
+
+      .img-wrap {
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px dashed var(--border);
+        border-radius: 12px;
+        background: #fff;
+      }
+
+      .img-wrap img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <div>
+          <h1>Case Test</h1>
+          <p>Test-sida som visar ett case från `cases/`.</p>
+        </div>
+        <p><a href="./index.html">← Tillbaka</a></p>
+      </header>
+
+      <div class="card">
+        <div class="pad">
+          <div class="hint">
+            Om du öppnar detta via <code>file://</code> kan webbläsaren blockera att sidan läser
+            <code>cases/case-bajs.json</code>. Då fungerar filväljaren nedan (du väljer JSON-filen
+            manuellt).
+          </div>
+
+          <div class="row">
+            <button type="button" class="primary" id="loadDefaultBtn">Ladda cases/case-bajs.json</button>
+            <div class="spacer"></div>
+          </div>
+
+          <label for="fileInput">Välj en JSON-fil (fallback)</label>
+          <input id="fileInput" type="file" accept="application/json,.json" />
+
+          <p class="status" id="status" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="pad" id="output">
+          <p class="status">Ingen fil laddad ännu.</p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const DEFAULT_PATH = "./cases/case-bajs.json";
+      const BOX_ORDER = [
+        "oversikt",
+        "airway",
+        "breathing",
+        "circulation",
+        "disability",
+        "exposure",
+        "blodgas",
+        "ekg",
+        "handlaggning",
+        "signout",
+      ];
+
+      const statusEl = document.getElementById("status");
+      const outputEl = document.getElementById("output");
+      const loadDefaultBtn = document.getElementById("loadDefaultBtn");
+      const fileInput = document.getElementById("fileInput");
+
+      function setStatus(text) {
+        statusEl.textContent = text || "";
+      }
+
+      function safeText(value) {
+        return String(value ?? "");
+      }
+
+      function renderCase(data, sourceLabel) {
+        outputEl.replaceChildren();
+
+        const title = document.createElement("h2");
+        title.className = "case-title";
+        title.textContent = safeText(data.title || "(utan titel)");
+
+        const meta = document.createElement("p");
+        meta.className = "status";
+        meta.textContent = `Källa: ${sourceLabel} • schemaVersion: ${safeText(data.schemaVersion)}`;
+
+        const caseText = document.createElement("div");
+        caseText.className = "case-text";
+        caseText.textContent = safeText(data.caseText);
+
+        outputEl.append(title, meta, caseText);
+
+        const boxes = data.boxes && typeof data.boxes === "object" ? data.boxes : {};
+        for (const boxId of BOX_ORDER) {
+          const box = boxes[boxId];
+          if (!box) continue;
+
+          const details = document.createElement("details");
+          details.open = false;
+          const summary = document.createElement("summary");
+          summary.textContent = safeText(box.label || boxId);
+
+          const body = document.createElement("div");
+          body.className = "box-body";
+
+          if (box.image && box.image.suggestedPath) {
+            const wrap = document.createElement("div");
+            wrap.className = "img-wrap";
+            const img = document.createElement("img");
+            img.alt = `${safeText(box.label || boxId)} bild`;
+            img.src = box.image.suggestedPath;
+            wrap.append(img);
+            body.append(wrap);
+          }
+
+          const subboxes = Array.isArray(box.subboxes) ? box.subboxes : [];
+          for (const sub of subboxes) {
+            const item = document.createElement("div");
+            item.className = "sub";
+            const standard = document.createElement("strong");
+            standard.textContent = safeText(sub.name);
+            item.append(standard);
+
+            const special = safeText(sub.specialCase).trim();
+            if (special) {
+              const specialEl = document.createElement("div");
+              specialEl.className = "special";
+              specialEl.textContent = special;
+              item.append(specialEl);
+            }
+            body.append(item);
+          }
+
+          details.append(summary, body);
+          outputEl.append(details);
+        }
+      }
+
+      async function loadViaFetch(path) {
+        const response = await fetch(path, { cache: "no-store" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return await response.json();
+      }
+
+      function loadFromFile(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onerror = () => reject(new Error("Kunde inte läsa filen."));
+          reader.onload = () => {
+            try {
+              resolve(JSON.parse(String(reader.result || "")));
+            } catch {
+              reject(new Error("Filen är inte giltig JSON."));
+            }
+          };
+          reader.readAsText(file, "utf-8");
+        });
+      }
+
+      loadDefaultBtn.addEventListener("click", async () => {
+        setStatus("Laddar...");
+        try {
+          const data = await loadViaFetch(DEFAULT_PATH);
+          renderCase(data, DEFAULT_PATH);
+          setStatus("Klart.");
+        } catch (err) {
+          setStatus(
+            `Kunde inte läsa ${DEFAULT_PATH}. Om du öppnar via file:// måste du använda filväljaren. ` +
+              `Om du vill att sidan ska kunna läsa från projektmappen automatiskt: öppna via http:// ` +
+              `(t.ex. "python -m http.server 8000" i projektmappen). (${safeText(err && err.message)})`
+          );
+        }
+      });
+
+      fileInput.addEventListener("change", async () => {
+        const file = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+        if (!file) return;
+        setStatus("Läser fil...");
+        try {
+          const data = await loadFromFile(file);
+          renderCase(data, file.name);
+          setStatus("Klart.");
+        } catch (err) {
+          setStatus(safeText(err && err.message));
+        }
+      });
+
+      if (location.protocol === "file:") {
+        loadDefaultBtn.disabled = true;
+        loadDefaultBtn.title =
+          "Blockeras av webbläsaren på file://. Öppna sidan via http:// för att läsa cases/ automatiskt.";
+        setStatus(
+          "Tips: Du öppnar detta via file://, så webbläsaren blockerar fetch från projektmappen. " +
+            "Använd filväljaren, eller kör en enkel statisk server (http://) för att kunna läsa cases/ direkt."
+        );
+      }
+    </script>
+  </body>
+</html>

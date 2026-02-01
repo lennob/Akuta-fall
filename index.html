@@ -1,0 +1,1591 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lennyshemsida</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <h1>Akuta fall</h1>
+        <p>Steg för steg: gör dig redo, kör ett fall och reflektera.</p>
+      </header>
+
+      <nav class="card step-nav" aria-label="Steg">
+        <div class="step-nav-row">
+          <div class="step-info-buttons">
+            <button type="button" class="btn-secondary step-info-btn" id="aboutBtn">
+              Om denna sida
+            </button>
+            <div class="steps" id="stepsList"></div>
+          </div>
+        </div>
+      </nav>
+
+      <div class="info-panel" id="aboutPanel" hidden>
+        <p>
+          Denna hemsida är menat som ett hjälpmedel för att öva på sin egna tid på akuta fall som kan komma på
+          OSCE (och säkert på mottagningen också). De flesta fallen är baserade på anteckningar från min tid
+          som termin-11 student vid temadagarna på akutkursen 2025 på Lunds universitet, och andra är baserade
+          på gamla OSCE-fall. Fallen är menade att användas av helst två personer, där en person agerar som
+          bedömare och en som undersökande läkare. Vi har lagt till en blodgas och EKG på fallen som ska visas
+          till den undersökande läkaren utan att de ser andra mallen. Kom ihåg att fallen är ihopskrivna av
+          studenter som snabbt tagit anteckningar på temadagarna, ta inte allting som direkt sanning utan att du
+          själv vet att det stämmer. Handläggning och behandling kan snabbt förändra sig, så därför uppskattar
+          vi gärna feedback från er!
+        </p>
+      </div>
+
+      <main class="card">
+        <section class="content" data-step="1" id="step-1"></section>
+        <section class="content" data-step="2" id="step-2">
+          <div class="step-stage" aria-label="Navigering mellan steg">
+            <button type="button" class="step-side-btn" id="step2PrevBtn" aria-label="Föregående steg">←</button>
+            <div class="case-card">
+              <div class="case-title-row">
+                <h2 class="case-title" id="caseTitle">Slumpar fall...</h2>
+                <button type="button" class="btn-icon" id="refreshCaseBtn" aria-label="Slumpa nytt fall">
+                  ⟳
+                </button>
+              </div>
+             <div class="case-text" id="caseText" aria-live="polite"></div>
+              <p class="status" id="caseStatus"></p>
+              <div class="row start-row">
+                <div class="timer-centered">
+                  <div class="timer" aria-label="Timer (startar när du trycker börja)">
+                    <span class="label">Timer</span>
+                    <span class="value" id="timerPreview">00:00</span>
+                  </div>
+                </div>
+                <button type="button" class="btn-primary btn-start" id="startBtn">Börja</button>
+              </div>
+            </div>
+            <button type="button" class="step-side-btn" id="step2NextBtn" aria-label="Nästa steg">→</button>
+          </div>
+        </section>
+        <section class="content" data-step="3" id="step-3">
+          <h2 class="active-case-title" id="activeCaseTitle"></h2>
+          <div class="timer-centered">
+            <div class="timer">
+              <span class="label">Tid</span>
+              <span class="value" id="timerValue">00:00</span>
+            </div>
+          </div>
+          <div class="timer-controls">
+            <button type="button" class="btn-secondary" id="pauseBtn">Paus</button>
+          </div>
+          <div class="box-stepbar" id="boxStepBar" aria-label="Snabbnavigering mellan boxar"></div>
+          <div class="box-stage" aria-label="Navigering mellan boxar">
+            <button type="button" class="box-side-btn" id="prevBoxBtn" aria-label="Föregående box">←</button>
+            <div id="caseBoxes" class="box-single" aria-label="Aktiv box"></div>
+            <button type="button" class="box-side-btn" id="nextBoxBtn" aria-label="Nästa box">→</button>
+          </div>
+          <div class="box-progress-row" aria-label="Box-progress">
+            <div class="box-progress" id="boxProgress">0 / 0</div>
+          </div>
+          <div class="grade-controls" id="gradeControls">
+            <button type="button" class="btn-primary" id="gradeBtn">Gradera</button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const instructions = {
+        prep:
+          "Hur hemsidan funkar:<br>Du kan välja att antingen välja fall själv från kompendiet, genom att klicka på \"kompendium\". Eller så kan du klicka på knappen \"Fall\" så får du ett slumpvalt fall.<br><br>Ni ska helst vara två personer. Där en person agerar som bedömare och en som är undersökande läkare.<br><br>Den undersökande läkaren kommer inte att få se skärmen, bortsett från när hen kollar på blodgasen och EKG. Resten av informationen kommer att avslöja information om fallet.<br><br>I slutet kommer man att få en summering av poäng från vad man har undersökt och vad man har missat. Missade kritiska moment räknas som ett underkänt fall. Resten av poängen är menade som feedback för vad man ska tänka på till nästa gång.",
+        doing: [
+          "",
+        ],
+      };
+
+      const steps = [
+        { id: 1, title: "Förberedelser", desc: "Samla material och förstå syftet" },
+        { id: 2, title: "Fall", desc: "SBAR och bedömning i A–E" },
+        { id: 3, title: "Reflektion", desc: "Samla dina lärdomar" },
+      ];
+
+      const stepsList = document.getElementById("stepsList");
+      const sections = Array.from(document.querySelectorAll(".content"));
+      const introSection = document.getElementById("step-1");
+      const aboutBtn = document.getElementById("aboutBtn");
+      const aboutPanel = document.getElementById("aboutPanel");
+      const caseTitleEl = document.getElementById("caseTitle");
+      const caseTextEl = document.getElementById("caseText");
+      const caseStatusEl = document.getElementById("caseStatus");
+      let step1PrevBtn = null;
+      let step1NextBtn = null;
+      let step2PrevBtn = null;
+      let step2NextBtn = null;
+      let randomCaseBtn = null;
+      let refreshCaseBtn = null;
+      const startBtn = document.getElementById("startBtn");
+      const timerPreviewEl = document.getElementById("timerPreview");
+      const timerValueEl = document.getElementById("timerValue");
+      const activeCaseTitleEl = document.getElementById("activeCaseTitle");
+      const caseBoxesEl = document.getElementById("caseBoxes");
+      const boxStepBarEl = document.getElementById("boxStepBar");
+      const pauseBtn = document.getElementById("pauseBtn");
+      const gradeBtn = document.getElementById("gradeBtn");
+      const gradeControlsEl = document.getElementById("gradeControls");
+      const prevBoxBtn = document.getElementById("prevBoxBtn");
+      const nextBoxBtn = document.getElementById("nextBoxBtn");
+      const boxProgressEl = document.getElementById("boxProgress");
+
+      const CASE_INDEX_PATH = "./cases/index.json";
+      const HISTORY_KEY = "lenny.history.v1";
+      const SESSION_SELECTED_CASE = "lenny.selectedCase.v1";
+      const SESSION_TIMER_START = "lenny.timerStartMs.v1";
+      const SESSION_TIMER_ELAPSED = "lenny.timerElapsedMs.v1";
+      const SESSION_TIMER_RUNNING = "lenny.timerRunning.v1";
+      let timerHandle = null;
+      const BOX_ORDER = [
+        "oversikt",
+        "airway",
+        "breathing",
+        "circulation",
+        "disability",
+        "exposure",
+        "blodgas",
+        "ekg",
+        "handlaggning",
+        "signout",
+      ];
+      const CHECKS_KEY_PREFIX = "lenny.checks.v1.";
+      const EVAL_KEY_PREFIX = "lenny.eval.v1.";
+      const BOX_NAV_KEY_PREFIX = "lenny.boxNav.v1.";
+
+      function renderSteps(activeStep) {
+        stepsList.innerHTML = "";
+        for (const step of steps) {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "step-btn";
+          button.textContent = `${step.id}. ${step.title}`;
+          button.setAttribute("aria-current", step.id === activeStep ? "step" : "false");
+          button.addEventListener("click", () => {
+            const nextHash = `#step=${step.id}`;
+            if (location.hash !== nextHash) {
+              location.hash = nextHash;
+            } else {
+              showStep(step.id);
+            }
+          });
+          stepsList.append(button);
+        }
+      }
+
+      function showStep(activeStep) {
+        sections.forEach((section) => {
+          const idMatch = Number(section.dataset.step);
+          const isActive = idMatch === activeStep;
+          section.dataset.active = isActive ? "true" : "false";
+        });
+        renderSteps(activeStep);
+        onStepActivated(activeStep);
+      }
+
+      function setCaseStatus(text) {
+        if (!caseStatusEl) return;
+        caseStatusEl.textContent = text || "";
+      }
+
+      function safeText(value) {
+        return String(value ?? "");
+      }
+
+      function slugify(value) {
+        return String(value ?? "")
+          .toLowerCase()
+          .trim()
+          .replace(/å/g, "a")
+          .replace(/ä/g, "a")
+          .replace(/ö/g, "o")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "")
+          .slice(0, 80);
+      }
+
+      function getBoxNavKey(caseData) {
+        const title = safeText(caseData?.title);
+        return `${BOX_NAV_KEY_PREFIX}${slugify(title) || "case"}`;
+      }
+
+      function readBoxIndex(caseData) {
+        const raw = sessionStorage.getItem(getBoxNavKey(caseData));
+        if (!raw) return 0;
+        const n = Number(raw);
+        return Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0;
+      }
+
+      function writeBoxIndex(caseData, index) {
+        sessionStorage.setItem(getBoxNavKey(caseData), String(Math.max(0, Math.floor(index))));
+      }
+
+      function getAvailableBoxIds(caseData) {
+        const boxes = caseData?.boxes && typeof caseData.boxes === "object" ? caseData.boxes : {};
+        return BOX_ORDER.filter((id) => boxes[id]);
+      }
+
+      function getEvalKey(caseData) {
+        const title = safeText(caseData?.title);
+        return `${EVAL_KEY_PREFIX}${slugify(title) || "case"}`;
+      }
+
+      function readEval(caseData) {
+        try {
+          const raw = sessionStorage.getItem(getEvalKey(caseData));
+          if (!raw) return { done: {}, grade: {} };
+          const parsed = JSON.parse(raw);
+          const done = parsed?.done && typeof parsed.done === "object" ? parsed.done : {};
+          const grade = parsed?.grade && typeof parsed.grade === "object" ? parsed.grade : {};
+          return { done, grade };
+        } catch {
+          return { done: {}, grade: {} };
+        }
+      }
+
+      function writeEval(caseData, next) {
+        sessionStorage.setItem(getEvalKey(caseData), JSON.stringify(next || { done: {}, grade: {} }));
+      }
+
+      function getChecksKey(caseData) {
+        const title = safeText(caseData?.title);
+        return `${CHECKS_KEY_PREFIX}${slugify(title) || "case"}`;
+      }
+
+      function readChecks(caseData) {
+        try {
+          const raw = sessionStorage.getItem(getChecksKey(caseData));
+          if (!raw) return {};
+          const parsed = JSON.parse(raw);
+          return parsed && typeof parsed === "object" ? parsed : {};
+        } catch {
+          return {};
+        }
+      }
+
+      function writeChecks(caseData, next) {
+        sessionStorage.setItem(getChecksKey(caseData), JSON.stringify(next || {}));
+      }
+
+      function formatTime(ms) {
+        const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+      }
+
+      function gaussian(x, mu, sigma) {
+        const z = (x - mu) / sigma;
+        return Math.exp(-0.5 * z * z);
+      }
+
+      function drawEcg12Lead(canvas, ecgBox) {
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        const settings = (ecgBox && ecgBox.settings) || ecgBox || {};
+        const hr = Number(settings.hr || 75);
+        const template = safeText(settings.template || "");
+        const speed = Number(settings.speed || 50); // mm/s
+        const gain = Number(settings.gain || 10); // mm/mV
+        const noise = Number(settings.noise || 0.03);
+        const wander = Number(settings.wander || 0.06);
+        const prMs = Number(settings.prMs || 160);
+        const qrsMs = Number(settings.qrsMs || 90);
+        const qtMs = Number(settings.qtMs || 400);
+        const axisDeg = Number(settings.axisDeg || 60);
+        const linkAxis = String(settings.linkAxis || "off") === "on";
+        const ectopyType = safeText(settings.ectopyType || "off");
+        const ectopyPerMin = Number(settings.ectopyPerMin || 0);
+        const ectopyCoupling = safeText(settings.ectopyCoupling || "mid");
+        const ectopyPattern = safeText(settings.ectopyPattern || "random");
+        const rhythm = safeText(settings.rhythm || "EKG");
+        const age = safeText(settings.age ?? "");
+        const sex = safeText(settings.sex ?? "");
+
+        const pqrst = settings.pqrst || {};
+        const leadsCfg = settings.leads || {};
+
+        const mmPx = 4; // matches lab visual scale
+        const rr = 60 / Math.max(20, hr);
+        const pr = Math.max(0.06, Math.min(0.32, prMs / 1000));
+        const qrs = Math.max(0.04, Math.min(0.22, qrsMs / 1000));
+        const qt = Math.max(0.2, Math.min(0.7, qtMs / 1000));
+        const qrsOnset = Math.max(0.18 * rr, Math.min(0.55 * rr, 0.32 * rr));
+        const mu = {
+          P: Math.max(0.05, Math.min(qrsOnset / rr - 0.04, (qrsOnset - pr * 0.55) / rr)),
+          Q: (qrsOnset + qrs * 0.2) / rr,
+          R: (qrsOnset + qrs * 0.45) / rr,
+          S: (qrsOnset + qrs * 0.72) / rr,
+          T: Math.max((qrsOnset + 0.12 * rr) / rr, Math.min(0.92, (qrsOnset + qt * 0.6) / rr)),
+        };
+        const T_SHIFT_PHASE = 0.09 / rr;
+
+        const degToRad = (deg) => (deg * Math.PI) / 180;
+        const limbLeadAngleDeg = (lead) => {
+          if (lead === "I") return 0;
+          if (lead === "II") return 60;
+          if (lead === "III") return 120;
+          if (lead === "aVL") return -30;
+          if (lead === "aVF") return 90;
+          if (lead === "-aVR") return 30;
+          return null;
+        };
+        const limbAxisScale = (lead) => {
+          if (!linkAxis) return 1;
+          const angle = limbLeadAngleDeg(lead);
+          if (angle === null) return 1;
+          const d = degToRad(axisDeg - angle);
+          return Math.cos(d);
+        };
+
+        const hashStringToSeed = (str) => {
+          let h = 2166136261;
+          for (let i = 0; i < str.length; i += 1) {
+            h ^= str.charCodeAt(i);
+            h = Math.imul(h, 16777619);
+          }
+          return h >>> 0;
+        };
+
+        const mulberry32 = (seed) => {
+          let t = seed >>> 0;
+          return () => {
+            t += 0x6d2b79f5;
+            let x = Math.imul(t ^ (t >>> 15), 1 | t);
+            x ^= x + Math.imul(x ^ (x >>> 7), 61 | x);
+            return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+          };
+        };
+
+        const randn = (rng) => {
+          let u = 0;
+          let v = 0;
+          while (u === 0) u = rng();
+          while (v === 0) v = rng();
+          return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+        };
+
+        const buildBeatMap = (seconds) => {
+          const mean = 60 / Math.max(20, hr);
+          const mode = String(template || "").toLowerCase();
+          const seed = hashStringToSeed(
+            [mode, hr, prMs, qrsMs, qtMs, axisDeg, noise, wander, ectopyType, ectopyPerMin, ectopyCoupling, ectopyPattern].join(
+              "|",
+            ),
+          );
+          const rng = mulberry32(seed);
+          const couplingFrac =
+            String(ectopyCoupling || "mid").toLowerCase() === "early"
+              ? 0.45
+              : String(ectopyCoupling || "mid").toLowerCase() === "late"
+                ? 0.75
+                : 0.60;
+
+          const wantEctopy = String(ectopyType || "off").toLowerCase() === "pvc" || String(ectopyType || "off").toLowerCase() === "pac";
+          const patt = String(ectopyPattern || "random").toLowerCase();
+          const perMin = Math.max(0, Math.min(60, Number(ectopyPerMin || 0)));
+
+          const beats = [{ t: 0, type: "normal" }];
+          let t = 0;
+          let sinusSinceEctopy = 0;
+          const secondsLimit = seconds + mean * 2;
+
+          while (t < secondsLimit) {
+            let rr = mean;
+            if (mode === "afib") {
+              const sigma = 0.22;
+              rr = mean * Math.exp(sigma * randn(rng));
+              rr = Math.max(0.35, Math.min(1.8, rr));
+            }
+
+            let doEctopy = false;
+            if (wantEctopy) {
+              if (patt === "bigeminy") doEctopy = true;
+              else if (patt === "trigeminy") doEctopy = sinusSinceEctopy >= 2;
+              else {
+                const p = Math.max(0, Math.min(0.95, perMin / Math.max(1, hr)));
+                doEctopy = perMin > 0 && rng() < p;
+              }
+            }
+
+            sinusSinceEctopy += 1;
+
+            if (doEctopy) {
+              const ectT = t + rr * Math.max(0.25, Math.min(0.9, couplingFrac));
+              if (ectT > t + 0.18) beats.push({ t: ectT, type: String(ectopyType || "pvc").toLowerCase() });
+
+              let nextT = t + rr * 2;
+              if (String(ectopyType || "").toLowerCase() === "pac") nextT = t + rr * (1.3 - 0.3 * couplingFrac);
+
+              const minGap = 0.25;
+              const last = beats[beats.length - 1];
+              nextT = Math.max(nextT, last.t + minGap);
+              beats.push({ t: nextT, type: "normal" });
+              t = nextT;
+              sinusSinceEctopy = 0;
+            } else {
+              const nextT = t + rr;
+              beats.push({ t: nextT, type: "normal" });
+              t = nextT;
+            }
+
+            if (beats.length > 450) break;
+          }
+
+          const boundaries = beats.map((b) => b.t);
+          const types = beats.map((b) => b.type);
+          if (boundaries.length >= 2) return { boundaries, types };
+          return { boundaries: [0, mean], types: ["normal", "normal"] };
+        };
+
+        const phaseFromBeatMap = (tSec, boundaries) => {
+          let idx = 0;
+          while (idx < boundaries.length - 2 && tSec >= boundaries[idx + 1]) idx += 1;
+          const start = boundaries[idx];
+          const end = boundaries[idx + 1];
+          const period = Math.max(0.2, end - start);
+          const phase = Math.max(0, Math.min(1, (tSec - start) / period));
+          return { phase, period, idx };
+        };
+
+        let currentBeatMap = { boundaries: [0, 60 / Math.max(20, hr)], types: ["normal", "normal"] };
+
+        const sawtooth01 = (x) => {
+          const f = x - Math.floor(x);
+          return f;
+        };
+
+        const flutterWave = (tSec, lead) => {
+          const fHz = 5;
+          const s = sawtooth01(tSec * fHz);
+          const wave = (s - 0.5) * 2;
+          const shaped = Math.sign(wave) * Math.pow(Math.abs(wave), 0.7);
+          const w = lead === "II" || lead === "III" || lead === "aVF" ? 1.0 : lead === "V1" ? 0.7 : 0.25;
+          return shaped * 0.06 * w;
+        };
+
+        const afibFWave = (tSec, lead) => {
+          const fHz = 7.0;
+          const w = lead === "V1" ? 1.0 : lead === "II" || lead === "III" || lead === "aVF" ? 0.6 : 0.25;
+          return Math.sin(2 * Math.PI * fHz * tSec) * 0.02 * w;
+        };
+
+        const defaultPqrst = {
+          P: { amp: 0.12, width: 0.03 },
+          Q: { amp: -0.15, width: 0.008 },
+          R: { amp: 1.0, width: 0.006 },
+          S: { amp: -0.25, width: 0.01 },
+          T: { amp: 0.35, width: 0.06, tailAmp: 0.0, tailWidth: 0.05 },
+        };
+
+        const getWaveCfg = (lead, name) => {
+          const leadP = leadsCfg?.[lead]?.pqrst?.[name];
+          if (leadP && typeof leadP === "object") return leadP;
+          const global = pqrst?.[name];
+          if (global && typeof global === "object") return global;
+          return defaultPqrst[name];
+        };
+
+        const noiseAt = (t, amount) => {
+          const a = Math.sin(t * 12.9898) * 43758.5453;
+          const frac = a - Math.floor(a);
+          return (frac - 0.5) * 2 * amount;
+        };
+
+        const pqrstWave = (lead, name, phase, beatType) => {
+          const cfg = getWaveCfg(lead, name);
+          let amp = Number(cfg?.amp ?? defaultPqrst[name].amp);
+          let width = Math.max(0.001, Math.min(0.2, Number(cfg?.width ?? defaultPqrst[name].width)));
+
+          const t = String(beatType || "normal").toLowerCase();
+          if (t === "pvc") {
+            if (name === "P") amp *= 0.0;
+            if (name === "Q" || name === "R" || name === "S") width = Math.max(0.001, Math.min(0.2, width * 3.0));
+          } else if (t === "pac") {
+            if (name === "Q" || name === "R" || name === "S") width = Math.max(0.001, Math.min(0.2, width * 1.1));
+          }
+
+          let v = amp * gaussian(phase, mu[name], width);
+          if (name === "T") {
+            const headAmp = Number(cfg?.tailAmp ?? defaultPqrst.T.tailAmp);
+            const headWidth = Math.max(
+              0.001,
+              Math.min(0.2, Number(cfg?.tailWidth ?? defaultPqrst.T.tailWidth)),
+            );
+            if (headAmp && phase <= mu.T) {
+              v += headAmp * gaussian(phase, mu.T - T_SHIFT_PHASE, headWidth);
+            }
+          }
+          return v;
+        };
+
+        const baseBeat = (lead, phase, beatType) =>
+          pqrstWave(lead, "P", phase, beatType) +
+          pqrstWave(lead, "Q", phase, beatType) +
+          pqrstWave(lead, "R", phase, beatType) +
+          pqrstWave(lead, "S", phase, beatType) +
+          pqrstWave(lead, "T", phase, beatType);
+
+        const waveAt = (lead, tSec) => {
+          const mode = String(template || "").toLowerCase();
+          const beatMap = currentBeatMap;
+          const p = phaseFromBeatMap(tSec, beatMap.boundaries);
+          const beatType = beatMap.types[p.idx] || "normal";
+          const phase = p.phase;
+          let v = baseBeat(lead, phase, beatType);
+          v += Math.sin(tSec * 2 * Math.PI * 0.33) * wander * 0.1;
+          if (mode === "flutter2to1") v += flutterWave(tSec, lead);
+          if (mode === "afib") v += afibFWave(tSec, lead);
+          v += noiseAt(tSec, noise);
+          const leadCfg = leadsCfg?.[lead] || {};
+          v += Number(leadCfg.st || 0);
+          const scale = Number(leadCfg.scale || 1) * limbAxisScale(lead);
+          const invert = Boolean(leadCfg.invert);
+          v *= scale * (invert ? -1 : 1);
+          return v;
+        };
+
+        const drawGrid = (x, y, w, h) => {
+          const small = mmPx;
+          const big = mmPx * 5;
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, w, h);
+          ctx.strokeStyle = "rgba(220, 38, 38, 0.10)";
+          ctx.lineWidth = 1;
+          for (let gx = 0; gx <= w; gx += small) {
+            ctx.beginPath();
+            ctx.moveTo(gx + 0.5, 0);
+            ctx.lineTo(gx + 0.5, h);
+            ctx.stroke();
+          }
+          for (let gy = 0; gy <= h; gy += small) {
+            ctx.beginPath();
+            ctx.moveTo(0, gy + 0.5);
+            ctx.lineTo(w, gy + 0.5);
+            ctx.stroke();
+          }
+          ctx.strokeStyle = "rgba(220, 38, 38, 0.22)";
+          for (let gx = 0; gx <= w; gx += big) {
+            ctx.beginPath();
+            ctx.moveTo(gx + 0.5, 0);
+            ctx.lineTo(gx + 0.5, h);
+            ctx.stroke();
+          }
+          for (let gy = 0; gy <= h; gy += big) {
+            ctx.beginPath();
+            ctx.moveTo(0, gy + 0.5);
+            ctx.lineTo(w, gy + 0.5);
+            ctx.stroke();
+          }
+          ctx.restore();
+        };
+
+        const drawCalibration = (x, y) => {
+          const heightMm = gain;
+          const widthMm = 5;
+          const h = heightMm * mmPx;
+          const w = widthMm * mmPx;
+          ctx.save();
+          ctx.strokeStyle = "rgba(17, 24, 39, 0.9)";
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x, y - h);
+          ctx.lineTo(x + w, y - h);
+          ctx.lineTo(x + w, y);
+          ctx.stroke();
+          ctx.restore();
+        };
+
+        const drawLead = (lead, x, y, w, h) => {
+          const seconds = w / (mmPx * speed);
+          currentBeatMap = buildBeatMap(seconds);
+          const baseline = y + h / 2;
+          const dt = seconds / w;
+          const oversample = 6;
+          ctx.save();
+          ctx.strokeStyle = "rgba(17, 24, 39, 0.9)";
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          for (let i = 0; i < w; i += 1) {
+            const t0 = i * dt;
+            let best = waveAt(lead, t0);
+            let bestAbs = Math.abs(best);
+            for (let s = 1; s < oversample; s += 1) {
+              const t = t0 + (s * dt) / oversample;
+              const v = waveAt(lead, t);
+              const a = Math.abs(v);
+              if (a > bestAbs) {
+                bestAbs = a;
+                best = v;
+              }
+            }
+            const dyMm = best * gain;
+            const py = baseline - dyMm * mmPx;
+            if (i === 0) ctx.moveTo(x + i, py);
+            else ctx.lineTo(x + i, py);
+          }
+          ctx.stroke();
+          ctx.fillStyle = "rgba(17, 24, 39, 0.9)";
+          ctx.font = "800 12px system-ui, -apple-system, Segoe UI, sans-serif";
+          ctx.fillText(lead, x + 6, y + 14);
+          drawCalibration(x + w - 22, baseline + (h / 2 - 6));
+          ctx.restore();
+        };
+
+        const LAYOUT = [
+          ["aVL", "V1"],
+          ["I", "V2"],
+          ["-aVR", "V3"],
+          ["II", "V4"],
+          ["aVF", "V5"],
+          ["III", "V6"],
+        ];
+
+        const pad = 12;
+        const headerH = 88;
+        const W = canvas.width;
+        const H = canvas.height;
+
+        drawGrid(pad, pad, W - pad * 2, H - pad * 2);
+
+        ctx.save();
+        ctx.fillStyle = "#111827";
+        ctx.font = "700 18px system-ui, -apple-system, Segoe UI, sans-serif";
+        ctx.fillText(rhythm, pad + 10, pad + 26);
+        ctx.font = "600 14px system-ui, -apple-system, Segoe UI, sans-serif";
+        if (age) ctx.fillText(`Ålder: ${age}`, pad + 10, pad + 44);
+        if (sex) ctx.fillText(`Kön: ${sex}`, pad + 10, pad + 62);
+        ctx.fillText(`Hjärtfrekvens: ${hr}`, pad + 10, pad + 80);
+        ctx.textAlign = "right";
+        ctx.fillText(`${speed} mm/s`, W - pad - 10, pad + 80);
+        ctx.restore();
+
+        const innerY = pad + headerH;
+        const innerH = H - pad * 2 - headerH - 8;
+        const gapX = 10;
+        const gapY = 10;
+        const colW = Math.floor((W - pad * 2 - gapX) / 2);
+        const rowH = Math.floor((innerH - gapY * 5) / 6);
+        for (let r = 0; r < 6; r += 1) {
+          for (let c = 0; c < 2; c += 1) {
+            const lead = LAYOUT[r][c];
+            const x = pad + c * (colW + gapX);
+            const y = innerY + r * (rowH + gapY);
+            drawLead(lead, x, y, colW, rowH);
+          }
+        }
+      }
+
+      function renderBlodgas(el, blodgasBox) {
+        if (!el) return;
+        const payload = (blodgasBox && blodgasBox.payload) || blodgasBox || {};
+        const settings = payload.settings || {};
+        const sections = Array.isArray(payload.sections) ? payload.sections : [];
+
+        const parseNum = (v) => {
+          const s = safeText(v).trim().replace(",", ".");
+          if (!s) return null;
+          const n = Number(s);
+          return Number.isFinite(n) ? n : null;
+        };
+
+        const formatNum = (n, digits = 1) => {
+          if (n === null || n === undefined) return "";
+          if (!Number.isFinite(Number(n))) return safeText(n);
+          const x = Number(n);
+          const d = Math.abs(x) >= 10 ? 0 : digits;
+          return x.toFixed(d).replace(".", ",");
+        };
+
+        const computeFlag = (value, low, high) => {
+          const v = parseNum(value);
+          const lo = low === null || low === undefined ? null : Number(low);
+          const hi = high === null || high === undefined ? null : Number(high);
+          if (v === null || lo === null || hi === null || !Number.isFinite(lo) || !Number.isFinite(hi)) return "";
+          if (v < lo) return "down";
+          if (v > hi) return "up";
+          return "";
+        };
+
+        const showRef = safeText(settings.showRef || "on") !== "off";
+        const baroKpa = Number(settings.baroKpa || 101.3);
+        const comment = safeText(settings.comment || "");
+
+        const wrap = document.createElement("div");
+        wrap.className = "blodgas-render";
+
+        const report = document.createElement("div");
+        report.className = "bg-report";
+
+        const header = document.createElement("div");
+        header.className = "bg-header";
+        header.innerHTML = `
+          <div class="bg-header-left">
+            <div class="bg-kv"><span>Baro.</span><strong>${formatNum(baroKpa, 1)}</strong><span>kPa</span></div>
+          </div>
+          <div class="bg-header-right"><div class="bg-comment">${comment}</div></div>
+        `;
+        report.appendChild(header);
+
+        const table = document.createElement("table");
+        table.className = "bg-table";
+        const tbody = document.createElement("tbody");
+
+        for (const sec of sections) {
+          const secTr = document.createElement("tr");
+          secTr.className = "bg-sec";
+          const td = document.createElement("td");
+          td.colSpan = 4;
+          td.textContent = safeText(sec.label || "");
+          secTr.appendChild(td);
+          tbody.appendChild(secTr);
+
+          const rows = Array.isArray(sec.rows) ? sec.rows : [];
+          for (const row of rows) {
+            const tr = document.createElement("tr");
+            tr.className = "bg-row";
+            const flag = computeFlag(row.value, row.refLow, row.refHigh);
+            const arrow = flag === "up" ? "↑" : flag === "down" ? "↓" : "";
+
+            const nameTd = document.createElement("td");
+            nameTd.className = "bg-name";
+            nameTd.textContent = `${arrow ? arrow + " " : ""}${safeText(row.name)}`;
+
+            const valueTd = document.createElement("td");
+            valueTd.className = "bg-val";
+            const v = parseNum(row.value);
+            valueTd.textContent = v === null ? safeText(row.value || "") : formatNum(v, 2);
+
+            const unitTd = document.createElement("td");
+            unitTd.className = "bg-unit";
+            unitTd.textContent = safeText(row.unit || "");
+
+            const refTd = document.createElement("td");
+            refTd.className = "bg-ref";
+            if (showRef && row.refLow != null && row.refHigh != null) {
+              refTd.textContent = `[ ${formatNum(row.refLow, 2)} - ${formatNum(row.refHigh, 2)} ]`;
+            } else if (showRef) {
+              refTd.textContent = "[ - ]";
+            } else {
+              refTd.textContent = "";
+            }
+
+            tr.append(nameTd, valueTd, unitTd, refTd);
+            tbody.appendChild(tr);
+          }
+        }
+
+        table.appendChild(tbody);
+        report.appendChild(table);
+        wrap.appendChild(report);
+
+        el.replaceChildren(wrap);
+      }
+
+      function readSelectedCase() {
+        try {
+          const raw = sessionStorage.getItem(SESSION_SELECTED_CASE);
+          if (!raw) return null;
+          return JSON.parse(raw);
+        } catch {
+          return null;
+        }
+      }
+
+      function writeSelectedCase(caseData) {
+        sessionStorage.setItem(SESSION_SELECTED_CASE, JSON.stringify(caseData));
+      }
+
+      function readHistory() {
+        try {
+          const raw = localStorage.getItem(HISTORY_KEY);
+          if (!raw) return [];
+          const parsed = JSON.parse(raw);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return [];
+        }
+      }
+
+      function countPlayedBySlug() {
+        const history = readHistory();
+        const counts = {};
+        for (const h of history) {
+          const slug = safeText(h?.caseSlug);
+          if (!slug) continue;
+          counts[slug] = (counts[slug] || 0) + 1;
+        }
+        return counts;
+      }
+
+      function readTimerStartMs() {
+        const raw = sessionStorage.getItem(SESSION_TIMER_START);
+        if (!raw) return null;
+        const n = Number(raw);
+        return Number.isFinite(n) ? n : null;
+      }
+
+      function readElapsedMs() {
+        const raw = sessionStorage.getItem(SESSION_TIMER_ELAPSED);
+        if (!raw) return 0;
+        const n = Number(raw);
+        return Number.isFinite(n) ? Math.max(0, n) : 0;
+      }
+
+      function isTimerRunning() {
+        const raw = sessionStorage.getItem(SESSION_TIMER_RUNNING);
+        if (raw === null) return Boolean(readTimerStartMs());
+        return raw === "true";
+      }
+
+      function finalizeTimer() {
+        const running = isTimerRunning();
+        const start = readTimerStartMs();
+        const base = readElapsedMs();
+        const now = Date.now();
+        if (running) {
+          const add = start ? now - start : 0;
+          sessionStorage.setItem(SESSION_TIMER_ELAPSED, String(base + add));
+          sessionStorage.setItem(SESSION_TIMER_RUNNING, "false");
+          sessionStorage.removeItem(SESSION_TIMER_START);
+        }
+      }
+
+      function startTimerAndGo() {
+        const now = Date.now();
+        sessionStorage.setItem(SESSION_TIMER_START, String(now));
+        sessionStorage.setItem(SESSION_TIMER_ELAPSED, "0");
+        sessionStorage.setItem(SESSION_TIMER_RUNNING, "true");
+        ensureTimerRunning();
+        location.hash = "#step=3";
+      }
+
+      let countdownHandle = null;
+
+      function startCountdownThenGo() {
+        if (!startBtn || countdownHandle) return;
+        let remaining = 3;
+        startBtn.disabled = true;
+        startBtn.textContent = String(remaining);
+        countdownHandle = setInterval(() => {
+          remaining -= 1;
+          if (remaining <= 0) {
+            clearInterval(countdownHandle);
+            countdownHandle = null;
+            startBtn.textContent = "Startar...";
+            startTimerAndGo();
+          } else {
+            startBtn.textContent = String(remaining);
+          }
+        }, 1000);
+      }
+
+      function renderSelectedCaseIntoStep2(caseData) {
+        if (!caseTitleEl || !caseTextEl) return;
+        caseTitleEl.textContent = safeText(caseData?.title || "Utan titel");
+        caseTextEl.textContent = safeText(caseData?.caseText || "");
+      }
+
+      function renderSelectedCaseIntoStep3(caseData) {
+        if (!activeCaseTitleEl) return;
+        activeCaseTitleEl.textContent = caseData?.title ? caseData.title : "";
+      }
+
+      function renderCaseBoxesIntoStep3(caseData) {
+        if (!caseBoxesEl) return;
+        caseBoxesEl.replaceChildren();
+        if (!caseData || !caseData.boxes) {
+          if (boxStepBarEl) {
+            boxStepBarEl.replaceChildren();
+            boxStepBarEl.style.display = "none";
+          }
+          if (boxProgressEl) boxProgressEl.textContent = "0 / 0";
+          if (prevBoxBtn) prevBoxBtn.disabled = true;
+          if (nextBoxBtn) nextBoxBtn.disabled = true;
+          if (gradeControlsEl) gradeControlsEl.style.display = "none";
+          const p = document.createElement("p");
+          p.className = "status";
+          p.textContent = "Inget fall laddat ännu.";
+          caseBoxesEl.append(p);
+          return;
+        }
+
+        const availableBoxIds = getAvailableBoxIds(caseData);
+        const total = availableBoxIds.length;
+        if (!total) {
+          if (boxStepBarEl) {
+            boxStepBarEl.replaceChildren();
+            boxStepBarEl.style.display = "none";
+          }
+          if (boxProgressEl) boxProgressEl.textContent = "0 / 0";
+          if (prevBoxBtn) prevBoxBtn.disabled = true;
+          if (nextBoxBtn) nextBoxBtn.disabled = true;
+          if (gradeControlsEl) gradeControlsEl.style.display = "none";
+          const p = document.createElement("p");
+          p.className = "status";
+          p.textContent = "Inga boxar i detta fall.";
+          caseBoxesEl.append(p);
+          return;
+        }
+
+        let boxIndex = readBoxIndex(caseData);
+        if (boxIndex >= total) boxIndex = total - 1;
+        if (boxIndex < 0) boxIndex = 0;
+        writeBoxIndex(caseData, boxIndex);
+        const activeBoxId = availableBoxIds[boxIndex];
+
+        if (boxStepBarEl) {
+          boxStepBarEl.replaceChildren();
+          boxStepBarEl.style.display = "flex";
+          for (const id of availableBoxIds) {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "box-step-btn";
+            btn.textContent = safeText(caseData?.boxes?.[id]?.label || id);
+            btn.setAttribute("aria-current", id === activeBoxId ? "step" : "false");
+            btn.addEventListener("click", () => {
+              const idx = availableBoxIds.indexOf(id);
+              if (idx < 0) return;
+              writeBoxIndex(caseData, idx);
+              renderCaseBoxesIntoStep3(caseData);
+            });
+            boxStepBarEl.append(btn);
+          }
+        }
+
+        if (boxProgressEl) boxProgressEl.textContent = `${boxIndex + 1} / ${total}`;
+        if (prevBoxBtn) prevBoxBtn.disabled = boxIndex <= 0;
+        if (nextBoxBtn) nextBoxBtn.disabled = boxIndex >= total - 1;
+        if (gradeControlsEl) gradeControlsEl.style.display = boxIndex === total - 1 ? "flex" : "none";
+
+        const checks = readChecks(caseData);
+        const evalState = readEval(caseData);
+        const updateCheck = (key, value) => {
+          checks[key] = Boolean(value);
+          writeChecks(caseData, checks);
+        };
+        const updateDone = (key, value) => {
+          evalState.done[key] = Boolean(value);
+          if (!value) evalState.grade[key] = "none";
+          writeEval(caseData, evalState);
+        };
+        const updateGrade = (key, value) => {
+          evalState.grade[key] = String(value || "none");
+          if (value && value !== "none") evalState.done[key] = true;
+          writeEval(caseData, evalState);
+        };
+
+        const boxes = caseData.boxes && typeof caseData.boxes === "object" ? caseData.boxes : {};
+        const boxId = activeBoxId;
+        const box = boxes[boxId];
+        if (!box) {
+          const p = document.createElement("p");
+          p.className = "status";
+          p.textContent = "Kunde inte hitta vald box.";
+          caseBoxesEl.append(p);
+          return;
+        }
+
+        const card = document.createElement("div");
+        card.className = "box-card";
+
+        const head = document.createElement("div");
+        head.className = "box-head";
+
+        const spacer = document.createElement("div");
+        spacer.className = "box-spacer";
+
+        const title = document.createElement("div");
+        title.className = "title";
+        title.textContent = safeText(box.label || boxId);
+
+        head.append(spacer, title, spacer.cloneNode(true));
+
+        const body = document.createElement("div");
+        body.className = "box-body";
+
+        let mediaRenderer = null;
+        const ecgData = box.ecg;
+        if (boxId === "ekg" && ecgData) {
+          const wrap = document.createElement("div");
+          wrap.className = "img-wrap";
+          const canvas = document.createElement("canvas");
+          canvas.width = 1200;
+          canvas.height = 800;
+          canvas.style.width = "100%";
+          canvas.style.height = "auto";
+          wrap.append(canvas);
+          body.append(wrap);
+          try {
+            drawEcg12Lead(canvas, ecgData);
+            mediaRenderer = (container) => {
+              const fullCanvas = document.createElement("canvas");
+              fullCanvas.width = canvas.width;
+              fullCanvas.height = canvas.height;
+              drawEcg12Lead(fullCanvas, ecgData);
+              container.append(fullCanvas);
+            };
+          } catch {
+            const p = document.createElement("p");
+            p.className = "status";
+            p.textContent = "Kunde inte rendera EKG från JSON.";
+            body.append(p);
+          }
+        } else if (!(boxId === "blodgas" && box.blodgas)) {
+          const imagePath =
+            (box.image && (box.image.suggestedPath || box.image.filename)) || "";
+          if (imagePath) {
+            const wrap = document.createElement("div");
+            wrap.className = "img-wrap";
+            const img = document.createElement("img");
+            img.alt = `${safeText(box.label || boxId)} bild`;
+            img.src = imagePath;
+            wrap.append(img);
+            body.append(wrap);
+          }
+        }
+
+        const bgData = box.blodgas;
+        if (boxId === "blodgas" && bgData) {
+          const wrap = document.createElement("div");
+          body.append(wrap);
+          try {
+            renderBlodgas(wrap, bgData);
+            mediaRenderer = (container) => {
+              const fullWrap = document.createElement("div");
+              fullWrap.className = "media-fullscreen";
+              renderBlodgas(fullWrap, bgData);
+              container.append(fullWrap);
+            };
+          } catch {
+            const p = document.createElement("p");
+            p.className = "status";
+            p.textContent = "Kunde inte rendera blodgas från JSON.";
+            body.append(p);
+          }
+        }
+
+        const subboxes = Array.isArray(box.subboxes) ? box.subboxes : [];
+        for (let i = 0; i < subboxes.length; i += 1) {
+          const sub = subboxes[i];
+          if (i > 0) {
+            const sep = document.createElement("div");
+            sep.className = "sub-sep";
+            body.append(sep);
+          }
+          const subCard = document.createElement("div");
+          subCard.className = "sub-card";
+
+          const studentActionRaw = safeText(sub.studentAction).trim();
+          const hasStudentAction = Boolean(studentActionRaw);
+          const doneKey = `${boxId}.${i}`;
+
+          const head = document.createElement("div");
+          head.className = "sub-head";
+          const name = document.createElement("div");
+          name.className = "name";
+          name.textContent = safeText(sub.name);
+
+          const badges = document.createElement("div");
+          badges.className = "badges";
+          const crit = Boolean(sub.critical);
+          if (crit) {
+            const critBadge = document.createElement("span");
+            critBadge.className = "badge critical";
+            critBadge.textContent = "Kritisk";
+            badges.append(critBadge);
+          }
+
+          head.append(name, badges);
+          subCard.append(head);
+
+          const sayText = safeText(sub.specialCase).trim();
+          if (sayText) {
+            const say = document.createElement("div");
+            say.className = "say-block";
+            const sayLabel = document.createElement("div");
+            sayLabel.className = "label";
+            sayLabel.textContent = "Vad du ska säga";
+            const sayBody = document.createElement("div");
+            sayBody.className = "text";
+            sayBody.textContent = sayText;
+            say.append(sayLabel, sayBody);
+            subCard.append(say);
+          }
+
+          if (hasStudentAction) {
+            const doBox = document.createElement("div");
+            doBox.className = "do-box";
+
+            const doBoxRow = document.createElement("div");
+            doBoxRow.className = "do-box-row";
+
+            const doWrap = document.createElement("div");
+            const doLabel = document.createElement("label");
+            const doId = `do-${boxId}-${i}`;
+            doLabel.setAttribute("id", doId);
+            const doLabelTop = document.createElement("span");
+            doLabelTop.className = "do-label";
+            doLabelTop.textContent = "Vad studenten ska göra: ";
+            doLabel.append(doLabelTop, document.createTextNode(studentActionRaw));
+            doWrap.append(doLabel);
+
+            doBoxRow.append(doWrap);
+            doBox.append(doBoxRow);
+            subCard.append(doBox);
+          }
+
+          const possible = Array.isArray(sub.tiers) && sub.tiers.length ? sub.tiers : ["basic"];
+          const normalized = possible
+            .map((t) => String(t))
+            .filter((t) => t === "basic" || t === "middle" || t === "high");
+          const unique = Array.from(new Set(normalized));
+          unique.sort(
+            (a, b) =>
+              ["basic", "middle", "high"].indexOf(a) - ["basic", "middle", "high"].indexOf(b),
+          );
+
+          const tierRow = document.createElement("div");
+          tierRow.className = "tier-row";
+          const tierTitle = document.createElement("div");
+          tierTitle.className = "title";
+          tierTitle.textContent = "";
+          const options = document.createElement("div");
+          options.className = "tier-options";
+
+          const gradeKey = doneKey;
+          const currentGrade = String(evalState.grade[gradeKey] || "none");
+          const groupName = `grade-${boxId}-${i}`;
+
+          const makeGrade = (value, label) => {
+            const wrap = document.createElement("label");
+            wrap.className = "tier-option";
+            const input = document.createElement("input");
+            input.type = "radio";
+            input.name = groupName;
+            input.value = value;
+            input.checked = currentGrade === value;
+            input.addEventListener("click", (e) => e.stopPropagation());
+            input.addEventListener("change", () => {
+              updateGrade(gradeKey, value);
+              subCard.classList.toggle("done", value !== "none");
+              subCard.setAttribute("aria-pressed", value !== "none" ? "true" : "false");
+            });
+            const span = document.createElement("span");
+            span.textContent = label;
+            wrap.append(input, span);
+            return wrap;
+          };
+
+          options.append(makeGrade("none", "Ej uppnått"));
+          for (const t of unique) {
+            const label =
+              t === "basic" ? "Basic" : t === "middle" ? "Middle" : t === "high" ? "High" : t;
+            options.append(makeGrade(t, label));
+          }
+
+          tierRow.append(tierTitle, options);
+          subCard.append(tierRow);
+
+          const syncGradeRadios = (value) => {
+            const radios = subCard.querySelectorAll(`input[name="${groupName}"]`);
+            radios.forEach((input) => {
+              input.checked = input.value === value;
+            });
+          };
+
+          const applyDoneUi = (isDone) => {
+            subCard.classList.toggle("done", isDone);
+            subCard.setAttribute("aria-pressed", isDone ? "true" : "false");
+            if (!isDone) {
+              const none = subCard.querySelector(
+                `input[type="radio"][name="${groupName}"][value="none"]`,
+              );
+              if (none) none.checked = true;
+            }
+          };
+
+          applyDoneUi(Boolean(evalState.done[doneKey]));
+
+          subCard.tabIndex = 0;
+          subCard.setAttribute("role", "button");
+          const toggleDone = () => {
+            const current = Boolean(readEval(caseData).done[doneKey]);
+            const next = !current;
+            const gradeBefore = String(evalState.grade[gradeKey] || "none");
+            if (next) {
+              if (gradeBefore === "none") {
+                const defaultGrade = unique.includes("basic") ? "basic" : unique[0] || "none";
+                syncGradeRadios(defaultGrade);
+                updateGrade(gradeKey, defaultGrade);
+              } else {
+                syncGradeRadios(gradeBefore);
+              }
+            } else {
+              syncGradeRadios("none");
+              updateGrade(gradeKey, "none");
+            }
+            updateDone(doneKey, next);
+            applyDoneUi(next);
+          };
+
+          subCard.addEventListener("click", toggleDone);
+          subCard.addEventListener("keydown", (e) => {
+            if (e.key !== "Enter" && e.key !== " ") return;
+            e.preventDefault();
+            toggleDone();
+          });
+
+          if (sayText) {
+            const sayEl = subCard.querySelector(".say-block");
+            if (sayEl) sayEl.addEventListener("click", (e) => e.stopPropagation());
+          }
+          if (hasStudentAction) {
+            const doEl = subCard.querySelector(".do-box");
+            if (doEl) doEl.addEventListener("click", (e) => e.stopPropagation());
+          }
+
+          body.append(subCard);
+        }
+
+        let mediaToolbar = null;
+        if (mediaRenderer) {
+          const viewerBtn = document.createElement("button");
+          viewerBtn.type = "button";
+          viewerBtn.className = "btn-secondary btn-json";
+          viewerBtn.textContent = "Visa studenten";
+          viewerBtn.addEventListener("click", () => {
+            showMediaViewer(box.label || boxId, mediaRenderer);
+          });
+          if (boxId === "blodgas" || boxId === "ekg") {
+            mediaToolbar = document.createElement("div");
+            mediaToolbar.className = "media-toolbar";
+            mediaToolbar.append(viewerBtn);
+          } else {
+            body.append(viewerBtn);
+          }
+        }
+
+        if (mediaToolbar) {
+          card.append(head, mediaToolbar, body);
+        } else {
+          card.append(head, body);
+        }
+        caseBoxesEl.append(card);
+      }
+
+      async function fetchJson(path) {
+        const res = await fetch(path, { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+      }
+
+      async function loadRandomCaseIfNeeded(force = false) {
+        const existing = force ? null : readSelectedCase();
+        if (existing) {
+          renderSelectedCaseIntoStep2(existing);
+          if (startBtn) startBtn.disabled = false;
+          return existing;
+        }
+
+        if (location.protocol === "file:") {
+          setCaseStatus('Öppna sidan via http:// för att kunna läsa "cases/" automatiskt.');
+          if (caseTitleEl) caseTitleEl.textContent = "Kan inte läsa cases/ via file://";
+          if (caseTextEl)
+            caseTextEl.textContent =
+              "Starta en enkel server (t.ex. python -m http.server) och öppna via http://.";
+          if (startBtn) {
+            startBtn.disabled = true;
+            startBtn.title = "Kräver http:// för att kunna slumpa fall från cases/.";
+          }
+          return null;
+        }
+
+        setCaseStatus("Laddar fall...");
+        const index = await fetchJson(CASE_INDEX_PATH);
+        const files = Array.isArray(index?.cases) ? index.cases : [];
+        if (!files.length) throw new Error("Inga fall i cases/index.json");
+
+        const playedBySlug = countPlayedBySlug();
+        const loaded = await Promise.all(
+          files.map(async (filename) => {
+            const data = await fetchJson(`./cases/${filename}`);
+            const slug = slugify(data?.title || filename);
+            const played = Number(playedBySlug[slug] || 0);
+            return { filename, data, slug, played };
+          }),
+        );
+
+        let min = Infinity;
+        for (const item of loaded) min = Math.min(min, Number(item.played || 0));
+        if (!Number.isFinite(min)) min = 0;
+        const candidates = loaded.filter((item) => Number(item.played || 0) === min);
+        const pick = (candidates.length ? candidates : loaded)[
+          Math.floor(Math.random() * (candidates.length ? candidates.length : loaded.length))
+        ];
+
+        const caseData = pick.data;
+        caseData.__filename = pick.filename;
+        writeSelectedCase(caseData);
+        writeBoxIndex(caseData, 0);
+        renderSelectedCaseIntoStep2(caseData);
+        setCaseStatus(`Slumpat: ${pick.filename} (spelat minst: ${min} ggr)`);
+        if (startBtn) {
+          startBtn.disabled = false;
+          startBtn.textContent = "Börja";
+        }
+        return caseData;
+      }
+
+      function ensureTimerRunning() {
+        if (!timerPreviewEl || !timerValueEl) return;
+        const start = readTimerStartMs();
+        const base = readElapsedMs();
+        const running = isTimerRunning();
+        const now = Date.now();
+        const elapsed = running && start ? base + (now - start) : base;
+        timerPreviewEl.textContent = formatTime(elapsed);
+        timerValueEl.textContent = formatTime(elapsed);
+        if (pauseBtn) pauseBtn.textContent = running ? "Paus" : "Fortsätt";
+
+        if (timerHandle) return;
+        timerHandle = setInterval(() => {
+          const s = readTimerStartMs();
+          const b = readElapsedMs();
+          const run = isTimerRunning();
+          const current = Date.now();
+          const e = run && s ? b + (current - s) : b;
+          timerPreviewEl.textContent = formatTime(e);
+          timerValueEl.textContent = formatTime(e);
+          if (pauseBtn) pauseBtn.textContent = run ? "Paus" : "Fortsätt";
+        }, 250);
+      }
+
+      function togglePause() {
+        const running = isTimerRunning();
+        const start = readTimerStartMs();
+        const base = readElapsedMs();
+        const now = Date.now();
+
+        if (running) {
+          const add = start ? now - start : 0;
+          sessionStorage.setItem(SESSION_TIMER_ELAPSED, String(base + add));
+          sessionStorage.setItem(SESSION_TIMER_RUNNING, "false");
+          sessionStorage.removeItem(SESSION_TIMER_START);
+        } else {
+          sessionStorage.setItem(SESSION_TIMER_START, String(now));
+          sessionStorage.setItem(SESSION_TIMER_RUNNING, "true");
+        }
+        ensureTimerRunning();
+      }
+
+      function goToOverview() {
+        finalizeTimer();
+        window.location.href = "./overview.html";
+      }
+
+      function onStepActivated(stepId) {
+        if (stepId === 2) {
+          loadRandomCaseIfNeeded().catch((err) => {
+            setCaseStatus(`Kunde inte ladda fall. (${safeText(err && err.message)})`);
+          });
+        }
+        if (stepId === 3) {
+          const selected = readSelectedCase();
+          if (selected) {
+            renderSelectedCaseIntoStep3(selected);
+            renderCaseBoxesIntoStep3(selected);
+          } else {
+            renderCaseBoxesIntoStep3(null);
+          }
+          ensureTimerRunning();
+        }
+      }
+
+      const mediaViewer = document.createElement("div");
+      mediaViewer.id = "mediaViewer";
+      mediaViewer.className = "media-viewer";
+      mediaViewer.hidden = true;
+      mediaViewer.innerHTML = `
+        <div class="media-panel">
+          <div class="media-header">
+            <span id="mediaTitle">Visa studenten</span>
+            <button type="button" class="btn-icon media-close" id="mediaCloseBtn" aria-label="St�ng">
+              <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+                <line x1="4" y1="4" x2="14" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <line x1="14" y1="4" x2="4" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+          <div class="media-body" id="mediaBody"></div>
+        </div>
+      `;
+      document.body.append(mediaViewer);
+      const mediaBodyEl = mediaViewer.querySelector("#mediaBody");
+      const mediaTitleEl = mediaViewer.querySelector("#mediaTitle");
+      const mediaCloseBtn = mediaViewer.querySelector("#mediaCloseBtn");
+
+      const showMediaViewer = (title, renderer) => {
+        if (!mediaViewer || !mediaBodyEl || typeof renderer !== "function") return;
+        mediaTitleEl.textContent = 'Visa studenten: ' + safeText(title);
+        mediaBodyEl.replaceChildren();
+        renderer(mediaBodyEl);
+        mediaViewer.hidden = false;
+        document.body.classList.add("has-modal");
+      };
+
+      const hideMediaViewer = () => {
+        if (!mediaViewer) return;
+        mediaViewer.hidden = true;
+        document.body.classList.remove("has-modal");
+        if (mediaBodyEl) mediaBodyEl.replaceChildren();
+      };
+
+      if (mediaCloseBtn) mediaCloseBtn.addEventListener("click", hideMediaViewer);
+      mediaViewer.addEventListener("click", (e) => {
+        if (e.target === mediaViewer) hideMediaViewer();
+      });
+
+      function renderIntro() {
+        if (!introSection) return;
+        introSection.replaceChildren();
+
+        const stage = document.createElement("div");
+        stage.className = "step-stage";
+        stage.setAttribute("aria-label", "Navigering mellan steg");
+
+        const prevBtn = document.createElement("button");
+        prevBtn.type = "button";
+        prevBtn.className = "step-side-btn";
+        prevBtn.id = "step1PrevBtn";
+        prevBtn.setAttribute("aria-label", "Föregående steg");
+        prevBtn.textContent = "←";
+        prevBtn.disabled = true;
+
+        const nextBtn = document.createElement("button");
+        nextBtn.type = "button";
+        nextBtn.className = "step-side-btn";
+        nextBtn.id = "step1NextBtn";
+        nextBtn.setAttribute("aria-label", "Nästa steg");
+        nextBtn.textContent = "→";
+
+        const panel = document.createElement("div");
+        panel.className = "step-panel";
+
+        const introBlock = document.createElement("div");
+        introBlock.className = "intro";
+        introBlock.innerHTML = `<h1>Förberedelser</h1><p>${instructions.prep}</p>`;
+
+        const infoBlock = document.createElement("div");
+        infoBlock.className = "intro-info";
+        infoBlock.innerHTML =
+          "" +
+          instructions.doing.map((item) => `<p>${item}</p>`).join("");
+
+        panel.append(introBlock, infoBlock);
+        stage.append(prevBtn, panel, nextBtn);
+
+        const cta = document.createElement("div");
+        cta.className = "step-cta";
+        const randomBtn = document.createElement("button");
+        randomBtn.type = "button";
+        randomBtn.className = "btn-primary";
+        randomBtn.id = "randomCaseBtn";
+        randomBtn.textContent = "Slumpvalt fall";
+        const compendiumLink = document.createElement("a");
+        compendiumLink.className = "btn-secondary";
+        compendiumLink.id = "compendiumBtn";
+        compendiumLink.href = "./compendium.html";
+        compendiumLink.textContent = "Kompendium";
+        cta.append(randomBtn, compendiumLink);
+
+        introSection.append(stage, cta);
+      }
+
+      function getStepFromHash() {
+        const match = location.hash.match(/step=(\d+)/);
+        if (!match) return 1;
+        const parsed = Number(match[1]);
+        if (Number.isNaN(parsed)) return 1;
+        return Math.max(1, Math.min(steps.length, parsed));
+      }
+
+      function refreshStepButtons() {
+        step1PrevBtn = document.getElementById("step1PrevBtn");
+        step1NextBtn = document.getElementById("step1NextBtn");
+        step2PrevBtn = document.getElementById("step2PrevBtn");
+        step2NextBtn = document.getElementById("step2NextBtn");
+        randomCaseBtn = document.getElementById("randomCaseBtn");
+        refreshCaseBtn = document.getElementById("refreshCaseBtn");
+      }
+
+      function init() {
+        renderIntro();
+        refreshStepButtons();
+        if (step1PrevBtn) step1PrevBtn.addEventListener("click", () => (location.hash = "#step=3"));
+        if (step1NextBtn) step1NextBtn.addEventListener("click", () => (location.hash = "#step=2"));
+        if (step2PrevBtn) step2PrevBtn.addEventListener("click", () => (location.hash = "#step=1"));
+        if (step2NextBtn) step2NextBtn.addEventListener("click", () => (location.hash = "#step=3"));
+        if (randomCaseBtn)
+          randomCaseBtn.addEventListener("click", () => {
+            if (location.hash !== "#step=2") {
+              location.hash = "#step=2";
+            }
+            loadRandomCaseIfNeeded().catch((err) => {
+              setCaseStatus(`Kunde inte ladda fall. (${safeText(err && err.message)})`);
+            });
+          });
+        if (refreshCaseBtn)
+          refreshCaseBtn.addEventListener("click", () => {
+            loadRandomCaseIfNeeded(true).catch((err) => {
+              setCaseStatus(`Kunde inte ladda fall. (${safeText(err && err.message)})`);
+            });
+          });
+        if (startBtn) startBtn.addEventListener("click", startCountdownThenGo);
+        if (pauseBtn) pauseBtn.addEventListener("click", togglePause);
+        if (gradeBtn) gradeBtn.addEventListener("click", goToOverview);
+        if (gradeControlsEl) gradeControlsEl.style.display = "none";
+        if (aboutBtn && aboutPanel) {
+          aboutBtn.addEventListener("click", () => {
+            const open = aboutPanel.classList.toggle("open");
+            aboutPanel.hidden = !open;
+          });
+        }
+
+        const goRelative = (delta) => {
+          const selected = readSelectedCase();
+          if (!selected) return;
+          const ids = getAvailableBoxIds(selected);
+          if (!ids.length) return;
+          const idx = readBoxIndex(selected);
+          const next = Math.max(0, Math.min(ids.length - 1, idx + delta));
+          if (next === idx) return;
+          writeBoxIndex(selected, next);
+          renderCaseBoxesIntoStep3(selected);
+        };
+
+        if (prevBoxBtn) prevBoxBtn.addEventListener("click", () => goRelative(-1));
+        if (nextBoxBtn) nextBoxBtn.addEventListener("click", () => goRelative(1));
+
+        const applyStep = () => showStep(getStepFromHash());
+        window.addEventListener("hashchange", applyStep);
+        if (!location.hash) {
+          location.hash = "#step=1";
+        } else {
+          applyStep();
+        }
+      }
+
+      init();
+    </script>
+  </body>
+</html>

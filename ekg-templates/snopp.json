@@ -1,0 +1,135 @@
+{
+  "schema": "ekg-lab.v1",
+  "createdAt": "2026-01-31T17:21:38.272Z",
+  "settings": {
+    "template": "",
+    "rhythm": "Sinusrytm",
+    "age": 66,
+    "sex": "kvinna",
+    "hr": 75,
+    "speed": 50,
+    "gain": 10,
+    "noise": 0.1,
+    "wander": 0.2,
+    "prMs": 160,
+    "qrsMs": 90,
+    "qtMs": 400,
+    "axisDeg": 60,
+    "linkAxis": "off",
+    "showMeasures": "on",
+    "ectopyType": "off",
+    "ectopyPerMin": 0,
+    "ectopyCoupling": "mid",
+    "ectopyPattern": "random",
+    "pqrst": {
+      "P": {
+        "amp": 0.12,
+        "width": 0.03
+      },
+      "Q": {
+        "amp": -0.15,
+        "width": 0.008
+      },
+      "R": {
+        "amp": 1,
+        "width": 0.006
+      },
+      "S": {
+        "amp": -0.25,
+        "width": 0.01
+      },
+      "T": {
+        "amp": 0.35,
+        "width": 0.06,
+        "tailAmp": 0,
+        "tailWidth": 0.05
+      }
+    },
+    "leads": {
+      "aVL": {
+        "scale": 1,
+        "invert": false,
+        "st": 0,
+        "pqrst": {},
+        "__leadName": "aVL"
+      },
+      "I": {
+        "scale": 1,
+        "invert": false,
+        "st": 0,
+        "pqrst": {},
+        "__leadName": "I"
+      },
+      "-aVR": {
+        "scale": 1,
+        "invert": false,
+        "st": 0,
+        "pqrst": {},
+        "__leadName": "-aVR"
+      },
+      "II": {
+        "scale": 1,
+        "invert": false,
+        "st": 0,
+        "pqrst": {},
+        "__leadName": "II"
+      },
+      "aVF": {
+        "scale": 1,
+        "invert": false,
+        "st": 0,
+        "pqrst": {},
+        "__leadName": "aVF"
+      },
+      "III": {
+        "scale": 1,
+        "invert": false,
+        "st": 0,
+        "pqrst": {},
+        "__leadName": "III"
+      },
+      "V1": {
+        "scale": 0.7,
+        "invert": true,
+        "st": 0,
+        "pqrst": {},
+        "__leadName": "V1"
+      },
+      "V2": {
+        "scale": 0.8,
+        "invert": true,
+        "st": 0,
+        "pqrst": {},
+        "__leadName": "V2"
+      },
+      "V3": {
+        "scale": 0.95,
+        "invert": false,
+        "st": 0,
+        "pqrst": {},
+        "__leadName": "V3"
+      },
+      "V4": {
+        "scale": 1.15,
+        "invert": false,
+        "st": 0,
+        "pqrst": {},
+        "__leadName": "V4"
+      },
+      "V5": {
+        "scale": 1,
+        "invert": false,
+        "st": 0,
+        "pqrst": {},
+        "__leadName": "V5"
+      },
+      "V6": {
+        "scale": 0.85,
+        "invert": false,
+        "st": 0,
+        "pqrst": {},
+        "__leadName": "V6"
+      }
+    }
+  }
+}

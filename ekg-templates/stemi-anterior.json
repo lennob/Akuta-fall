@@ -1,0 +1,37 @@
+{
+  "schema": "ekg-template.v1",
+  "id": "stemi-anterior",
+  "label": "STEMI anterior",
+  "patch": {
+    "template": "stemi-anterior",
+    "rhythm": "Sinusrytm",
+    "hr": 80,
+    "prMs": 160,
+    "qrsMs": 95,
+    "qtMs": 420,
+    "axisDeg": 40,
+    "linkAxis": "off",
+    "pqrst": {
+      "P": { "amp": 0.12, "width": 0.03 },
+      "Q": { "amp": -0.15, "width": 0.008 },
+      "R": { "amp": 1.0, "width": 0.006 },
+      "S": { "amp": -0.25, "width": 0.01 },
+      "T": { "amp": 0.35, "width": 0.06, "tailAmp": 0.0, "tailWidth": 0.05 }
+    },
+    "leads": {
+      "aVL": { "scale": 1.0, "invert": false, "st": 0 },
+      "I": { "scale": 1.0, "invert": false, "st": 0 },
+      "-aVR": { "scale": 1.0, "invert": false, "st": 0 },
+      "II": { "scale": 1.0, "invert": false, "st": -0.1 },
+      "aVF": { "scale": 1.0, "invert": false, "st": -0.1 },
+      "III": { "scale": 1.0, "invert": false, "st": -0.1 },
+      "V1": { "scale": 0.7, "invert": true, "st": 0.28 },
+      "V2": { "scale": 0.8, "invert": true, "st": 0.28 },
+      "V3": { "scale": 0.95, "invert": false, "st": 0.28 },
+      "V4": { "scale": 1.15, "invert": false, "st": 0.28 },
+      "V5": { "scale": 1.0, "invert": false, "st": 0 },
+      "V6": { "scale": 0.85, "invert": false, "st": 0 }
+    }
+  }
+}
+

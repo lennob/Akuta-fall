@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Redigera fall</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="case-editor">
+    <div class="page">
+      <header>
+        <h1>Redigera fall</h1>
+        <p>Välj en befintlig fallfil, justera JSON-texten och ladda ner den för att ersätta filen.</p>
+      </header>
+      <main class="card">
+        <section class="editor-actions">
+          <label class="editor-label">
+            Fall att redigera
+            <select id="caseSelector"></select>
+          </label>
+          <div class="editor-buttons">
+            <button type="button" class="btn-primary" id="reloadIndexBtn">Uppdatera lista</button>
+            <button type="button" class="btn-secondary" id="downloadBtn" disabled>Ladda ned JSON</button>
+          </div>
+        </section>
+        <section class="editor-meta" aria-live="polite" id="metaInfo">
+          Välj ett fall för att visa metadata.
+        </section>
+        <section class="editor-area">
+          <textarea id="editorTextarea" placeholder="Välj ett fall för att börja redigera..." spellcheck="false"></textarea>
+          <p class="status" id="editorStatus"></p>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const CASE_INDEX_PATH = "./cases/index.json";
+      const caseSelector = document.getElementById("caseSelector");
+      const editorTextarea = document.getElementById("editorTextarea");
+      const statusEl = document.getElementById("editorStatus");
+      const metaInfoEl = document.getElementById("metaInfo");
+      const downloadBtn = document.getElementById("downloadBtn");
+      const reloadIndexBtn = document.getElementById("reloadIndexBtn");
+      let selectedFilename = "";
+      let currentData = null;
+
+      function setStatus(message, type = "info") {
+        if (!statusEl) return;
+        statusEl.textContent = message;
+        statusEl.dataset.state = type;
+      }
+
+      function renderMeta(data) {
+        if (!metaInfoEl) return;
+        const title = data?.title || "Okänt fall";
+        const note = data?.note || "";
+        metaInfoEl.textContent = `Titel: ${title}${note ? " · " + note : ""}`;
+      }
+
+      async function fetchJson(path) {
+        const res = await fetch(path, { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      }
+
+      async function loadIndex() {
+        if (location.protocol === "file:") {
+          setStatus("Öppna sidan via http:// (ex. python -m http.server) för att läsa fallautomatiskt.", "warn");
+          caseSelector.disabled = true;
+          return;
+        }
+        try {
+          const index = await fetchJson(CASE_INDEX_PATH);
+          const files = Array.isArray(index?.cases) ? index.cases : [];
+          caseSelector.replaceChildren();
+          for (const filename of files) {
+            const option = document.createElement("option");
+            option.value = filename;
+            option.textContent = filename;
+            caseSelector.append(option);
+          }
+          if (files.length) {
+            caseSelector.disabled = false;
+            setStatus("Välj ett fall för att ladda dess JSON.", "info");
+            loadSelectedCase();
+          } else {
+            setStatus("Inga fall angivna i cases/index.json.", "warn");
+            caseSelector.disabled = true;
+          }
+        } catch (err) {
+          setStatus(`Kunde inte läsa lista: ${safeText(err?.message)}`, "error");
+        }
+      }
+
+      function safeText(value) {
+        return String(value ?? "");
+      }
+
+      async function loadSelectedCase() {
+        const filename = caseSelector.value;
+        if (!filename) return;
+        selectedFilename = filename;
+        try {
+          const data = await fetchJson(`./cases/${filename}`);
+          currentData = data;
+          editorTextarea.value = JSON.stringify(data, null, 2);
+          renderMeta(data);
+          downloadBtn.disabled = false;
+          setStatus(`Laddade ${filename}.`, "success");
+        } catch (err) {
+          setStatus(`Kunde inte läsa ${filename}: ${safeText(err?.message)}`, "error");
+          downloadBtn.disabled = true;
+        }
+      }
+
+      downloadBtn.addEventListener("click", () => {
+        if (!selectedFilename) return;
+        let content;
+        try {
+          content = JSON.stringify(JSON.parse(editorTextarea.value), null, 2);
+        } catch (err) {
+          setStatus("JSON är inte giltig: " + safeText(err?.message), "error");
+          return;
+        }
+        const blob = new Blob([content], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = selectedFilename;
+        anchor.click();
+        URL.revokeObjectURL(url);
+        setStatus(`Förberedd nedladdning för ${selectedFilename}.`, "success");
+      });
+
+      if (caseSelector) {
+        caseSelector.addEventListener("change", loadSelectedCase);
+      }
+      if (reloadIndexBtn) {
+        reloadIndexBtn.addEventListener("click", () => {
+          loadIndex();
+        });
+      }
+
+      loadIndex().catch(() => {});
+    </script>
+  </body>
+</html>

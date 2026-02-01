@@ -1,0 +1,2063 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EKG-labb • Akuta fall</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="ecg-lab">
+    <div class="page">
+      <header>
+        <h1>Akuta fall</h1>
+        <p>EKG-labb (experiment)</p>
+      </header>
+
+      <main class="card">
+        <div class="ecg-wrap">
+          <div class="ecg-top">
+            <div class="ecg-controls panel">
+              <h2 class="panel-title">Inställningar</h2>
+
+              <div class="ecg-controls-grid">
+                <label class="field">
+                  <span>Mall</span>
+                  <select id="template">
+                    <option value="">(Ingen)</option>
+                    <option value="" disabled>— Laddar mallar… —</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Rytm</span>
+                  <input id="rhythm" type="text" value="Sinusrytm" />
+                </label>
+                <label class="field">
+                  <span>Ålder</span>
+                  <input id="age" type="number" min="0" max="130" value="66" />
+                </label>
+                <label class="field">
+                  <span>Kön</span>
+                  <select id="sex">
+                    <option value="kvinna" selected>Kvinna</option>
+                    <option value="man">Man</option>
+                    <option value="annat">Annat</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Hjärtfrekvens</span>
+                  <input id="hr" type="number" min="20" max="220" value="75" />
+                </label>
+
+                <label class="field">
+                  <span>Pappershastighet (mm/s)</span>
+                  <select id="speed">
+                    <option value="25">25</option>
+                    <option value="50" selected>50</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Förstärkning (mm/mV)</span>
+                  <select id="gain">
+                    <option value="5">5</option>
+                    <option value="10" selected>10</option>
+                    <option value="20">20</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Brus</span>
+                  <input id="noise" type="range" min="0" max="0.2" step="0.005" value="0.03" />
+                </label>
+                <label class="field">
+                  <span>Baslinjevandring</span>
+                  <input id="wander" type="range" min="0" max="0.3" step="0.01" value="0.06" />
+                </label>
+              </div>
+
+              <details class="ecg-advanced" open>
+                <summary>Realism: intervall & axel</summary>
+                <div class="ecg-controls-grid">
+                  <label class="field">
+                    <span>PR (ms)</span>
+                    <input id="prMs" type="number" min="60" max="320" step="5" value="160" />
+                  </label>
+                  <label class="field">
+                    <span>QRS (ms)</span>
+                    <input id="qrsMs" type="number" min="40" max="220" step="5" value="90" />
+                  </label>
+                  <label class="field">
+                    <span>QT (ms)</span>
+                    <input id="qtMs" type="number" min="200" max="700" step="5" value="400" />
+                  </label>
+                  <label class="field">
+                    <span>El-axel (°)</span>
+                    <input id="axisDeg" type="number" min="-90" max="180" step="1" value="60" />
+                  </label>
+                  <label class="field">
+                    <span>Koppla extremitetsavledningar till axel</span>
+                    <select id="linkAxis">
+                      <option value="on">På</option>
+                      <option value="off" selected>Av</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>Visa mätningar (PR/QRS/QT)</span>
+                    <select id="showMeasures">
+                      <option value="on" selected>På</option>
+                      <option value="off">Av</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="qtc-banner" id="qtcBanner" role="status" aria-live="polite"></div>
+              </details>
+
+              <details class="ecg-advanced" open>
+                <summary>Realism: ektopi</summary>
+                <div class="ecg-controls-grid">
+                  <label class="field">
+                    <span>Ektopi</span>
+                    <select id="ectopyType">
+                      <option value="off" selected>Av</option>
+                      <option value="pvc">PVC (VES)</option>
+                      <option value="pac">PAC (SVES)</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>Ektopi/min</span>
+                    <input id="ectopyPerMin" type="number" min="0" max="20" step="1" value="0" />
+                  </label>
+                  <label class="field">
+                    <span>Koppling</span>
+                    <select id="ectopyCoupling">
+                      <option value="early">Tidig</option>
+                      <option value="mid" selected>Mitten</option>
+                      <option value="late">Sen</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>Mönster</span>
+                    <select id="ectopyPattern">
+                      <option value="random" selected>Slump</option>
+                      <option value="bigeminy">Bigemini</option>
+                      <option value="trigeminy">Trigemini</option>
+                    </select>
+                  </label>
+                </div>
+                <p class="status">
+                  Tips: PVC ger bredare QRS + kompensatorisk paus. PAC ger tidig beat utan full kompensatorisk paus.
+                </p>
+              </details>
+
+              <div class="ecg-selected panel" id="selectedPanel">
+                <h3 class="panel-title">Vald våg</h3>
+                <p class="status" id="selectedHint">Klicka på en våg i grafen för att välja P/Q/R/S/T per avledning.</p>
+                <div class="ecg-selected-row">
+                  <div class="ecg-selected-chip" id="selectedChip">Ingen vald</div>
+                  <button type="button" class="btn-secondary" id="clearSelectedBtn" disabled>Ta bort override</button>
+                </div>
+                <div class="ecg-selected-grid" id="selectedControls" hidden>
+                  <label class="field">
+                    <span>Höjd (mV)</span>
+                    <input id="selAmp" type="number" step="0.01" min="-2" max="2" />
+                  </label>
+                  <label class="field">
+                    <span>Bredd</span>
+                    <input id="selWidth" type="number" step="0.001" min="0.001" max="0.2" />
+                  </label>
+                  <label class="field" id="selTHeadAmpWrap" hidden>
+                    <span>T-huvud (mV)</span>
+                    <input id="selTHeadAmp" type="number" step="0.01" min="-2" max="2" />
+                  </label>
+                  <label class="field" id="selTHeadWidthWrap" hidden>
+                    <span>T-huvud bredd</span>
+                    <input id="selTHeadWidth" type="number" step="0.001" min="0.001" max="0.2" />
+                  </label>
+                </div>
+              </div>
+
+              <div class="ecg-measure panel">
+                <h3 class="panel-title">Mätning</h3>
+                <div class="ecg-measure-row">
+                  <label class="field">
+                    <span>Mätläge</span>
+                    <select id="measureMode">
+                      <option value="off" selected>Av</option>
+                      <option value="on">På</option>
+                    </select>
+                  </label>
+                  <button type="button" class="btn-secondary" id="clearMeasureBtn" disabled>Rensa</button>
+                </div>
+                <div class="ecg-measure-readout" id="measureReadout">
+                  <div class="status">Slå på mätläge och dra i grafen för att mäta tid (ms) och amplitud (mV).</div>
+                </div>
+              </div>
+
+              <details class="ecg-advanced">
+                <summary>Avancerat: per avledning</summary>
+                <div class="lead-table-wrap">
+                  <table class="lead-table" aria-label="Per avledning">
+                    <thead>
+                      <tr>
+                        <th>Avledning</th>
+                        <th>Skala</th>
+                        <th>Invert</th>
+                        <th>ST (mV)</th>
+                      </tr>
+                    </thead>
+                    <tbody id="leadBody"></tbody>
+                  </table>
+                </div>
+              </details>
+
+              <details class="ecg-advanced">
+                <summary>Avancerat: P/Q/R/S/T</summary>
+                <p class="status">
+                  Höjd styr amplitud (mV). Bredd styr hur smal/vid vågen är (relativt i en hjärtcykel).
+                </p>
+                <div class="lead-table-wrap">
+                  <table class="lead-table" aria-label="PQRST">
+                    <thead>
+                      <tr>
+                        <th>Våg</th>
+                        <th>Höjd (mV)</th>
+                        <th>Bredd</th>
+                        <th>T-huvud (mV)</th>
+                        <th>T-huvud bredd</th>
+                      </tr>
+                    </thead>
+                    <tbody id="pqrstBody"></tbody>
+                  </table>
+                </div>
+              </details>
+
+              <details class="ecg-advanced">
+                <summary>Avancerat: P/Q/R/S/T per avledning</summary>
+                <p class="status">
+                  Här kan du åsidosätta P/Q/R/S/T per avledning. Tomt = använd globala P/Q/R/S/T ovan.
+                </p>
+                <div id="leadPqrstWrap" class="lead-pqrst-wrap"></div>
+              </details>
+
+              <div class="ecg-actions">
+                <button type="button" class="btn-secondary" id="resetBtn">Återställ</button>
+                <button type="button" class="btn-secondary" id="exportJsonBtn">Exportera JSON</button>
+                <button type="button" class="btn-primary" id="exportPngBtn">Exportera PNG</button>
+                <button type="button" class="btn-secondary" id="fullScreenBtn">Helskärm</button>
+                <button type="button" class="btn-primary" id="sendToBuilderBtn" hidden>
+                  Skicka till Case Builder
+                </button>
+                <a class="btn-secondary" href="./compendium.html">Kompendium</a>
+              </div>
+            </div>
+
+            <div class="ecg-preview panel">
+              <h2 class="panel-title">Förhandsvisning</h2>
+              <button type="button" class="btn-secondary ecg-fs-exit" id="exitFullScreenBtn" hidden>
+                Avsluta helskärm
+              </button>
+              <div class="ecg-canvas-wrap">
+                <canvas id="ecgCanvas" width="1200" height="800"></canvas>
+              </div>
+              <p class="status" id="hint">
+                Tips: ändra hastighet/förstärkning, exportera som PNG/JSON. Detta är en enkel generator – vi kan
+                göra den mer realistisk senare.
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const DEFAULTS = {
+        template: "",
+        rhythm: "Sinusrytm",
+        age: 66,
+        sex: "kvinna",
+        hr: 75,
+        speed: 50,
+        gain: 10,
+        noise: 0.03,
+        wander: 0.06,
+        prMs: 160,
+        qrsMs: 90,
+        qtMs: 400,
+        axisDeg: 60,
+        linkAxis: "off",
+        showMeasures: "on",
+        ectopyType: "off",
+        ectopyPerMin: 0,
+        ectopyCoupling: "mid",
+        ectopyPattern: "random",
+        mmPx: 4, // px per mm (visual scale)
+        pqrst: {
+          P: { amp: 0.12, width: 0.03 },
+          Q: { amp: -0.15, width: 0.008 },
+          R: { amp: 1.0, width: 0.006 },
+          S: { amp: -0.25, width: 0.01 },
+          T: { amp: 0.35, width: 0.06, tailAmp: 0.0, tailWidth: 0.05 },
+        },
+        leads: {
+          aVL: { scale: 1.0, invert: false, st: 0 },
+          I: { scale: 1.0, invert: false, st: 0 },
+          "-aVR": { scale: 1.0, invert: false, st: 0 },
+          II: { scale: 1.0, invert: false, st: 0 },
+          aVF: { scale: 1.0, invert: false, st: 0 },
+          III: { scale: 1.0, invert: false, st: 0 },
+          V1: { scale: 0.7, invert: true, st: 0 },
+          V2: { scale: 0.8, invert: true, st: 0 },
+          V3: { scale: 0.95, invert: false, st: 0 },
+          V4: { scale: 1.15, invert: false, st: 0 },
+          V5: { scale: 1.0, invert: false, st: 0 },
+          V6: { scale: 0.85, invert: false, st: 0 },
+        },
+      };
+
+      const LAYOUT = [
+        ["aVL", "V1"],
+        ["I", "V2"],
+        ["-aVR", "V3"],
+        ["II", "V4"],
+        ["aVF", "V5"],
+        ["III", "V6"],
+      ];
+
+      const elTemplate = document.getElementById("template");
+      const elRhythm = document.getElementById("rhythm");
+      const elAge = document.getElementById("age");
+      const elSex = document.getElementById("sex");
+      const elHr = document.getElementById("hr");
+      const elSpeed = document.getElementById("speed");
+      const elGain = document.getElementById("gain");
+      const elNoise = document.getElementById("noise");
+      const elWander = document.getElementById("wander");
+      const elPrMs = document.getElementById("prMs");
+      const elQrsMs = document.getElementById("qrsMs");
+      const elQtMs = document.getElementById("qtMs");
+      const elAxisDeg = document.getElementById("axisDeg");
+      const elLinkAxis = document.getElementById("linkAxis");
+      const elShowMeasures = document.getElementById("showMeasures");
+      const elEctopyType = document.getElementById("ectopyType");
+      const elEctopyPerMin = document.getElementById("ectopyPerMin");
+      const elEctopyCoupling = document.getElementById("ectopyCoupling");
+      const elEctopyPattern = document.getElementById("ectopyPattern");
+      const elQtcBanner = document.getElementById("qtcBanner");
+      const elReset = document.getElementById("resetBtn");
+      const elExportJson = document.getElementById("exportJsonBtn");
+      const elExportPng = document.getElementById("exportPngBtn");
+      const elFullScreen = document.getElementById("fullScreenBtn");
+      const elExitFullScreen = document.getElementById("exitFullScreenBtn");
+      const elSendToBuilder = document.getElementById("sendToBuilderBtn");
+      const elSelectedChip = document.getElementById("selectedChip");
+      const elSelectedHint = document.getElementById("selectedHint");
+      const elSelectedControls = document.getElementById("selectedControls");
+      const elClearSelected = document.getElementById("clearSelectedBtn");
+      const elSelAmp = document.getElementById("selAmp");
+      const elSelWidth = document.getElementById("selWidth");
+      const elSelTHeadAmpWrap = document.getElementById("selTHeadAmpWrap");
+      const elSelTHeadWidthWrap = document.getElementById("selTHeadWidthWrap");
+      const elSelTHeadAmp = document.getElementById("selTHeadAmp");
+      const elSelTHeadWidth = document.getElementById("selTHeadWidth");
+      const elMeasureMode = document.getElementById("measureMode");
+      const elMeasureReadout = document.getElementById("measureReadout");
+      const elClearMeasureBtn = document.getElementById("clearMeasureBtn");
+      const leadBody = document.getElementById("leadBody");
+      const pqrstBody = document.getElementById("pqrstBody");
+      const leadPqrstWrap = document.getElementById("leadPqrstWrap");
+      const previewPanel = document.querySelector(".ecg-preview");
+      const canvas = document.getElementById("ecgCanvas");
+      const wrap = document.querySelector(".ecg-canvas-wrap");
+      const ctx = canvas ? canvas.getContext("2d") : null;
+
+      const ECG_HANDOFF_KEY = "lenny.ecgLab.handoff.v1";
+
+      function safeText(v) {
+        return String(v ?? "");
+      }
+
+      function clamp(n, a, b) {
+        return Math.max(a, Math.min(b, n));
+      }
+
+      function deepClone(obj) {
+        return JSON.parse(JSON.stringify(obj));
+      }
+
+      let state = deepClone(DEFAULTS);
+
+      const BUILTIN_TEMPLATES = [
+        {
+          id: "sinus",
+          label: "Sinusrytm (normal)",
+          apply: (prev) => ({
+            template: "sinus",
+            rhythm: "Sinusrytm",
+            hr: 75,
+            prMs: 160,
+            qrsMs: 90,
+            qtMs: 400,
+            axisDeg: 60,
+            linkAxis: "off",
+            pqrst: deepClone(DEFAULTS.pqrst),
+            leads: (() => {
+              const next = deepClone(DEFAULTS.leads);
+              // subtle variation
+              next.V1.invert = true;
+              next.V2.invert = true;
+              return next;
+            })(),
+          }),
+        },
+        {
+          id: "afib",
+          label: "Förmaksflimmer",
+          apply: () => {
+            const nextPqrst = deepClone(DEFAULTS.pqrst);
+            nextPqrst.P.amp = 0;
+            nextPqrst.P.width = 0.02;
+            return {
+              template: "afib",
+              rhythm: "Förmaksflimmer",
+              hr: 110,
+              prMs: 120,
+              qrsMs: 90,
+              qtMs: 380,
+              axisDeg: 60,
+              linkAxis: "off",
+              noise: 0.045,
+              pqrst: nextPqrst,
+              leads: deepClone(DEFAULTS.leads),
+            };
+          },
+        },
+        {
+          id: "flutter2to1",
+          label: "Förmaksfladder (2:1)",
+          apply: () => {
+            const nextPqrst = deepClone(DEFAULTS.pqrst);
+            // crude approximation: small repeating atrial activity -> reduce P and increase baseline wander/noise a bit
+            nextPqrst.P.amp = 0.04;
+            nextPqrst.P.width = 0.02;
+            return {
+              template: "flutter2to1",
+              rhythm: "Förmaksfladder (2:1)",
+              hr: 150,
+              prMs: 120,
+              qrsMs: 90,
+              qtMs: 360,
+              axisDeg: 70,
+              linkAxis: "off",
+              wander: 0.10,
+              noise: 0.04,
+              pqrst: nextPqrst,
+              leads: deepClone(DEFAULTS.leads),
+            };
+          },
+        },
+        {
+          id: "svt",
+          label: "SVT (AVNRT)",
+          apply: () => {
+            const nextPqrst = deepClone(DEFAULTS.pqrst);
+            nextPqrst.P.amp = 0.02;
+            nextPqrst.P.width = 0.02;
+            return {
+              template: "svt",
+              rhythm: "SVT (AVNRT)",
+              hr: 180,
+              prMs: 90,
+              qrsMs: 90,
+              qtMs: 340,
+              axisDeg: 60,
+              linkAxis: "off",
+              pqrst: nextPqrst,
+              leads: deepClone(DEFAULTS.leads),
+            };
+          },
+        },
+        {
+          id: "vt",
+          label: "Ventrikeltakykardi",
+          apply: () => {
+            const nextPqrst = deepClone(DEFAULTS.pqrst);
+            nextPqrst.P.amp = 0;
+            nextPqrst.Q.amp = -0.05;
+            nextPqrst.R.amp = 1.2;
+            nextPqrst.S.amp = -0.35;
+            nextPqrst.T.amp = 0.15;
+            return {
+              template: "vt",
+              rhythm: "Ventrikeltakykardi",
+              hr: 160,
+              prMs: 80,
+              qrsMs: 160,
+              qtMs: 420,
+              axisDeg: -60,
+              linkAxis: "off",
+              pqrst: nextPqrst,
+              leads: deepClone(DEFAULTS.leads),
+            };
+          },
+        },
+        {
+          id: "stemi-inferior",
+          label: "STEMI inferior",
+          apply: () => {
+            const leads = deepClone(DEFAULTS.leads);
+            for (const id of ["II", "III", "aVF"]) leads[id].st = 0.22;
+            for (const id of ["I", "aVL"]) leads[id].st = -0.10;
+            return {
+              template: "stemi-inferior",
+              rhythm: "Sinusrytm",
+              hr: 75,
+              prMs: 160,
+              qrsMs: 90,
+              qtMs: 420,
+              axisDeg: 90,
+              linkAxis: "off",
+              pqrst: deepClone(DEFAULTS.pqrst),
+              leads,
+            };
+          },
+        },
+        {
+          id: "stemi-anterior",
+          label: "STEMI anterior",
+          apply: () => {
+            const leads = deepClone(DEFAULTS.leads);
+            for (const id of ["V1", "V2", "V3", "V4"]) leads[id].st = 0.28;
+            for (const id of ["II", "III", "aVF"]) leads[id].st = -0.10;
+            return {
+              template: "stemi-anterior",
+              rhythm: "Sinusrytm",
+              hr: 80,
+              prMs: 160,
+              qrsMs: 95,
+              qtMs: 420,
+              axisDeg: 40,
+              linkAxis: "off",
+              pqrst: deepClone(DEFAULTS.pqrst),
+              leads,
+            };
+          },
+        },
+        {
+          id: "hyperk",
+          label: "Hyperkalemi",
+          apply: () => {
+            const nextPqrst = deepClone(DEFAULTS.pqrst);
+            nextPqrst.P.amp = 0.05;
+            nextPqrst.T.amp = 0.75;
+            nextPqrst.T.width = 0.035;
+            const leads = deepClone(DEFAULTS.leads);
+            for (const id of ["V2", "V3", "V4", "V5"]) {
+              leads[id].pqrst = {
+                T: { amp: 0.95, width: 0.03, tailAmp: 0.0, tailWidth: 0.05 },
+              };
+            }
+            return {
+              template: "hyperk",
+              rhythm: "Sinusrytm",
+              hr: 70,
+              prMs: 180,
+              qrsMs: 120,
+              qtMs: 360,
+              axisDeg: 60,
+              linkAxis: "off",
+              pqrst: nextPqrst,
+              leads,
+            };
+          },
+        },
+      ];
+
+      const TEMPLATE_INDEX_URL = "./ekg-templates/index.json";
+      const templatesById = new Map(); // id -> { id, label, file, patch, source }
+
+      function setTemplateSelectOptions(options) {
+        if (!elTemplate) return;
+        const current = safeText(elTemplate.value);
+        elTemplate.innerHTML = "";
+
+        const none = document.createElement("option");
+        none.value = "";
+        none.textContent = "(Ingen)";
+        elTemplate.appendChild(none);
+
+        for (const opt of options) {
+          const o = document.createElement("option");
+          o.value = opt.value;
+          o.textContent = opt.label;
+          elTemplate.appendChild(o);
+        }
+
+        if ([...elTemplate.options].some((o) => o.value === current)) elTemplate.value = current;
+        else elTemplate.value = "";
+      }
+
+      function deepCloneIfObject(v) {
+        if (!v || typeof v !== "object") return v;
+        return deepClone(v);
+      }
+
+      function applyTemplatePatch(patch) {
+        // preserve demographics + paper settings unless template wants to overwrite
+        const preserved = {
+          age: state.age,
+          sex: state.sex,
+          speed: state.speed,
+          gain: state.gain,
+          showMeasures: state.showMeasures,
+        };
+
+        state = deepClone(DEFAULTS);
+        const safePatch = deepCloneIfObject(patch) || {};
+        Object.assign(state, preserved, safePatch);
+        if (safePatch.pqrst) state.pqrst = deepClone(safePatch.pqrst);
+        if (safePatch.leads) state.leads = deepClone(safePatch.leads);
+
+        // ensure lead state objects exist for tables
+        for (const lead of Object.keys(DEFAULTS.leads)) ensureLeadPqrstState(lead);
+        writeStateIntoUi();
+        renderLeadTable();
+        renderPqrstTable();
+        renderLeadPqrst();
+        setSelected(null);
+        draw();
+      }
+
+      async function fetchJson(url) {
+        const u = new URL(url, window.location.href);
+        // avoid stale caching while editing template files locally
+        u.searchParams.set("v", String(Date.now()));
+        const res = await fetch(u.toString(), { cache: "no-store" });
+        if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
+        return await res.json();
+      }
+
+      async function loadTemplateIndex() {
+        try {
+          const raw = await fetchJson(TEMPLATE_INDEX_URL);
+          const list = Array.isArray(raw?.templates) ? raw.templates : Array.isArray(raw) ? raw : null;
+          if (!list) throw new Error("Bad template index format");
+
+          templatesById.clear();
+          const opts = [];
+          for (const item of list) {
+            const id = safeText(item?.id).trim();
+            const label = safeText(item?.label || id).trim();
+            const file = safeText(item?.file).trim();
+            if (!id || !file) continue;
+            templatesById.set(id, { id, label, file, patch: null, source: "external" });
+            opts.push({ value: id, label });
+          }
+          if (!opts.length) throw new Error("No templates in index");
+
+          setTemplateSelectOptions(opts);
+          return true;
+        } catch {
+          // Fallback to built-in templates
+          const opts = BUILTIN_TEMPLATES.map((t) => ({ value: t.id, label: t.label }));
+          setTemplateSelectOptions(opts);
+          templatesById.clear();
+          for (const t of BUILTIN_TEMPLATES) {
+            templatesById.set(t.id, { id: t.id, label: t.label, file: "", patch: null, source: "builtin" });
+          }
+          return false;
+        }
+      }
+
+      async function loadTemplatePatchById(id) {
+        const entry = templatesById.get(id);
+        if (!entry) return null;
+        if (entry.source === "builtin") {
+          const chosen = BUILTIN_TEMPLATES.find((t) => t.id === id);
+          return chosen ? chosen.apply(state) || {} : null;
+        }
+        if (entry.patch) return entry.patch;
+        try {
+          const tpl = await fetchJson(entry.file);
+          // Accept:
+          //  - ekg-template.v1: { patch: {...} }
+          //  - ekg-lab.v1 export: { settings: {...} }
+          //  - raw patch object: { hr, prMs, pqrst, leads, ... }
+          let patch =
+            tpl?.patch && typeof tpl.patch === "object"
+              ? tpl.patch
+              : tpl?.settings && typeof tpl.settings === "object"
+                ? tpl.settings
+                : tpl && typeof tpl === "object"
+                  ? tpl
+                  : null;
+
+          if (patch && typeof patch === "object" && (patch.schema || patch.createdAt || patch.settings)) {
+            // Avoid accidentally treating envelopes as patches
+            patch = tpl?.settings && typeof tpl.settings === "object" ? tpl.settings : null;
+          }
+
+          // Keep the dropdown selection stable: if the template doesn't specify a template id,
+          // default to the selected id.
+          if (patch && typeof patch === "object") {
+            if (!safeText(patch.template).trim()) patch.template = id;
+          }
+          if (!patch) throw new Error("Missing patch");
+          entry.patch = patch;
+          return patch;
+        } catch {
+          return null;
+        }
+      }
+
+      async function applyTemplate(id) {
+        const patch = await loadTemplatePatchById(id);
+        if (!patch) return;
+        applyTemplatePatch(patch);
+      }
+
+      function readUiIntoState() {
+        state.template = safeText(elTemplate?.value || DEFAULTS.template);
+        state.rhythm = safeText(elRhythm?.value || DEFAULTS.rhythm).trim() || DEFAULTS.rhythm;
+        state.age = clamp(Number(elAge?.value || DEFAULTS.age), 0, 130);
+        state.sex = safeText(elSex?.value || DEFAULTS.sex);
+        state.hr = clamp(Number(elHr?.value || DEFAULTS.hr), 20, 220);
+        state.speed = Number(elSpeed?.value || DEFAULTS.speed) || DEFAULTS.speed;
+        state.gain = Number(elGain?.value || DEFAULTS.gain) || DEFAULTS.gain;
+        state.noise = clamp(Number(elNoise?.value || DEFAULTS.noise), 0, 0.4);
+        state.wander = clamp(Number(elWander?.value || DEFAULTS.wander), 0, 1);
+        state.prMs = clamp(Number(elPrMs?.value || DEFAULTS.prMs), 60, 320);
+        state.qrsMs = clamp(Number(elQrsMs?.value || DEFAULTS.qrsMs), 40, 220);
+        state.qtMs = clamp(Number(elQtMs?.value || DEFAULTS.qtMs), 200, 700);
+        state.axisDeg = clamp(Number(elAxisDeg?.value || DEFAULTS.axisDeg), -90, 180);
+        state.linkAxis = safeText(elLinkAxis?.value || DEFAULTS.linkAxis) === "off" ? "off" : "on";
+        state.showMeasures =
+          safeText(elShowMeasures?.value || DEFAULTS.showMeasures) === "off" ? "off" : "on";
+        state.ectopyType = safeText(elEctopyType?.value || DEFAULTS.ectopyType);
+        state.ectopyPerMin = clamp(Number(elEctopyPerMin?.value || DEFAULTS.ectopyPerMin), 0, 20);
+        state.ectopyCoupling = safeText(elEctopyCoupling?.value || DEFAULTS.ectopyCoupling);
+        state.ectopyPattern = safeText(elEctopyPattern?.value || DEFAULTS.ectopyPattern);
+      }
+
+      function writeStateIntoUi() {
+        if (elTemplate) elTemplate.value = state.template || "";
+        if (elRhythm) elRhythm.value = state.rhythm;
+        if (elAge) elAge.value = String(state.age);
+        if (elSex) elSex.value = state.sex;
+        if (elHr) elHr.value = String(state.hr);
+        if (elSpeed) elSpeed.value = String(state.speed);
+        if (elGain) elGain.value = String(state.gain);
+        if (elNoise) elNoise.value = String(state.noise);
+        if (elWander) elWander.value = String(state.wander);
+        if (elPrMs) elPrMs.value = String(state.prMs);
+        if (elQrsMs) elQrsMs.value = String(state.qrsMs);
+        if (elQtMs) elQtMs.value = String(state.qtMs);
+        if (elAxisDeg) elAxisDeg.value = String(state.axisDeg);
+        if (elLinkAxis) elLinkAxis.value = state.linkAxis;
+        if (elShowMeasures) elShowMeasures.value = state.showMeasures;
+        if (elEctopyType) elEctopyType.value = state.ectopyType || "off";
+        if (elEctopyPerMin) elEctopyPerMin.value = String(Number(state.ectopyPerMin || 0));
+        if (elEctopyCoupling) elEctopyCoupling.value = state.ectopyCoupling || "mid";
+        if (elEctopyPattern) elEctopyPattern.value = state.ectopyPattern || "random";
+      }
+
+      function gaussian(x, mu, sigma) {
+        const z = (x - mu) / sigma;
+        return Math.exp(-0.5 * z * z);
+      }
+
+      const PQRST_ORDER = ["P", "Q", "R", "S", "T"];
+      const PQRST_MU_ORDER = ["P", "Q", "R", "S", "T"];
+      const T_SHAPE_SHIFT_SEC = 0.09; // ~90 ms
+
+      let lastLeadRects = [];
+      let selected = null; // { lead, wave }
+      let currentMu = { P: 0.18, Q: 0.39, R: 0.4, S: 0.42, T: 0.66 };
+      let measurement = null; // { lead, x0, y0, x1, y1, active }
+
+      function rrSec() {
+        return 60 / clamp(Number(state.hr || 75), 20, 220);
+      }
+
+      function updateTiming() {
+        const rr = rrSec();
+        const pr = clamp(Number(state.prMs || DEFAULTS.prMs), 60, 320) / 1000;
+        const qrs = clamp(Number(state.qrsMs || DEFAULTS.qrsMs), 40, 220) / 1000;
+        const qt = clamp(Number(state.qtMs || DEFAULTS.qtMs), 200, 700) / 1000;
+
+        // place QRS early enough to fit T within the cycle
+        const qrsOnset = clamp(0.32 * rr, 0.18 * rr, 0.55 * rr);
+        const qrsCenter = qrsOnset + qrs * 0.45;
+
+        // QRS components within QRS duration
+        const qMu = (qrsOnset + qrs * 0.20) / rr;
+        const rMu = (qrsOnset + qrs * 0.45) / rr;
+        const sMu = (qrsOnset + qrs * 0.72) / rr;
+
+        // P roughly ends before QRS onset; center earlier depending on PR
+        const pCenter = clamp(qrsOnset - pr * 0.55, 0.05 * rr, qrsOnset - 0.04 * rr);
+        const pMu = pCenter / rr;
+
+        // T based on QT (QRS onset -> T end), place apex at ~60% of QT
+        const tApex = clamp(qrsOnset + qt * 0.60, qrsOnset + 0.12 * rr, 0.92 * rr);
+        const tMu = tApex / rr;
+
+        currentMu = {
+          P: pMu,
+          Q: qMu,
+          R: rMu,
+          S: sMu,
+          T: tMu,
+          _qrsCenter: qrsCenter / rr,
+          _qrsOnset: qrsOnset / rr,
+          _qrsOffset: (qrsOnset + qrs) / rr,
+          _tEnd: (qrsOnset + qt) / rr,
+          _pOnset: Math.max(0, (qrsOnset - pr) / rr),
+        };
+      }
+
+      function degToRad(deg) {
+        return (deg * Math.PI) / 180;
+      }
+
+      function limbLeadAngleDeg(lead) {
+        // Standard limb lead axes (approx)
+        if (lead === "I") return 0;
+        if (lead === "II") return 60;
+        if (lead === "III") return 120;
+        if (lead === "aVL") return -30;
+        if (lead === "aVF") return 90;
+        if (lead === "-aVR") return 30; // -aVR is opposite of aVR (-150)
+        return null;
+      }
+
+      function limbAxisScale(lead) {
+        if (state.linkAxis !== "on") return 1;
+        const angle = limbLeadAngleDeg(lead);
+        if (angle === null) return 1;
+        const axis = clamp(Number(state.axisDeg || DEFAULTS.axisDeg), -90, 180);
+        const d = degToRad(axis - angle);
+        return Math.cos(d);
+      }
+
+      function getWaveCfg(name, leadConfig) {
+        const leadOverride = leadConfig?.pqrst?.[name];
+        if (leadOverride && typeof leadOverride === "object") return leadOverride;
+        const globalCfg = state?.pqrst?.[name];
+        if (globalCfg && typeof globalCfg === "object") return globalCfg;
+        return DEFAULTS.pqrst[name];
+      }
+
+      function pqrstWave(name, phase, leadConfig, beatType) {
+        const cfg = getWaveCfg(name, leadConfig);
+        let amp = Number(cfg?.amp ?? DEFAULTS.pqrst[name].amp);
+        let width = clamp(Number(cfg?.width ?? DEFAULTS.pqrst[name].width), 0.001, 0.2);
+        const mu = Number(currentMu[name] ?? 0.5);
+
+        // Ectopy shaping (very simplified but useful for cases): PVC -> absent P + wider QRS.
+        const t = safeText(beatType || "normal").toLowerCase();
+        if (t === "pvc") {
+          if (name === "P") amp *= 0.0;
+          if (name === "Q" || name === "R" || name === "S") width = clamp(width * 3.0, 0.001, 0.2);
+        } else if (t === "pac") {
+          // PAC: keep QRS narrow, but allow a slightly "sharper" appearance
+          if (name === "Q" || name === "R" || name === "S") width = clamp(width * 1.1, 0.001, 0.2);
+        }
+
+        let v = amp * gaussian(phase, mu, width);
+        if (name === "T") {
+          const headAmp = Number(cfg?.tailAmp ?? DEFAULTS.pqrst.T.tailAmp);
+          const headWidth = clamp(Number(cfg?.tailWidth ?? DEFAULTS.pqrst.T.tailWidth), 0.001, 0.2);
+          if (headAmp) {
+            // Only affect the ascending limb ("head") of T.
+            if (phase <= mu) {
+              const shiftPhase = T_SHAPE_SHIFT_SEC / rrSec();
+              v += headAmp * gaussian(phase, mu - shiftPhase, headWidth);
+            }
+          }
+        }
+        return v;
+      }
+
+      function baseBeat(phase, leadConfig, beatType) {
+        // Simple P-QRS-T model over normalized phase [0..1)
+        return (
+          pqrstWave("P", phase, leadConfig, beatType) +
+          pqrstWave("Q", phase, leadConfig, beatType) +
+          pqrstWave("R", phase, leadConfig, beatType) +
+          pqrstWave("S", phase, leadConfig, beatType) +
+          pqrstWave("T", phase, leadConfig, beatType)
+        );
+      }
+
+      function noiseAt(t, amount) {
+        // deterministic-ish pseudo noise
+        const a = Math.sin(t * 12.9898) * 43758.5453;
+        const frac = a - Math.floor(a);
+        return (frac - 0.5) * 2 * amount;
+      }
+
+      let currentLeadSeconds = 0;
+      let beatBoundaries = [0, 1];
+      let beatTypes = ["normal", "normal"];
+
+      function hashStringToSeed(str) {
+        let h = 2166136261;
+        for (let i = 0; i < str.length; i += 1) {
+          h ^= str.charCodeAt(i);
+          h = Math.imul(h, 16777619);
+        }
+        return h >>> 0;
+      }
+
+      function mulberry32(seed) {
+        let t = seed >>> 0;
+        return () => {
+          t += 0x6d2b79f5;
+          let x = Math.imul(t ^ (t >>> 15), 1 | t);
+          x ^= x + Math.imul(x ^ (x >>> 7), 61 | x);
+          return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+
+      function randn(rng) {
+        // Box-Muller
+        let u = 0;
+        let v = 0;
+        while (u === 0) u = rng();
+        while (v === 0) v = rng();
+        return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+      }
+
+      function buildBeatMap(seconds) {
+        const mean = rrSec();
+        const mode = safeText(state.template || "").toLowerCase();
+        const ectopyType = safeText(state.ectopyType || "off").toLowerCase();
+        const ectopyPerMin = clamp(Number(state.ectopyPerMin || 0), 0, 60);
+        const ectopyCoupling = safeText(state.ectopyCoupling || "mid").toLowerCase();
+        const ectopyPattern = safeText(state.ectopyPattern || "random").toLowerCase();
+        const seed = hashStringToSeed(
+          [
+            mode,
+            state.hr,
+            state.prMs,
+            state.qrsMs,
+            state.qtMs,
+            state.axisDeg,
+            state.noise,
+            state.wander,
+            ectopyType,
+            ectopyPerMin,
+            ectopyCoupling,
+            ectopyPattern,
+          ].join("|"),
+        );
+        const rng = mulberry32(seed);
+
+        const couplingFrac =
+          ectopyCoupling === "early" ? 0.45 : ectopyCoupling === "late" ? 0.75 : 0.60;
+
+        const beats = [{ t: 0, type: "normal" }];
+        let t = 0;
+        let sinusSinceEctopy = 0;
+
+        const wantEctopy = ectopyType === "pvc" || ectopyType === "pac";
+        const secondsLimit = seconds + mean * 2;
+
+        while (t < secondsLimit) {
+          let rr = mean;
+          if (mode === "afib") {
+            const sigma = 0.22;
+            rr = mean * Math.exp(sigma * randn(rng));
+            rr = clamp(rr, 0.35, 1.8);
+          }
+
+          let doEctopy = false;
+          if (wantEctopy) {
+            if (ectopyPattern === "bigeminy") {
+              doEctopy = true;
+            } else if (ectopyPattern === "trigeminy") {
+              doEctopy = sinusSinceEctopy >= 2;
+            } else {
+              const p = clamp(ectopyPerMin / Math.max(1, Number(state.hr || 75)), 0, 0.95);
+              doEctopy = ectopyPerMin > 0 && rng() < p;
+            }
+          }
+
+          sinusSinceEctopy += 1;
+
+          if (doEctopy) {
+            const ectT = t + rr * clamp(couplingFrac, 0.25, 0.9);
+            if (ectT > t + 0.18) beats.push({ t: ectT, type: ectopyType });
+
+            let nextT = t + rr * 2; // PVC: compensatory pause
+            if (ectopyType === "pac") {
+              // PAC: non-compensatory pause (shorter than 2*RR)
+              nextT = t + rr * (1.3 - 0.3 * couplingFrac);
+            }
+            // Ensure at least some distance from ectopic beat
+            const minGap = 0.25;
+            if (beats.length >= 2) {
+              const last = beats[beats.length - 1];
+              nextT = Math.max(nextT, last.t + minGap);
+            }
+            beats.push({ t: nextT, type: "normal" });
+            t = nextT;
+            sinusSinceEctopy = 0;
+          } else {
+            const nextT = t + rr;
+            beats.push({ t: nextT, type: "normal" });
+            t = nextT;
+          }
+
+          if (beats.length > 450) break;
+        }
+
+        const boundaries = beats.map((b) => b.t);
+        const types = beats.map((b) => b.type);
+        if (boundaries.length >= 2) return { boundaries, types };
+        return { boundaries: [0, mean], types: ["normal", "normal"] };
+      }
+
+      function phaseFromBeatMap(tSec) {
+        let idx = 0;
+        while (idx < beatBoundaries.length - 2 && tSec >= beatBoundaries[idx + 1]) idx += 1;
+        const start = beatBoundaries[idx];
+        const end = beatBoundaries[idx + 1];
+        const period = Math.max(0.2, end - start);
+        const phase = clamp((tSec - start) / period, 0, 1);
+        return { phase, period, start, end };
+      }
+
+      function sawtooth01(x) {
+        const f = x - Math.floor(x);
+        return f;
+      }
+
+      function flutterWave(tSec, leadName) {
+        // ~300 bpm atrial activity (5 Hz), "sawtooth" prominent in inferior leads + V1
+        const fHz = 5;
+        const s = sawtooth01(tSec * fHz);
+        const wave = (s - 0.5) * 2; // [-1..1]
+        const shaped = Math.sign(wave) * Math.pow(Math.abs(wave), 0.7);
+        const w = leadName === "II" || leadName === "III" || leadName === "aVF" ? 1.0 : leadName === "V1" ? 0.7 : 0.25;
+        return shaped * 0.06 * w;
+      }
+
+      function afibFWave(tSec, leadName) {
+        // Small fibrillatory activity, more visible in V1/inferior
+        const fHz = 7.0;
+        const w = leadName === "V1" ? 1.0 : leadName === "II" || leadName === "III" || leadName === "aVF" ? 0.6 : 0.25;
+        return Math.sin(2 * Math.PI * fHz * tSec) * 0.02 * w;
+      }
+
+      function waveAt(tSec, phase, leadConfig, beatType) {
+        let v = baseBeat(phase, leadConfig, beatType);
+        // baseline wander
+        v += Math.sin(tSec * 2 * Math.PI * 0.33) * state.wander * 0.1;
+        // rhythm-specific baseline activity
+        const mode = safeText(state.template || "").toLowerCase();
+        const leadName = safeText(leadConfig?.__leadName || "");
+        if (mode === "flutter2to1") v += flutterWave(tSec, leadName);
+        if (mode === "afib") v += afibFWave(tSec, leadName);
+        // noise
+        v += noiseAt(tSec, state.noise);
+        // ST shift
+        v += Number(leadConfig.st || 0);
+        // per-lead scale/invert
+        const scale = Number(leadConfig.scale || 1) * limbAxisScale(leadConfig?.__leadName || "");
+        const invert = Boolean(leadConfig.invert);
+        v *= scale * (invert ? -1 : 1);
+        return v;
+      }
+
+      function fitCanvasToContainer() {
+        if (!canvas || !wrap) return;
+        const cssW = Math.floor(wrap.clientWidth || 0);
+        if (!cssW) return;
+        const inFs =
+          Boolean(document.fullscreenElement) ||
+          document.body.classList.contains("ecg-fs") ||
+          previewPanel?.classList.contains("ecg-fs");
+        const w = Math.max(320, cssW);
+        const cssH = Math.floor(wrap.clientHeight || 0);
+        const h = inFs
+          ? Math.max(420, cssH || Math.floor(w * 0.66))
+          : Math.max(420, Math.floor(Math.min(900, w * 0.66)));
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = Math.floor(w * dpr);
+        canvas.height = Math.floor(h * dpr);
+        if (!inFs) wrap.style.height = `${h}px`;
+        else wrap.style.height = "";
+        canvas.style.width = "100%";
+        canvas.style.height = "100%";
+        if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      function drawGrid(x, y, w, h) {
+        if (!ctx) return;
+        const mm = state.mmPx;
+        const small = mm; // 1 mm
+        const big = mm * 5; // 5 mm
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, w, h);
+
+        // small grid
+        ctx.strokeStyle = "rgba(220, 38, 38, 0.10)";
+        ctx.lineWidth = 1;
+        for (let gx = 0; gx <= w; gx += small) {
+          ctx.beginPath();
+          ctx.moveTo(gx + 0.5, 0);
+          ctx.lineTo(gx + 0.5, h);
+          ctx.stroke();
+        }
+        for (let gy = 0; gy <= h; gy += small) {
+          ctx.beginPath();
+          ctx.moveTo(0, gy + 0.5);
+          ctx.lineTo(w, gy + 0.5);
+          ctx.stroke();
+        }
+
+        // big grid
+        ctx.strokeStyle = "rgba(220, 38, 38, 0.22)";
+        ctx.lineWidth = 1;
+        for (let gx = 0; gx <= w; gx += big) {
+          ctx.beginPath();
+          ctx.moveTo(gx + 0.5, 0);
+          ctx.lineTo(gx + 0.5, h);
+          ctx.stroke();
+        }
+        for (let gy = 0; gy <= h; gy += big) {
+          ctx.beginPath();
+          ctx.moveTo(0, gy + 0.5);
+          ctx.lineTo(w, gy + 0.5);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      function drawHeader(x, y, w) {
+        if (!ctx) return;
+        ctx.save();
+        ctx.fillStyle = "#111827";
+        ctx.font = "700 18px system-ui, -apple-system, Segoe UI, sans-serif";
+        ctx.fillText(state.rhythm, x, y);
+        ctx.font = "600 14px system-ui, -apple-system, Segoe UI, sans-serif";
+        ctx.fillText(`Ålder: ${state.age}`, x, y + 18);
+        ctx.fillText(`Kön: ${state.sex}`, x, y + 36);
+        ctx.fillText(`Hjärtfrekvens: ${state.hr}`, x, y + 54);
+        ctx.fillText(`PR/QRS/QT: ${state.prMs}/${state.qrsMs}/${state.qtMs} ms`, x, y + 72);
+        ctx.textAlign = "right";
+        ctx.fillText(`${state.speed} mm/s`, x + w, y + 54);
+        ctx.restore();
+      }
+
+      function drawCalibration(x, y) {
+        if (!ctx) return;
+        const mm = state.mmPx;
+        const gainMmPerMv = state.gain;
+        const heightMm = gainMmPerMv; // 1mV pulse height
+        const widthMm = 5; // 200ms at 25mm/s -> 5mm. We'll keep 5mm visually.
+        const h = heightMm * mm;
+        const w = widthMm * mm;
+        ctx.save();
+        ctx.strokeStyle = "rgba(17, 24, 39, 0.9)";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x, y - h);
+        ctx.lineTo(x + w, y - h);
+        ctx.lineTo(x + w, y);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      function drawLead(lead, x, y, w, h) {
+        if (!ctx) return;
+        const mm = state.mmPx;
+        const speed = state.speed; // mm/s
+        const gainMmPerMv = state.gain; // mm per mV
+
+        const seconds = currentLeadSeconds || w / (mm * speed);
+        const baseline = y + h / 2;
+        const dt = seconds / w; // seconds per pixel
+        const oversample = 6;
+        let beatIndex = 0;
+        let beatStart = beatBoundaries[0] || 0;
+        let beatEnd = beatBoundaries[1] || seconds;
+        let beatPeriod = Math.max(0.2, beatEnd - beatStart);
+
+        ctx.save();
+        ctx.strokeStyle = "rgba(17, 24, 39, 0.9)";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+
+        const cfg = state.leads[lead] || { scale: 1, invert: false, st: 0 };
+        cfg.__leadName = lead;
+        for (let i = 0; i < w; i += 1) {
+          const t0 = i * dt;
+          while (beatIndex < beatBoundaries.length - 2 && t0 >= beatEnd) {
+            beatIndex += 1;
+            beatStart = beatBoundaries[beatIndex];
+            beatEnd = beatBoundaries[beatIndex + 1];
+            beatPeriod = Math.max(0.2, beatEnd - beatStart);
+          }
+          const phase0 = clamp((t0 - beatStart) / beatPeriod, 0, 1);
+          const bt0 = beatTypes[beatIndex] || "normal";
+          let bestV = waveAt(t0, phase0, cfg, bt0); // mV-ish
+          let bestAbs = Math.abs(bestV);
+          for (let s = 1; s < oversample; s += 1) {
+            const t = t0 + (s * dt) / oversample;
+            while (beatIndex < beatBoundaries.length - 2 && t >= beatEnd) {
+              beatIndex += 1;
+              beatStart = beatBoundaries[beatIndex];
+              beatEnd = beatBoundaries[beatIndex + 1];
+              beatPeriod = Math.max(0.2, beatEnd - beatStart);
+            }
+            const phase = clamp((t - beatStart) / beatPeriod, 0, 1);
+            const bt = beatTypes[beatIndex] || "normal";
+            const v = waveAt(t, phase, cfg, bt);
+            const a = Math.abs(v);
+            if (a > bestAbs) {
+              bestAbs = a;
+              bestV = v;
+            }
+          }
+          const v = Number.isFinite(bestV) ? bestV : waveAt(t0, phase0, cfg, beatTypes[beatIndex] || "normal");
+          const dyMm = v * gainMmPerMv;
+          const py = baseline - dyMm * mm;
+          if (i === 0) ctx.moveTo(x + i, py);
+          else ctx.lineTo(x + i, py);
+        }
+        ctx.stroke();
+
+        // lead label
+        ctx.fillStyle = "rgba(17, 24, 39, 0.9)";
+        ctx.font = "800 12px system-ui, -apple-system, Segoe UI, sans-serif";
+        ctx.fillText(lead, x + 6, y + 14);
+
+        // calibration pulse at right
+        drawCalibration(x + w - 22, baseline + (h / 2 - 6));
+
+        if (state.showMeasures === "on" && beatBoundaries.length >= 2) {
+          // Overlay measurement markers per beat: P onset, QRS onset/offset, T end
+          const markers = [
+            { key: "P", phase: currentMu._pOnset, color: "rgba(28, 78, 135, 0.55)" },
+            { key: "QRS", phase: currentMu._qrsOnset, color: "rgba(17, 24, 39, 0.55)" },
+            { key: "QRS", phase: currentMu._qrsOffset, color: "rgba(17, 24, 39, 0.55)" },
+            { key: "Tend", phase: currentMu._tEnd, color: "rgba(238, 155, 0, 0.60)" },
+          ];
+          ctx.save();
+          ctx.lineWidth = 1;
+          for (let b = 0; b < beatBoundaries.length - 1; b += 1) {
+            const beatStart = beatBoundaries[b];
+            const period = Math.max(0.2, beatBoundaries[b + 1] - beatStart);
+            for (const m of markers) {
+              if (m.phase == null) continue;
+              const t = beatStart + m.phase * period;
+              if (t < 0 || t > seconds) continue;
+              const px = x + (t / seconds) * w;
+              ctx.strokeStyle = m.color;
+              ctx.beginPath();
+              ctx.moveTo(px, y);
+              ctx.lineTo(px, y + h);
+              ctx.stroke();
+            }
+          }
+          ctx.restore();
+        }
+
+        ctx.restore();
+      }
+
+      function draw() {
+        if (!canvas || !ctx) return;
+        readUiIntoState();
+        updateTiming();
+        fitCanvasToContainer();
+
+        // QTc display (approx)
+        if (elQtcBanner) {
+          const rrMs = 60000 / Math.max(20, Number(state.hr || 75));
+          const qtMs = Number(state.qtMs || DEFAULTS.qtMs);
+          const rrSec = rrMs / 1000;
+          const qtcBazett = qtMs / Math.sqrt(rrSec);
+          const qtcFrid = qtMs / Math.cbrt(rrSec);
+          const sex = safeText(state.sex).toLowerCase();
+          const prolonged =
+            sex.includes("kvin") ? 470 : sex.includes("man") ? 450 : 460;
+          const short = 350;
+          let label = `QTc (Bazett): ${Math.round(qtcBazett)} ms • QTc (Fridericia): ${Math.round(qtcFrid)} ms`;
+          let klass = "qtc-ok";
+          if (qtcBazett >= prolonged || qtcFrid >= prolonged) {
+            klass = "qtc-warn";
+            label += ` • Förlängd (gräns ~${prolonged} ms)`;
+          } else if (qtcBazett <= short || qtcFrid <= short) {
+            klass = "qtc-warn";
+            label += ` • Kort (gräns ~${short} ms)`;
+          } else {
+            label += " • Inom ungefärlig normal";
+          }
+          elQtcBanner.className = `qtc-banner ${klass}`;
+          elQtcBanner.textContent = label;
+        }
+
+        const w =
+          Math.floor((wrap && wrap.clientWidth) || canvas.getBoundingClientRect().width || 0) || 900;
+        const h =
+          Math.floor((wrap && wrap.clientHeight) || canvas.getBoundingClientRect().height || 0) || 600;
+
+        const pad = 16;
+        const headerH = 92;
+        const gridX = pad;
+        const gridY = pad;
+        const gridW = w - pad * 2;
+        const gridH = h - pad * 2;
+
+        drawGrid(gridX, gridY, gridW, gridH);
+        drawHeader(gridX + 10, gridY + 26, gridW - 20);
+
+        const innerY = gridY + headerH;
+        const innerH = gridH - headerH - 10;
+        const rows = 6;
+        const cols = 2;
+        const gapX = 10;
+        const gapY = 10;
+        const colW = Math.floor((gridW - gapX) / 2);
+        const rowH = Math.floor((innerH - gapY * (rows - 1)) / rows);
+
+        currentLeadSeconds = colW / (state.mmPx * state.speed);
+        {
+          const bm = buildBeatMap(currentLeadSeconds);
+          beatBoundaries = bm.boundaries;
+          beatTypes = bm.types;
+        }
+
+        lastLeadRects = [];
+        for (let r = 0; r < rows; r += 1) {
+          for (let c = 0; c < cols; c += 1) {
+            const lead = LAYOUT[r][c];
+            const x = gridX + c * (colW + gapX);
+            const y = innerY + r * (rowH + gapY);
+            drawLead(lead, x, y, colW, rowH);
+            lastLeadRects.push({ lead, x, y, w: colW, h: rowH });
+          }
+        }
+
+        if (selected) {
+          const rect = lastLeadRects.find((r) => r.lead === selected.lead);
+          if (rect && currentMu[selected.wave] != null) {
+            const mm = state.mmPx;
+            const seconds = rect.w / (mm * state.speed);
+            const period = 60 / state.hr;
+            const mu = currentMu[selected.wave];
+            const markerX = rect.x + ((mu * period) / seconds) * rect.w;
+            const x = clamp(markerX, rect.x, rect.x + rect.w);
+            ctx.save();
+            ctx.strokeStyle = "rgba(101, 155, 162, 0.85)";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x, rect.y);
+            ctx.lineTo(x, rect.y + rect.h);
+            ctx.stroke();
+            ctx.fillStyle = "rgba(101, 155, 162, 0.95)";
+            ctx.font = "900 12px system-ui, -apple-system, Segoe UI, sans-serif";
+            ctx.fillText(`${selected.lead} • ${selected.wave}`, rect.x + 8, rect.y + 28);
+            ctx.restore();
+          }
+        }
+
+        if (measurement && lastLeadRects.length) {
+          const rect = lastLeadRects.find((r) => r.lead === measurement.lead);
+          if (rect) {
+            const x0 = clamp(measurement.x0, rect.x, rect.x + rect.w);
+            const y0 = clamp(measurement.y0, rect.y, rect.y + rect.h);
+            const x1 = clamp(measurement.x1, rect.x, rect.x + rect.w);
+            const y1 = clamp(measurement.y1, rect.y, rect.y + rect.h);
+            ctx.save();
+            ctx.strokeStyle = "rgba(28, 78, 135, 0.85)";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x0, y0);
+            ctx.lineTo(x1, y1);
+            ctx.stroke();
+            ctx.fillStyle = "rgba(28, 78, 135, 0.85)";
+            ctx.beginPath();
+            ctx.arc(x0, y0, 4, 0, Math.PI * 2);
+            ctx.arc(x1, y1, 4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+          }
+        }
+      }
+
+      function setSelected(next) {
+        selected = next;
+        if (!elSelectedChip || !elSelectedControls || !elClearSelected || !elSelectedHint) return;
+        if (!selected) {
+          elSelectedChip.textContent = "Ingen vald";
+          elSelectedControls.hidden = true;
+          elClearSelected.disabled = true;
+          elSelectedHint.textContent = "Klicka på en våg i grafen för att välja P/Q/R/S/T per avledning.";
+          return;
+        }
+        elSelectedHint.textContent = "";
+        elSelectedChip.textContent = `${selected.lead} • ${selected.wave}`;
+        elSelectedControls.hidden = false;
+        elClearSelected.disabled = false;
+
+        ensureLeadPqrstState(selected.lead);
+        const leadCfg = state.leads[selected.lead];
+        const cfg = getWaveCfg(selected.wave, leadCfg);
+        if (elSelAmp) elSelAmp.value = String(Number(cfg.amp));
+        if (elSelWidth) elSelWidth.value = String(Number(cfg.width));
+
+        const isT = selected.wave === "T";
+        if (elSelTHeadAmpWrap) elSelTHeadAmpWrap.hidden = !isT;
+        if (elSelTHeadWidthWrap) elSelTHeadWidthWrap.hidden = !isT;
+        if (isT) {
+          if (elSelTHeadAmp) elSelTHeadAmp.value = String(Number(cfg.tailAmp ?? 0));
+          if (elSelTHeadWidth) elSelTHeadWidth.value = String(Number(cfg.tailWidth ?? DEFAULTS.pqrst.T.tailWidth));
+        }
+      }
+
+      function applySelectedInputs() {
+        if (!selected) return;
+        ensureLeadPqrstState(selected.lead);
+        const leadCfg = state.leads[selected.lead];
+        leadCfg.pqrst[selected.wave] = leadCfg.pqrst[selected.wave] && typeof leadCfg.pqrst[selected.wave] === "object"
+          ? leadCfg.pqrst[selected.wave]
+          : {};
+        const target = leadCfg.pqrst[selected.wave];
+        if (elSelAmp) target.amp = clamp(Number(elSelAmp.value), -2, 2);
+        if (elSelWidth) target.width = clamp(Number(elSelWidth.value), 0.001, 0.2);
+        if (selected.wave === "T") {
+          if (elSelTHeadAmp) target.tailAmp = clamp(Number(elSelTHeadAmp.value), -2, 2);
+          if (elSelTHeadWidth) target.tailWidth = clamp(Number(elSelTHeadWidth.value), 0.001, 0.2);
+        }
+        draw();
+      }
+
+      function clearSelectedOverride() {
+        if (!selected) return;
+        ensureLeadPqrstState(selected.lead);
+        delete state.leads[selected.lead].pqrst[selected.wave];
+        setSelected(selected);
+        draw();
+      }
+
+      function phaseDistance(a, b) {
+        const d = Math.abs(a - b);
+        return Math.min(d, 1 - d);
+      }
+
+      function pickWaveByPhase(phase) {
+        let best = "R";
+        let bestD = Infinity;
+        for (const w of PQRST_MU_ORDER) {
+          const mu = currentMu[w];
+          const d = phaseDistance(phase, mu);
+          if (d < bestD) {
+            bestD = d;
+            best = w;
+          }
+        }
+        return best;
+      }
+
+      function onCanvasClick(ev) {
+        if (safeText(elMeasureMode?.value) === "on") return;
+        if (!canvas) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = ev.clientX - rect.left;
+        const y = ev.clientY - rect.top;
+        const hit = lastLeadRects.find((r) => x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h);
+        if (!hit) return;
+        const mm = state.mmPx;
+        const seconds = hit.w / (mm * state.speed);
+        const dt = seconds / hit.w;
+        const t = (x - hit.x) * dt;
+        const phase = phaseFromBeatMap(t).phase;
+        const wave = pickWaveByPhase(phase);
+        setSelected({ lead: hit.lead, wave });
+        draw();
+      }
+
+      function findLeadAt(x, y) {
+        return lastLeadRects.find((r) => x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) || null;
+      }
+
+      function updateMeasureReadout() {
+        if (!elMeasureReadout) return;
+        if (!measurement) {
+          elMeasureReadout.innerHTML =
+            '<div class="status">Slå på mätläge och dra i grafen för att mäta tid (ms) och amplitud (mV).</div>';
+          if (elClearMeasureBtn) elClearMeasureBtn.disabled = true;
+          return;
+        }
+
+        const dxPx = measurement.x1 - measurement.x0;
+        const dyPx = measurement.y1 - measurement.y0;
+        const dtSec = Math.abs(dxPx) / (state.mmPx * state.speed);
+        const dtMs = Math.round(dtSec * 1000);
+        const dV = (-dyPx) / (state.mmPx * state.gain);
+        const dVAbs = Math.round(Math.abs(dV) * 100) / 100;
+        elMeasureReadout.innerHTML = `
+          <div class="measure-kv">
+            <div class="k"><span>Avledning</span><strong>${measurement.lead}</strong></div>
+            <div class="k"><span>Δt</span><strong>${dtMs} ms</strong></div>
+            <div class="k"><span>ΔV</span><strong>${dVAbs} mV</strong></div>
+          </div>
+        `;
+        if (elClearMeasureBtn) elClearMeasureBtn.disabled = false;
+      }
+
+      function clearMeasurement() {
+        measurement = null;
+        updateMeasureReadout();
+        draw();
+      }
+
+      function onCanvasPointerDown(ev) {
+        if (safeText(elMeasureMode?.value) !== "on") return;
+        if (!canvas) return;
+        ev.preventDefault();
+        const rect = canvas.getBoundingClientRect();
+        const x = ev.clientX - rect.left;
+        const y = ev.clientY - rect.top;
+        const hit = findLeadAt(x, y);
+        if (!hit) return;
+        measurement = { lead: hit.lead, x0: x, y0: y, x1: x, y1: y, active: true };
+        updateMeasureReadout();
+        draw();
+      }
+
+      function onCanvasPointerMove(ev) {
+        if (safeText(elMeasureMode?.value) !== "on") return;
+        if (!measurement || !measurement.active) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = ev.clientX - rect.left;
+        const y = ev.clientY - rect.top;
+        measurement.x1 = x;
+        measurement.y1 = y;
+        updateMeasureReadout();
+        draw();
+      }
+
+      function onCanvasPointerUp() {
+        if (!measurement) return;
+        measurement.active = false;
+        updateMeasureReadout();
+        draw();
+      }
+
+      function renderLeadTable() {
+        if (!leadBody) return;
+        leadBody.replaceChildren();
+        const leads = Object.keys(DEFAULTS.leads);
+        for (const lead of leads) {
+          const tr = document.createElement("tr");
+
+          const tdName = document.createElement("td");
+          tdName.textContent = lead;
+
+          const tdScale = document.createElement("td");
+          const scale = document.createElement("input");
+          scale.type = "number";
+          scale.step = "0.05";
+          scale.min = "-2";
+          scale.max = "2";
+          scale.value = String(state.leads[lead].scale);
+          scale.addEventListener("input", () => {
+            state.leads[lead].scale = clamp(Number(scale.value), -2, 2);
+            draw();
+          });
+          tdScale.append(scale);
+
+          const tdInv = document.createElement("td");
+          const inv = document.createElement("input");
+          inv.type = "checkbox";
+          inv.checked = Boolean(state.leads[lead].invert);
+          inv.addEventListener("change", () => {
+            state.leads[lead].invert = Boolean(inv.checked);
+            draw();
+          });
+          tdInv.append(inv);
+
+          const tdSt = document.createElement("td");
+          const st = document.createElement("input");
+          st.type = "number";
+          st.step = "0.05";
+          st.min = "-1";
+          st.max = "1";
+          st.value = String(state.leads[lead].st);
+          st.addEventListener("input", () => {
+            state.leads[lead].st = clamp(Number(st.value), -1, 1);
+            draw();
+          });
+          tdSt.append(st);
+
+          tr.append(tdName, tdScale, tdInv, tdSt);
+          leadBody.append(tr);
+        }
+      }
+
+      function renderPqrstTable() {
+        if (!pqrstBody) return;
+        pqrstBody.replaceChildren();
+        for (const wave of PQRST_ORDER) {
+          const tr = document.createElement("tr");
+
+          const tdName = document.createElement("td");
+          tdName.textContent = wave;
+
+          const tdAmp = document.createElement("td");
+          const amp = document.createElement("input");
+          amp.type = "number";
+          amp.step = "0.01";
+          amp.min = "-2";
+          amp.max = "2";
+          amp.value = String(state.pqrst[wave].amp);
+          amp.addEventListener("input", () => {
+            state.pqrst[wave].amp = clamp(Number(amp.value), -2, 2);
+            draw();
+          });
+          tdAmp.append(amp);
+
+          const tdWidth = document.createElement("td");
+          const width = document.createElement("input");
+          width.type = "number";
+          width.step = "0.001";
+          width.min = "0.001";
+          width.max = "0.2";
+          width.value = String(state.pqrst[wave].width);
+          width.addEventListener("input", () => {
+            state.pqrst[wave].width = clamp(Number(width.value), 0.001, 0.2);
+            draw();
+          });
+          tdWidth.append(width);
+
+          const tdTailAmp = document.createElement("td");
+          const tailAmp = document.createElement("input");
+          tailAmp.type = "number";
+          tailAmp.step = "0.01";
+          tailAmp.min = "-2";
+          tailAmp.max = "2";
+          tailAmp.value = String(Number(state.pqrst?.T?.tailAmp ?? 0));
+          tailAmp.disabled = wave !== "T";
+          tailAmp.addEventListener("input", () => {
+            if (wave !== "T") return;
+            state.pqrst.T.tailAmp = clamp(Number(tailAmp.value), -2, 2);
+            draw();
+          });
+          tdTailAmp.append(tailAmp);
+
+          const tdTailWidth = document.createElement("td");
+          const tailWidth = document.createElement("input");
+          tailWidth.type = "number";
+          tailWidth.step = "0.001";
+          tailWidth.min = "0.001";
+          tailWidth.max = "0.2";
+          tailWidth.value = String(Number(state.pqrst?.T?.tailWidth ?? DEFAULTS.pqrst.T.tailWidth));
+          tailWidth.disabled = wave !== "T";
+          tailWidth.addEventListener("input", () => {
+            if (wave !== "T") return;
+            state.pqrst.T.tailWidth = clamp(Number(tailWidth.value), 0.001, 0.2);
+            draw();
+          });
+          tdTailWidth.append(tailWidth);
+
+          tr.append(tdName, tdAmp, tdWidth, tdTailAmp, tdTailWidth);
+          pqrstBody.append(tr);
+        }
+      }
+
+      function ensureLeadPqrstState(lead) {
+        if (!state.leads[lead]) state.leads[lead] = deepClone(DEFAULTS.leads[lead] || { scale: 1, invert: false, st: 0 });
+        if (!state.leads[lead].pqrst || typeof state.leads[lead].pqrst !== "object") {
+          state.leads[lead].pqrst = {};
+        }
+      }
+
+      function renderLeadPqrst() {
+        if (!leadPqrstWrap) return;
+        leadPqrstWrap.replaceChildren();
+        const leads = Object.keys(DEFAULTS.leads);
+        for (const lead of leads) {
+          ensureLeadPqrstState(lead);
+          const details = document.createElement("details");
+          details.className = "lead-pqrst";
+          const summary = document.createElement("summary");
+          summary.textContent = lead;
+          details.append(summary);
+
+          const inner = document.createElement("div");
+          inner.className = "lead-pqrst-inner";
+
+          const tableWrap = document.createElement("div");
+          tableWrap.className = "lead-table-wrap";
+          const table = document.createElement("table");
+          table.className = "lead-table";
+          const thead = document.createElement("thead");
+          thead.innerHTML =
+            "<tr><th>Våg</th><th>Höjd (mV)</th><th>Bredd</th><th>T-huvud (mV)</th><th>T-huvud bredd</th><th>Aktiv</th></tr>";
+          const tbody = document.createElement("tbody");
+
+          for (const wave of PQRST_ORDER) {
+            const tr = document.createElement("tr");
+
+            const tdWave = document.createElement("td");
+            tdWave.textContent = wave;
+
+            const tdAmp = document.createElement("td");
+            const amp = document.createElement("input");
+            amp.type = "number";
+            amp.step = "0.01";
+            amp.min = "-2";
+            amp.max = "2";
+
+            const tdWidth = document.createElement("td");
+            const width = document.createElement("input");
+            width.type = "number";
+            width.step = "0.001";
+            width.min = "0.001";
+            width.max = "0.2";
+
+            const tdTailAmp = document.createElement("td");
+            const tailAmp = document.createElement("input");
+            tailAmp.type = "number";
+            tailAmp.step = "0.01";
+            tailAmp.min = "-2";
+            tailAmp.max = "2";
+            tailAmp.disabled = wave !== "T";
+
+            const tdTailWidth = document.createElement("td");
+            const tailWidth = document.createElement("input");
+            tailWidth.type = "number";
+            tailWidth.step = "0.001";
+            tailWidth.min = "0.001";
+            tailWidth.max = "0.2";
+            tailWidth.disabled = wave !== "T";
+
+            const tdActive = document.createElement("td");
+            const active = document.createElement("input");
+            active.type = "checkbox";
+            active.checked = Boolean(state.leads[lead].pqrst[wave]);
+
+            const fillInputs = () => {
+              const cfg = state.leads[lead].pqrst[wave];
+              const fallback = getWaveCfg(wave, null);
+              const source = cfg && typeof cfg === "object" ? cfg : fallback;
+              amp.value = String(Number(source.amp));
+              width.value = String(Number(source.width));
+              if (wave === "T") {
+                tailAmp.value = String(Number(source.tailAmp ?? 0));
+                tailWidth.value = String(Number(source.tailWidth ?? DEFAULTS.pqrst.T.tailWidth));
+              }
+              amp.disabled = !active.checked;
+              width.disabled = !active.checked;
+              if (wave === "T") {
+                tailAmp.disabled = !active.checked;
+                tailWidth.disabled = !active.checked;
+              }
+            };
+
+            const writeCfg = () => {
+              if (!active.checked) return;
+              const next = {
+                amp: clamp(Number(amp.value), -2, 2),
+                width: clamp(Number(width.value), 0.001, 0.2),
+              };
+              if (wave === "T") {
+                next.tailAmp = clamp(Number(tailAmp.value), -2, 2);
+                next.tailWidth = clamp(Number(tailWidth.value), 0.001, 0.2);
+              }
+              state.leads[lead].pqrst[wave] = next;
+              draw();
+            };
+
+            active.addEventListener("change", () => {
+              if (active.checked) {
+                const cur = getWaveCfg(wave, null);
+                const next = { amp: Number(cur.amp), width: Number(cur.width) };
+                if (wave === "T") {
+                  next.tailAmp = Number(cur.tailAmp ?? 0);
+                  next.tailWidth = Number(cur.tailWidth ?? DEFAULTS.pqrst.T.tailWidth);
+                }
+                state.leads[lead].pqrst[wave] = next;
+              } else {
+                delete state.leads[lead].pqrst[wave];
+              }
+              fillInputs();
+              draw();
+            });
+            amp.addEventListener("input", writeCfg);
+            width.addEventListener("input", writeCfg);
+            if (wave === "T") {
+              tailAmp.addEventListener("input", writeCfg);
+              tailWidth.addEventListener("input", writeCfg);
+            }
+
+            fillInputs();
+            tdAmp.append(amp);
+            tdWidth.append(width);
+            tdTailAmp.append(tailAmp);
+            tdTailWidth.append(tailWidth);
+            tdActive.append(active);
+            tr.append(tdWave, tdAmp, tdWidth, tdTailAmp, tdTailWidth, tdActive);
+            tbody.append(tr);
+          }
+
+          table.append(thead, tbody);
+          tableWrap.append(table);
+          inner.append(tableWrap);
+          details.append(inner);
+          leadPqrstWrap.append(details);
+        }
+      }
+
+      function download(filename, mime, data) {
+        const blob = new Blob([data], { type: mime });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.append(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function exportJson() {
+        readUiIntoState();
+        const payload = {
+          schema: "ekg-lab.v1",
+          createdAt: new Date().toISOString(),
+          settings: {
+            template: state.template,
+            rhythm: state.rhythm,
+            age: state.age,
+            sex: state.sex,
+            hr: state.hr,
+            speed: state.speed,
+            gain: state.gain,
+            noise: state.noise,
+            wander: state.wander,
+            prMs: state.prMs,
+            qrsMs: state.qrsMs,
+            qtMs: state.qtMs,
+            axisDeg: state.axisDeg,
+            linkAxis: state.linkAxis,
+            showMeasures: state.showMeasures,
+            ectopyType: state.ectopyType,
+            ectopyPerMin: state.ectopyPerMin,
+            ectopyCoupling: state.ectopyCoupling,
+            ectopyPattern: state.ectopyPattern,
+            pqrst: state.pqrst,
+            leads: state.leads,
+          },
+        };
+        download(`ekg-${Date.now()}.json`, "application/json", JSON.stringify(payload, null, 2));
+      }
+
+      function buildPayload() {
+        readUiIntoState();
+        return {
+          schema: "ekg-lab.v1",
+          createdAt: new Date().toISOString(),
+          settings: {
+            template: state.template,
+            rhythm: state.rhythm,
+            age: state.age,
+            sex: state.sex,
+            hr: state.hr,
+            speed: state.speed,
+            gain: state.gain,
+            noise: state.noise,
+            wander: state.wander,
+            prMs: state.prMs,
+            qrsMs: state.qrsMs,
+            qtMs: state.qtMs,
+            axisDeg: state.axisDeg,
+            linkAxis: state.linkAxis,
+            showMeasures: state.showMeasures,
+            ectopyType: state.ectopyType,
+            ectopyPerMin: state.ectopyPerMin,
+            ectopyCoupling: state.ectopyCoupling,
+            ectopyPattern: state.ectopyPattern,
+            pqrst: state.pqrst,
+            leads: state.leads,
+          },
+        };
+      }
+
+      function parseHandoffIntent() {
+        try {
+          const url = new URL(window.location.href);
+          const target = safeText(url.searchParams.get("handoff")).trim();
+          const boxId = safeText(url.searchParams.get("box")).trim();
+          return { target, boxId };
+        } catch {
+          return { target: "", boxId: "" };
+        }
+      }
+
+      function sendToBuilder() {
+        const intent = parseHandoffIntent();
+        const payload = buildPayload();
+        const envelope = {
+          target: intent.target || "case-builder",
+          boxId: intent.boxId || "ekg",
+          payload,
+          savedAt: new Date().toISOString(),
+        };
+        localStorage.setItem(ECG_HANDOFF_KEY, JSON.stringify(envelope));
+        alert("Sparade EKG (JSON) till Case Builder. Byt tillbaka till builder-fliken och klicka Hämta.");
+        try {
+          if (window.opener) window.close();
+        } catch {}
+      }
+
+      function exportPng() {
+        if (!canvas) return;
+        const url = canvas.toDataURL("image/png");
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `ekg-${Date.now()}.png`;
+        document.body.append(a);
+        a.click();
+        a.remove();
+      }
+
+      function reset() {
+        state = deepClone(DEFAULTS);
+        writeStateIntoUi();
+        renderLeadTable();
+        renderPqrstTable();
+        renderLeadPqrst();
+        draw();
+      }
+
+      function isFullscreenActive() {
+        return (
+          Boolean(document.fullscreenElement) ||
+          document.body.classList.contains("ecg-fs") ||
+          previewPanel?.classList.contains("ecg-fs")
+        );
+      }
+
+      function updateFullScreenUi() {
+        const active = isFullscreenActive();
+        if (elFullScreen) elFullScreen.textContent = active ? "Avsluta helskärm" : "Helskärm";
+        if (elExitFullScreen) elExitFullScreen.hidden = !active;
+      }
+
+      async function toggleFullscreen() {
+        if (!previewPanel) return;
+
+        if (document.fullscreenEnabled) {
+          if (document.fullscreenElement) {
+            await document.exitFullscreen();
+          } else {
+            await previewPanel.requestFullscreen();
+          }
+          return;
+        }
+
+        // Fallback (no Fullscreen API)
+        previewPanel.classList.toggle("ecg-fs");
+        document.body.classList.toggle("ecg-fs", previewPanel.classList.contains("ecg-fs"));
+        updateFullScreenUi();
+        fitCanvasToContainer();
+        draw();
+      }
+
+      function init() {
+        writeStateIntoUi();
+        // Load template list from project folder (falls back to built-ins)
+        loadTemplateIndex().finally(() => {
+          writeStateIntoUi();
+        });
+        renderLeadTable();
+        renderPqrstTable();
+        renderLeadPqrst();
+        fitCanvasToContainer();
+        draw();
+
+        const onAnyChange = () => draw();
+        for (const el of [
+          elTemplate,
+          elRhythm,
+          elAge,
+          elSex,
+          elHr,
+          elSpeed,
+          elGain,
+          elNoise,
+          elWander,
+          elPrMs,
+          elQrsMs,
+          elQtMs,
+          elAxisDeg,
+          elLinkAxis,
+          elShowMeasures,
+          elEctopyType,
+          elEctopyPerMin,
+          elEctopyCoupling,
+          elEctopyPattern,
+        ]) {
+          if (!el) continue;
+          el.addEventListener("input", onAnyChange);
+          el.addEventListener("change", onAnyChange);
+        }
+
+        if (elTemplate) {
+          elTemplate.addEventListener("change", () => {
+            const id = safeText(elTemplate.value).trim();
+            if (!id) return;
+            void applyTemplate(id);
+          });
+        }
+        if (elReset) elReset.addEventListener("click", reset);
+        if (elExportJson) elExportJson.addEventListener("click", exportJson);
+        if (elExportPng) elExportPng.addEventListener("click", exportPng);
+        if (elFullScreen) elFullScreen.addEventListener("click", () => toggleFullscreen());
+        if (elExitFullScreen) elExitFullScreen.addEventListener("click", () => toggleFullscreen());
+        if (elSendToBuilder) elSendToBuilder.addEventListener("click", sendToBuilder);
+
+        const intent = parseHandoffIntent();
+        if (elSendToBuilder) elSendToBuilder.hidden = intent.target !== "case-builder";
+
+        if (canvas) canvas.addEventListener("click", onCanvasClick);
+        if (canvas) {
+          canvas.addEventListener("pointerdown", onCanvasPointerDown);
+          canvas.addEventListener("pointermove", onCanvasPointerMove);
+          window.addEventListener("pointerup", onCanvasPointerUp);
+          canvas.style.touchAction = "none";
+        }
+        if (elSelAmp) elSelAmp.addEventListener("input", applySelectedInputs);
+        if (elSelWidth) elSelWidth.addEventListener("input", applySelectedInputs);
+        if (elSelTHeadAmp) elSelTHeadAmp.addEventListener("input", applySelectedInputs);
+        if (elSelTHeadWidth) elSelTHeadWidth.addEventListener("input", applySelectedInputs);
+        if (elClearSelected) elClearSelected.addEventListener("click", clearSelectedOverride);
+        if (elClearMeasureBtn) elClearMeasureBtn.addEventListener("click", clearMeasurement);
+        setSelected(null);
+        clearMeasurement();
+
+        document.addEventListener("fullscreenchange", () => {
+          updateFullScreenUi();
+          fitCanvasToContainer();
+          draw();
+        });
+
+        window.addEventListener("resize", () => {
+          fitCanvasToContainer();
+          draw();
+        });
+
+        updateFullScreenUi();
+      }
+
+      init();
+    </script>
+  </body>
+</html>

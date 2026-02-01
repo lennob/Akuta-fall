@@ -1,0 +1,564 @@
+{
+  "schemaVersion": 3,
+  "title": "MIN MORFAR MÅR INTE BRA",
+  "caseText": "Jag tog precis med min morfar till akuten och dom la honom i en maskin och hans ECG visar att han kanske inte mår så bra. Kan läkaren kika på den och se om han kanske är döende?",
+  "boxes": {
+    "oversikt": {
+      "label": "översikt",
+      "image": null,
+      "ecg": null,
+      "subboxes": [
+        {
+          "name": "Skyddskläder, handskar, förkläde.",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersök tecken till hjärtstopp",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Tecken till katastrofal blödning",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "airway": {
+      "label": "airway",
+      "image": null,
+      "ecg": null,
+      "subboxes": [
+        {
+          "name": "Inspektera ansikte",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Inspektera hals",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Inspektera munnen och svalg med ficklampa",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Lyssna på andning",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "breathing": {
+      "label": "breathing",
+      "image": null,
+      "ecg": null,
+      "subboxes": [
+        {
+          "name": "Beräkna och bedöm andningsfrekvens",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Bedöm saturation (%)",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Inspektion av bröstkorg, avseende symmetriska andningsrörelser, synliga skador",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Auskultation över lungfälten",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Palpation av bröstkorgen",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "circulation": {
+      "label": "circulation",
+      "image": null,
+      "ecg": null,
+      "subboxes": [
+        {
+          "name": "Bestäm hjärtfrekvens",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Bestäm blodtryck",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Bestäm kapillär återfyllnadstid",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Bedömning av perifera pulsationer bilateralt",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Bedömning av perifer cirkulation",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Palpation av buk, becken och lårben",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Ordination av venösa infarter",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Ordination av blodgas ± glukos",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "disability": {
+      "label": "disability",
+      "image": null,
+      "ecg": null,
+      "subboxes": [
+        {
+          "name": "Bedömning av medvetandegrad (RLS/GCS)",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersökning av ögon",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersökning av grov kraft i armar och ben",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersökning av sensorik armar och ben",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Ordination av kapillär glukos",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "exposure": {
+      "label": "exposure",
+      "image": null,
+      "ecg": null,
+      "subboxes": [
+        {
+          "name": "bestämning av kroppstemperatur",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "inspektion av kroppens fram- och baksida",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "blodgas": {
+      "label": "blodgas",
+      "image": null,
+      "ecg": null,
+      "subboxes": [
+        {
+          "name": "Undersöker och tolkar acidemi/alkalemi",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Respiratorisk/metabol genes, kompensation",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Övriga värden (Na, K, Hb, Cl, Ca, glukos, laktat, FCOHb",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "ekg": {
+      "label": "ekg",
+      "image": null,
+      "ecg": {
+        "schema": "ekg-lab.v1",
+        "createdAt": "2026-01-27T18:38:20.432Z",
+        "settings": {
+          "rhythm": "MORFARS HJÄRTA",
+          "age": 130,
+          "sex": "man",
+          "hr": 185,
+          "speed": 50,
+          "gain": 10,
+          "noise": 0.03,
+          "wander": 0.06,
+          "pqrst": {
+            "P": {
+              "amp": 0.12,
+              "width": 0.03
+            },
+            "Q": {
+              "amp": -0.15,
+              "width": 0.008
+            },
+            "R": {
+              "amp": 1,
+              "width": 0.006
+            },
+            "S": {
+              "amp": -0.25,
+              "width": 0.01
+            },
+            "T": {
+              "amp": 0.35,
+              "width": 0.06,
+              "tailAmp": 0,
+              "tailWidth": 0.05
+            }
+          },
+          "leads": {
+            "aVL": {
+              "scale": 0.55,
+              "invert": false,
+              "st": 0,
+              "pqrst": {
+                "T": {
+                  "amp": 0.35,
+                  "width": 0.06,
+                  "tailAmp": 2,
+                  "tailWidth": 0.2
+                }
+              }
+            },
+            "I": {
+              "scale": 0.9,
+              "invert": false,
+              "st": 0,
+              "pqrst": {}
+            },
+            "-aVR": {
+              "scale": 0.7,
+              "invert": false,
+              "st": 0,
+              "pqrst": {}
+            },
+            "II": {
+              "scale": 1.1,
+              "invert": false,
+              "st": 0,
+              "pqrst": {}
+            },
+            "aVF": {
+              "scale": 0.75,
+              "invert": false,
+              "st": 0,
+              "pqrst": {}
+            },
+            "III": {
+              "scale": 0.45,
+              "invert": false,
+              "st": 0,
+              "pqrst": {}
+            },
+            "V1": {
+              "scale": 0.7,
+              "invert": true,
+              "st": 0,
+              "pqrst": {}
+            },
+            "V2": {
+              "scale": 0.8,
+              "invert": true,
+              "st": 0,
+              "pqrst": {}
+            },
+            "V3": {
+              "scale": 0.95,
+              "invert": false,
+              "st": 0,
+              "pqrst": {}
+            },
+            "V4": {
+              "scale": 1.15,
+              "invert": false,
+              "st": 0,
+              "pqrst": {}
+            },
+            "V5": {
+              "scale": 1,
+              "invert": false,
+              "st": 0,
+              "pqrst": {}
+            },
+            "V6": {
+              "scale": 0.85,
+              "invert": false,
+              "st": 0,
+              "pqrst": {}
+            }
+          }
+        }
+      },
+      "subboxes": [
+        {
+          "name": "Frekvens",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Rytm",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "QRS",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "STT-sträcka",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "QT-tid",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "handlaggning": {
+      "label": "handläggning",
+      "image": null,
+      "ecg": null,
+      "subboxes": [
+        {
+          "name": "Bedömer behov av riktad klinisk undersökning (Ultraljud, PR, Nackstelhet)",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Initierar adekvat behandling",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Re-evaluerar (Övervakar och utvärderar effekter av åtgärder)",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "signout": {
+      "label": "signout",
+      "image": null,
+      "ecg": null,
+      "subboxes": [
+        {
+          "name": "Formulerar arbetsdiagnos",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Planerar vidare behandling",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Bedömer övervakningsbehov och vårdnivå",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    }
+  }
+}

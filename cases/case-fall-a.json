@@ -1,0 +1,245 @@
+{
+  "schemaVersion": 1,
+  "title": "Fall A",
+  "caseText": "S: 56 år man, hittad medvetslös hemma.\nB:  DM1. Vältränad.\nA: Varit lite förkyld senaste tiden men har ändå gett sig ut för en löptur då han tränar inför Iron Man. Nu hittad medvetslös hemma av sin fru som kallat på ambulans. Får syrgas 5 liter på grimma.",
+  "boxes": {
+    "oversikt": {
+      "label": "översikt",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "skyddskläder, handskar, förkläde.",
+          "specialCase": ""
+        },
+        {
+          "name": "undersök tecken till hjärtstopp",
+          "specialCase": ""
+        },
+        {
+          "name": "tecken till katastrofal blödning",
+          "specialCase": ""
+        }
+      ]
+    },
+    "airway": {
+      "label": "airway",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "Inspektera ansikte",
+          "specialCase": ""
+        },
+        {
+          "name": "Inspektera hals",
+          "specialCase": ""
+        },
+        {
+          "name": "inspektera munnen och svalg med ficklampa",
+          "specialCase": ""
+        },
+        {
+          "name": "Lyssna på andning",
+          "specialCase": "Förlängt inspirium, stridor, snarkande andning (studenten gör ett manuellt haklyft/käklyft och ger patient svalgtub/näskantarell)"
+        }
+      ]
+    },
+    "breathing": {
+      "label": "breathing",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "breathing",
+          "specialCase": ""
+        },
+        {
+          "name": "beräkna och bedöm andningsfrekvens",
+          "specialCase": "AF 18"
+        },
+        {
+          "name": "Bedöm saturation (%)",
+          "specialCase": "Sat 95% på 5 L/min med grimma (student ska byta till oxymask >10L syrgas)"
+        },
+        {
+          "name": "inspektion av bröstkorg, avseende symmetriska andningsrörelser, synliga skador",
+          "specialCase": ""
+        },
+        {
+          "name": "Auskultation över lungfälten",
+          "specialCase": "Svaga andingsljud bilateralt"
+        },
+        {
+          "name": "Palpation av bröstkorgen",
+          "specialCase": ""
+        }
+      ]
+    },
+    "circulation": {
+      "label": "circulation",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "Bestäm hjärtfrekvens",
+          "specialCase": "Puls 100/min"
+        },
+        {
+          "name": "bestäm blodtryck",
+          "specialCase": "BP 140/80"
+        },
+        {
+          "name": "bestäm kapillär återfyllnadstid",
+          "specialCase": "Kapillär återfyllnad 2 sek"
+        },
+        {
+          "name": "bedömning av perifera pulsationer bilaturalt",
+          "specialCase": ""
+        },
+        {
+          "name": "bedömning av perifer cirkulation",
+          "specialCase": "Kall, blek, fuktig hud"
+        },
+        {
+          "name": "Palpation av buk, becken och lårben",
+          "specialCase": ""
+        },
+        {
+          "name": "ordination av venösa infarter",
+          "specialCase": ""
+        },
+        {
+          "name": "ordination av blodgas ± glukos",
+          "specialCase": ""
+        }
+      ]
+    },
+    "disability": {
+      "label": "disability",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "bedömning av medvetandegrad (RLS/GCS)",
+          "specialCase": "RLS 8/GCS 3 (studenten ska ha smärtstimulerat för att komma fram till detta)"
+        },
+        {
+          "name": "undersökning av ögon",
+          "specialCase": "Pupiller ua, ljusreagerande, centrerade"
+        },
+        {
+          "name": "undersökning av grov kraft i armar och ben",
+          "specialCase": ""
+        },
+        {
+          "name": "undersökning av sensorik armar och ben",
+          "specialCase": ""
+        },
+        {
+          "name": "ordination av kapillär glukos",
+          "specialCase": "1,6 mmol/L"
+        }
+      ]
+    },
+    "exposure": {
+      "label": "exposure",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "bestämning av kroppstemperatur",
+          "specialCase": "Temp 35,2 (studenten ska ordinera varma täcken)"
+        },
+        {
+          "name": "inspektion av kroppens fram- och baksida",
+          "specialCase": "Kall, blek"
+        }
+      ]
+    },
+    "blodgas": {
+      "label": "blodgas",
+      "image": {
+        "filename": "fall-a-blodgas-image-1-jpg",
+        "suggestedPath": "assets/blodgas/fall-a-blodgas-image-1-jpg",
+        "originalName": "image (1).jpg",
+        "mime": "image/jpeg"
+      },
+      "subboxes": [
+        {
+          "name": "Undersöker och tolkar acidemi/alkalemi",
+          "specialCase": ""
+        },
+        {
+          "name": "Respiratorisk/metabol genes, kompensation",
+          "specialCase": ""
+        },
+        {
+          "name": "Övriga värden (Na, K, Hb, Cl, Ca, glukos, laktat, FCOHb",
+          "specialCase": "Lågt glukos, måttligt stegrat laktat (studenten ska ordinera 30 ml 30% glukos intravenöst)"
+        }
+      ]
+    },
+    "ekg": {
+      "label": "ekg",
+      "image": {
+        "filename": "fall-a-ekg-image-jpg",
+        "suggestedPath": "assets/ekg/fall-a-ekg-image-jpg",
+        "originalName": "image.jpg",
+        "mime": "image/jpeg"
+      },
+      "subboxes": [
+        {
+          "name": "Frekvens",
+          "specialCase": ""
+        },
+        {
+          "name": "Rytm",
+          "specialCase": ""
+        },
+        {
+          "name": "QRS",
+          "specialCase": ""
+        },
+        {
+          "name": "STT-sträcka",
+          "specialCase": ""
+        },
+        {
+          "name": "QT-tid",
+          "specialCase": ""
+        }
+      ]
+    },
+    "handlaggning": {
+      "label": "handläggning",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "Bedömer behov av riktad klinisk undersökning (Ultraljud, PR, Nackstelhet)",
+          "specialCase": ""
+        },
+        {
+          "name": "Initierar adekvat behandling",
+          "specialCase": "30 ml 30% glukos, första dosen kommer inte ha effekt - Vid andra dosen 30ml 30% glukos vaknar patienten med RLS 3"
+        },
+        {
+          "name": "Re-evaluerar (Övervakar och utvärderar effekter av åtgärder)",
+          "specialCase": "Studenten ska reevaluera A-E när glukos gett effekt"
+        }
+      ]
+    },
+    "signout": {
+      "label": "signout",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "Formulerar arbetsdiagnos",
+          "specialCase": "Hypoglykemi"
+        },
+        {
+          "name": "Planerar vidare behandling",
+          "specialCase": "Nya prover av glukos"
+        },
+        {
+          "name": "Bedömer övervakningsbehov och vårdnivå",
+          "specialCase": "Kan läggas in på övervakningsenheten på akutmottagningen"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "ekg-template.v1",
+  "id": "vt",
+  "label": "Ventrikeltakykardi",
+  "patch": {
+    "template": "vt",
+    "rhythm": "Ventrikeltakykardi",
+    "hr": 160,
+    "prMs": 80,
+    "qrsMs": 160,
+    "qtMs": 420,
+    "axisDeg": -60,
+    "linkAxis": "off",
+    "pqrst": {
+      "P": { "amp": 0.0, "width": 0.03 },
+      "Q": { "amp": -0.05, "width": 0.008 },
+      "R": { "amp": 1.2, "width": 0.006 },
+      "S": { "amp": -0.35, "width": 0.01 },
+      "T": { "amp": 0.15, "width": 0.06, "tailAmp": 0.0, "tailWidth": 0.05 }
+    },
+    "leads": {
+      "aVL": { "scale": 1.0, "invert": false, "st": 0 },
+      "I": { "scale": 1.0, "invert": false, "st": 0 },
+      "-aVR": { "scale": 1.0, "invert": false, "st": 0 },
+      "II": { "scale": 1.0, "invert": false, "st": 0 },
+      "aVF": { "scale": 1.0, "invert": false, "st": 0 },
+      "III": { "scale": 1.0, "invert": false, "st": 0 },
+      "V1": { "scale": 0.7, "invert": true, "st": 0 },
+      "V2": { "scale": 0.8, "invert": true, "st": 0 },
+      "V3": { "scale": 0.95, "invert": false, "st": 0 },
+      "V4": { "scale": 1.15, "invert": false, "st": 0 },
+      "V5": { "scale": 1.0, "invert": false, "st": 0 },
+      "V6": { "scale": 0.85, "invert": false, "st": 0 }
+    }
+  }
+}
+

@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Blodgas-labb • Akuta fall</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="blodgas-lab">
+    <div class="page">
+      <header>
+        <h1>Akuta fall</h1>
+        <p>Blodgas-labb (experiment)</p>
+      </header>
+
+      <main class="card">
+        <div class="bg-wrap">
+          <div class="bg-top">
+            <div class="bg-controls panel">
+              <h2 class="panel-title">Inställningar</h2>
+
+              <div class="bg-controls-grid">
+                <label class="field">
+                  <span>Baro (kPa)</span>
+                  <input id="baroKpa" type="number" step="0.1" min="80" max="120" value="101.3" />
+                </label>
+                <label class="field">
+                  <span>Kommentar</span>
+                  <input id="comment" type="text" value="" placeholder="t.ex. venös/arteriell, syrgas, etc." />
+                </label>
+              </div>
+
+              <details class="bg-advanced" open>
+                <summary>Värden</summary>
+                <div id="sections"></div>
+              </details>
+
+              <details class="bg-advanced">
+                <summary>Avancerat</summary>
+                <div class="bg-controls-grid">
+                  <label class="field">
+                    <span>Visa referensintervall</span>
+                    <select id="showRef">
+                      <option value="on" selected>På</option>
+                      <option value="off">Av</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>Redigera mall (namn/enhet/ref)</span>
+                    <select id="editTemplate">
+                      <option value="off" selected>Av</option>
+                      <option value="on">På</option>
+                    </select>
+                  </label>
+                </div>
+                <p class="status">
+                  Tips: i normalt läge ändrar du bara värden. Slå på “Redigera mall” om du vill ändra enheter/ref eller lägga till rader.
+                </p>
+              </details>
+
+              <div class="bg-actions">
+                <button type="button" class="btn-secondary" id="resetBtn">Återställ</button>
+                <button type="button" class="btn-secondary" id="exportJsonBtn">Exportera JSON</button>
+                <button type="button" class="btn-primary" id="sendToBuilderBtn" hidden>Skicka till Case Builder</button>
+                <a class="btn-secondary" href="./compendium.html">Kompendium</a>
+              </div>
+              <p class="status" id="status"></p>
+            </div>
+
+            <div class="bg-preview panel" id="previewPanel">
+              <h2 class="panel-title">Förhandsvisning</h2>
+              <div class="bg-paper" id="paper"></div>
+              <p class="status">
+                Exportera som JSON och spara i ditt case (precis som EKG). Detta är en tabellgenerator för att snabbt göra “kvitto”-liknande blodgasutskrifter.
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const BG_HANDOFF_KEY = "lenny.blodgasLab.handoff.v1";
+
+      function safeText(v) {
+        return String(v ?? "");
+      }
+
+      function clamp(n, a, b) {
+        return Math.max(a, Math.min(b, n));
+      }
+
+      function deepClone(obj) {
+        return JSON.parse(JSON.stringify(obj));
+      }
+
+      const DEFAULT_TEMPLATE = {
+        schema: "blodgas-lab.v1",
+        createdAt: null,
+        settings: {
+          baroKpa: 101.3,
+          comment: "",
+          showRef: "on",
+          editTemplate: "off",
+        },
+        sections: [
+          {
+            id: "calc",
+            label: "Beräknade värden",
+            rows: [
+              { id: "chco3st", name: "cHCO₃⁻ (P,st)c", value: "", unit: "mmol/L", refLow: 22.0, refHigh: 27.0 },
+              { id: "chco3", name: "cHCO₃⁻ (P)c", value: "", unit: "mmol/L", refLow: 22.0, refHigh: 26.0 },
+              { id: "abec", name: "ABEc", value: "", unit: "mmol/L", refLow: -3.0, refHigh: 3.0 },
+              { id: "p50c", name: "p50c", value: "", unit: "kPa", refLow: 3.3, refHigh: 3.9 },
+            ],
+          },
+          {
+            id: "abg",
+            label: "Blodgasvärden",
+            rows: [
+              { id: "ph", name: "pH", value: "", unit: "", refLow: null, refHigh: null },
+              { id: "pco2", name: "pCO₂", value: "", unit: "kPa", refLow: null, refHigh: null },
+              { id: "po2", name: "pO₂", value: "", unit: "kPa", refLow: null, refHigh: null },
+              { id: "so2", name: "sO₂", value: "", unit: "%", refLow: null, refHigh: null },
+            ],
+          },
+          {
+            id: "elec",
+            label: "Elektrolytvärden",
+            rows: [
+              { id: "na", name: "cNa⁺", value: "", unit: "mmol/L", refLow: 137.0, refHigh: 145.0 },
+              { id: "k", name: "cK⁺", value: "", unit: "mmol/L", refLow: 3.2, refHigh: 4.2 },
+              { id: "cl", name: "cCl⁻", value: "", unit: "mmol/L", refLow: 98.0, refHigh: 106.0 },
+              { id: "ca", name: "cCa²⁺", value: "", unit: "mmol/L", refLow: null, refHigh: null },
+              { id: "ca74", name: "cCa²⁺(7.4)c", value: "", unit: "mmol/L", refLow: 1.16, refHigh: 1.35 },
+            ],
+          },
+          {
+            id: "met",
+            label: "Metabolitvärden",
+            rows: [
+              { id: "glu", name: "cGlu", value: "", unit: "mmol/L", refLow: 4.2, refHigh: 6.3 },
+              { id: "lac", name: "cLac", value: "", unit: "mmol/L", refLow: 0.5, refHigh: 1.6 },
+            ],
+          },
+          {
+            id: "ox",
+            label: "Oximetervärden",
+            rows: [
+              { id: "hb", name: "ctHb", value: "", unit: "g/L", refLow: null, refHigh: null },
+              { id: "fo2", name: "FO₂Hb", value: "", unit: "%", refLow: 95.0, refHigh: 99.0 },
+              { id: "fco", name: "FCOHb", value: "", unit: "%", refLow: 0.5, refHigh: 2.5 },
+              { id: "fhhb", name: "FHHb", value: "", unit: "%", refLow: 1.0, refHigh: 5.0 },
+              { id: "fmet", name: "FMetHb", value: "", unit: "%", refLow: 0.4, refHigh: 1.5 },
+            ],
+          },
+        ],
+      };
+
+      const elBaro = document.getElementById("baroKpa");
+      const elComment = document.getElementById("comment");
+      const elShowRef = document.getElementById("showRef");
+      const elEditTemplate = document.getElementById("editTemplate");
+      const elSections = document.getElementById("sections");
+      const elPaper = document.getElementById("paper");
+      const elStatus = document.getElementById("status");
+      const elReset = document.getElementById("resetBtn");
+      const elExport = document.getElementById("exportJsonBtn");
+      const elSend = document.getElementById("sendToBuilderBtn");
+
+      let state = deepClone(DEFAULT_TEMPLATE);
+
+      function parseNum(v) {
+        const s = safeText(v).trim().replace(",", ".");
+        if (!s) return null;
+        const n = Number(s);
+        return Number.isFinite(n) ? n : null;
+      }
+
+      function formatNum(n, digits = 1) {
+        if (n === null || n === undefined) return "";
+        if (!Number.isFinite(Number(n))) return safeText(n);
+        const x = Number(n);
+        const d = Math.abs(x) >= 10 ? 0 : digits;
+        return x.toFixed(d).replace(".", ",");
+      }
+
+      function computeFlag(value, low, high) {
+        const v = parseNum(value);
+        const lo = low === null || low === undefined ? null : Number(low);
+        const hi = high === null || high === undefined ? null : Number(high);
+        if (v === null || lo === null || hi === null || !Number.isFinite(lo) || !Number.isFinite(hi)) return "";
+        if (v < lo) return "down";
+        if (v > hi) return "up";
+        return "";
+      }
+
+      function getIntent() {
+        try {
+          const url = new URL(window.location.href);
+          const target = safeText(url.searchParams.get("handoff")).trim();
+          const boxId = safeText(url.searchParams.get("box")).trim();
+          return { target, boxId };
+        } catch {
+          return { target: "", boxId: "" };
+        }
+      }
+
+      function readUi() {
+        state.settings.baroKpa = clamp(Number(elBaro?.value || 101.3), 80, 120);
+        state.settings.comment = safeText(elComment?.value || "");
+        state.settings.showRef = safeText(elShowRef?.value || "on") === "off" ? "off" : "on";
+        state.settings.editTemplate = safeText(elEditTemplate?.value || "off") === "on" ? "on" : "off";
+      }
+
+      function writeUi() {
+        if (elBaro) elBaro.value = String(state.settings.baroKpa ?? 101.3);
+        if (elComment) elComment.value = safeText(state.settings.comment || "");
+        if (elShowRef) elShowRef.value = state.settings.showRef || "on";
+        if (elEditTemplate) elEditTemplate.value = state.settings.editTemplate || "off";
+      }
+
+      function setStatus(msg) {
+        if (!elStatus) return;
+        elStatus.textContent = safeText(msg);
+      }
+
+      function addRow(sectionId) {
+        const sec = state.sections.find((s) => s.id === sectionId);
+        if (!sec) return;
+        sec.rows.push({
+          id: `row-${Date.now()}`,
+          name: "Ny rad",
+          value: "",
+          unit: "",
+          refLow: null,
+          refHigh: null,
+        });
+        render();
+      }
+
+      function removeRow(sectionId, rowId) {
+        const sec = state.sections.find((s) => s.id === sectionId);
+        if (!sec) return;
+        sec.rows = sec.rows.filter((r) => r.id !== rowId);
+        render();
+      }
+
+      function renderControls() {
+        if (!elSections) return;
+        readUi();
+        const editable = state.settings.editTemplate === "on";
+
+        elSections.innerHTML = "";
+        for (const sec of state.sections) {
+          const details = document.createElement("details");
+          details.className = "bg-section";
+          details.open = true;
+
+          const summary = document.createElement("summary");
+          summary.textContent = sec.label;
+          details.appendChild(summary);
+
+          const table = document.createElement("table");
+          table.className = "bg-edit-table";
+          const thead = document.createElement("thead");
+          thead.innerHTML = `
+            <tr>
+              <th>Parameter</th>
+              <th>Värde</th>
+              <th>Enhet</th>
+              <th class="only-advanced">Ref låg</th>
+              <th class="only-advanced">Ref hög</th>
+              <th class="only-advanced"></th>
+            </tr>
+          `;
+          table.appendChild(thead);
+
+          const tbody = document.createElement("tbody");
+          for (const row of sec.rows) {
+            const tr = document.createElement("tr");
+
+            const tdName = document.createElement("td");
+            if (editable) {
+              const inp = document.createElement("input");
+              inp.type = "text";
+              inp.value = safeText(row.name);
+              inp.addEventListener("input", () => {
+                row.name = safeText(inp.value);
+                renderPreview();
+              });
+              tdName.appendChild(inp);
+            } else {
+              tdName.textContent = safeText(row.name);
+            }
+
+            const tdVal = document.createElement("td");
+            const val = document.createElement("input");
+            val.type = "text";
+            val.inputMode = "decimal";
+            val.placeholder = "—";
+            val.value = safeText(row.value);
+            val.addEventListener("input", () => {
+              row.value = safeText(val.value);
+              renderPreview();
+            });
+            tdVal.appendChild(val);
+
+            const tdUnit = document.createElement("td");
+            if (editable) {
+              const inp = document.createElement("input");
+              inp.type = "text";
+              inp.value = safeText(row.unit);
+              inp.addEventListener("input", () => {
+                row.unit = safeText(inp.value);
+                renderPreview();
+              });
+              tdUnit.appendChild(inp);
+            } else {
+              tdUnit.textContent = safeText(row.unit);
+            }
+
+            const tdLo = document.createElement("td");
+            tdLo.className = "only-advanced";
+            const lo = document.createElement("input");
+            lo.type = "text";
+            lo.value = row.refLow === null || row.refLow === undefined ? "" : String(row.refLow).replace(".", ",");
+            lo.addEventListener("input", () => {
+              row.refLow = parseNum(lo.value);
+              renderPreview();
+            });
+            tdLo.appendChild(lo);
+
+            const tdHi = document.createElement("td");
+            tdHi.className = "only-advanced";
+            const hi = document.createElement("input");
+            hi.type = "text";
+            hi.value = row.refHigh === null || row.refHigh === undefined ? "" : String(row.refHigh).replace(".", ",");
+            hi.addEventListener("input", () => {
+              row.refHigh = parseNum(hi.value);
+              renderPreview();
+            });
+            tdHi.appendChild(hi);
+
+            const tdDel = document.createElement("td");
+            tdDel.className = "only-advanced";
+            const del = document.createElement("button");
+            del.type = "button";
+            del.className = "btn-secondary btn-xs";
+            del.textContent = "Ta bort";
+            del.addEventListener("click", () => removeRow(sec.id, row.id));
+            tdDel.appendChild(del);
+
+            tr.append(tdName, tdVal, tdUnit, tdLo, tdHi, tdDel);
+            tbody.appendChild(tr);
+          }
+          table.appendChild(tbody);
+          details.appendChild(table);
+
+          if (editable) {
+            const add = document.createElement("button");
+            add.type = "button";
+            add.className = "btn-secondary btn-xs";
+            add.textContent = "Lägg till rad";
+            add.addEventListener("click", () => addRow(sec.id));
+            details.appendChild(add);
+          }
+
+          elSections.appendChild(details);
+        }
+
+        // Hide advanced columns when not editing template
+        for (const el of elSections.querySelectorAll(".only-advanced")) {
+          el.style.display = editable ? "" : "none";
+        }
+      }
+
+      function renderPreview() {
+        if (!elPaper) return;
+        readUi();
+        const showRef = state.settings.showRef !== "off";
+
+        const wrap = document.createElement("div");
+        wrap.className = "bg-report";
+
+        const header = document.createElement("div");
+        header.className = "bg-header";
+        header.innerHTML = `
+          <div class="bg-header-left">
+            <div class="bg-kv"><span>Baro.</span><strong>${formatNum(state.settings.baroKpa, 1)}</strong><span>kPa</span></div>
+          </div>
+          <div class="bg-header-right">
+            <div class="bg-comment">${safeText(state.settings.comment || "")}</div>
+          </div>
+        `;
+        wrap.appendChild(header);
+
+        const table = document.createElement("table");
+        table.className = "bg-table";
+        const tbody = document.createElement("tbody");
+
+        for (const sec of state.sections) {
+          const secTr = document.createElement("tr");
+          secTr.className = "bg-sec";
+          const td = document.createElement("td");
+          td.colSpan = 4;
+          td.textContent = sec.label;
+          secTr.appendChild(td);
+          tbody.appendChild(secTr);
+
+          for (const row of sec.rows) {
+            const tr = document.createElement("tr");
+            tr.className = "bg-row";
+            const flag = computeFlag(row.value, row.refLow, row.refHigh);
+            const arrow = flag === "up" ? "↑" : flag === "down" ? "↓" : "";
+
+            const nameTd = document.createElement("td");
+            nameTd.className = "bg-name";
+            nameTd.textContent = `${arrow ? arrow + " " : ""}${safeText(row.name)}`;
+
+            const valueTd = document.createElement("td");
+            valueTd.className = "bg-val";
+            const v = parseNum(row.value);
+            valueTd.textContent = v === null ? safeText(row.value || "") : formatNum(v, 2);
+
+            const unitTd = document.createElement("td");
+            unitTd.className = "bg-unit";
+            unitTd.textContent = safeText(row.unit || "");
+
+            const refTd = document.createElement("td");
+            refTd.className = "bg-ref";
+            if (showRef && row.refLow != null && row.refHigh != null) {
+              refTd.textContent = `[ ${formatNum(row.refLow, 2)} - ${formatNum(row.refHigh, 2)} ]`;
+            } else if (showRef) {
+              refTd.textContent = "[ - ]";
+            } else {
+              refTd.textContent = "";
+            }
+
+            tr.append(nameTd, valueTd, unitTd, refTd);
+            tbody.appendChild(tr);
+          }
+        }
+
+        table.appendChild(tbody);
+        wrap.appendChild(table);
+
+        elPaper.innerHTML = "";
+        elPaper.appendChild(wrap);
+      }
+
+      function render() {
+        writeUi();
+        renderControls();
+        renderPreview();
+      }
+
+      function download(filename, mime, text) {
+        const blob = new Blob([text], { type: mime });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function buildPayload() {
+        readUi();
+        return {
+          schema: "blodgas-lab.v1",
+          createdAt: new Date().toISOString(),
+          settings: deepClone(state.settings),
+          sections: deepClone(state.sections),
+        };
+      }
+
+      function exportJson() {
+        const payload = buildPayload();
+        download(`blodgas-${Date.now()}.json`, "application/json", JSON.stringify(payload, null, 2));
+        setStatus("Laddade ner JSON.");
+      }
+
+      function sendToBuilder() {
+        const intent = getIntent();
+        const payload = buildPayload();
+        const envelope = {
+          target: intent.target || "case-builder",
+          boxId: intent.boxId || "blodgas",
+          payload,
+          savedAt: new Date().toISOString(),
+        };
+        localStorage.setItem(BG_HANDOFF_KEY, JSON.stringify(envelope));
+        alert("Sparade blodgas (JSON) till Case Builder. Byt tillbaka till builder-fliken och klicka Hämta.");
+        try {
+          if (window.opener) window.close();
+        } catch {}
+      }
+
+      function reset() {
+        state = deepClone(DEFAULT_TEMPLATE);
+        setStatus("Återställde.");
+        render();
+      }
+
+      function init() {
+        const intent = getIntent();
+        if (elSend) elSend.hidden = intent.target !== "case-builder";
+
+        for (const el of [elBaro, elComment, elShowRef, elEditTemplate]) {
+          if (!el) continue;
+          el.addEventListener("input", render);
+          el.addEventListener("change", render);
+        }
+        if (elReset) elReset.addEventListener("click", reset);
+        if (elExport) elExport.addEventListener("click", exportJson);
+        if (elSend) elSend.addEventListener("click", sendToBuilder);
+
+        render();
+      }
+
+      init();
+    </script>
+  </body>
+</html>
+

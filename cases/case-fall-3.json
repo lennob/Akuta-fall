@@ -1,0 +1,659 @@
+{
+  "schemaVersion": 3,
+  "title": "Fall 3",
+  "caseText": "S: 54-årig kvinna, inlagd på kirurgavdelningen efter en kolecystektomi. Hittad medvetandesänkt i rummet av sköterska\nB: Hypertoni\nA: Patienten har haft svåra postoperativa smärtor och krävt upprepade doser smärtstillande. Hittades nu medvetandesänkt av sköterskan som omedelbart hämtade dig (du är en AT-läkare på avdelningen).",
+  "boxes": {
+    "oversikt": {
+      "label": "översikt",
+      "image": null,
+      "ecg": null,
+      "blodgas": null,
+      "subboxes": [
+        {
+          "name": "Skyddskläder, handskar, förkläde.",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersök tecken till hjärtstopp",
+          "studentAction": "Identiferar frånvaro av hjärtstopp.",
+          "specialCase": "Medvetslös patient. Spontanandas med väsande andning.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Tecken till katastrofal blödning",
+          "studentAction": "",
+          "specialCase": "Inga tecken till katastrofal blödning.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "airway": {
+      "label": "airway",
+      "image": null,
+      "ecg": null,
+      "blodgas": null,
+      "subboxes": [
+        {
+          "name": "Inspektera ansikte",
+          "studentAction": "",
+          "specialCase": "Inga synliga skador på ansikte eller huvud.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Inspektera hals",
+          "studentAction": "",
+          "specialCase": "Inga synliga skador på hals.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Inspektera munnen och svalg med ficklampa",
+          "studentAction": "Studenten ska avlägsna den främmande kroppen med magills tång (INNAN svalgtub läggs ner).",
+          "specialCase": "I svalget ser du en främmande kropp",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true
+        },
+        {
+          "name": "Lyssna på andning",
+          "studentAction": "",
+          "specialCase": "Stridorös andning innan den främmande kroppen avlägsnats. När den tagits bort hörs normala andningsljud.",
+          "tiers": [
+            "basic",
+            "high"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "breathing": {
+      "label": "breathing",
+      "image": null,
+      "ecg": null,
+      "blodgas": null,
+      "subboxes": [
+        {
+          "name": "Beräkna och bedöm andningsfrekvens",
+          "studentAction": "Identifierar hypoventilation. Ordinerar ventilation med Rubens blåsa (10-12 andetag/min).",
+          "specialCase": "AF 8/min",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true
+        },
+        {
+          "name": "Bedöm saturation (%)",
+          "studentAction": "Ordinerar ≥8 L/min syrgas på mask",
+          "specialCase": "86% på luft (efter att den främmande kroppen avlägsnats)",
+          "tiers": [
+            "basic",
+            "high"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Inspektion av bröstkorg, avseende symmetriska andningsrörelser, synliga skador",
+          "studentAction": "",
+          "specialCase": "Liksidiga andningsrörelser. Inga synliga skador.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Auskultation över lungfälten",
+          "studentAction": "",
+          "specialCase": "Svaga andningsljud, basala krepitationer.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Palpation av bröstkorgen",
+          "studentAction": "",
+          "specialCase": "Stabil bröstkorg.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "circulation": {
+      "label": "circulation",
+      "image": null,
+      "ecg": null,
+      "blodgas": null,
+      "subboxes": [
+        {
+          "name": "Bestäm hjärtfrekvens",
+          "studentAction": "",
+          "specialCase": "Hjärtfrekvens 68/min.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Bestäm blodtryck",
+          "studentAction": "",
+          "specialCase": "130/80",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Bestäm kapillär återfyllnadstid",
+          "studentAction": "",
+          "specialCase": "Normal kapillär återfyllnad.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Bedömning av perifera pulsationer bilateralt",
+          "studentAction": "",
+          "specialCase": "Tydligt palpabla pulsar i radialis,",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Bedömning av perifer cirkulation",
+          "studentAction": "",
+          "specialCase": "Torr och kall perifert.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Palpation av buk, becken och lårben",
+          "studentAction": "",
+          "specialCase": "Buk/bäcken/lårben u.a.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Ordination av venösa infarter",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Ordination av blodgas ± glukos",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "disability": {
+      "label": "disability",
+      "image": null,
+      "ecg": null,
+      "blodgas": null,
+      "subboxes": [
+        {
+          "name": "Bedömning av medvetandegrad (RLS/GCS)",
+          "studentAction": "Identifierar RLS 4.",
+          "specialCase": "Patienten är medvetslös. Vid smärtstimulering lokaliserar patienten smärtan men avvärjer ej.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersökning av ögon",
+          "studentAction": "",
+          "specialCase": "Pupillerna är miotiska, centrerade och likstora.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersökning av grov kraft i armar och ben",
+          "studentAction": "",
+          "specialCase": "Motorik u.a.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersökning av sensorik armar och ben",
+          "studentAction": "",
+          "specialCase": "Sensorik u.a.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Ordination av kapillär glukos",
+          "studentAction": "",
+          "specialCase": "Normal kapillär glukos",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "exposure": {
+      "label": "exposure",
+      "image": null,
+      "ecg": null,
+      "blodgas": null,
+      "subboxes": [
+        {
+          "name": "bestämning av kroppstemperatur",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "inspektion av kroppens fram- och baksida",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "blodgas": {
+      "label": "blodgas",
+      "image": null,
+      "ecg": null,
+      "blodgas": {
+        "schema": "blodgas-lab.v1",
+        "createdAt": "2026-02-01T10:49:20.583Z",
+        "settings": {
+          "baroKpa": 101.3,
+          "comment": "",
+          "showRef": "on",
+          "editTemplate": "off"
+        },
+        "sections": [
+          {
+            "id": "calc",
+            "label": "Beräknade värden",
+            "rows": [
+              {
+                "id": "chco3st",
+                "name": "cHCO₃⁻ (P,st)c",
+                "value": "28",
+                "unit": "mmol/L",
+                "refLow": 22,
+                "refHigh": 27
+              },
+              {
+                "id": "chco3",
+                "name": "cHCO₃⁻ (P)c",
+                "value": "29",
+                "unit": "mmol/L",
+                "refLow": 22,
+                "refHigh": 26
+              },
+              {
+                "id": "abec",
+                "name": "ABEc",
+                "value": "+4",
+                "unit": "mmol/L",
+                "refLow": -3,
+                "refHigh": 3
+              },
+              {
+                "id": "p50c",
+                "name": "p50c",
+                "value": "3,60",
+                "unit": "kPa",
+                "refLow": 3.3,
+                "refHigh": 3.9
+              }
+            ]
+          },
+          {
+            "id": "abg",
+            "label": "Blodgasvärden",
+            "rows": [
+              {
+                "id": "ph",
+                "name": "pH",
+                "value": "7,25",
+                "unit": "",
+                "refLow": null,
+                "refHigh": null
+              },
+              {
+                "id": "pco2",
+                "name": "pCO₂",
+                "value": "8,5",
+                "unit": "kPa",
+                "refLow": null,
+                "refHigh": null
+              },
+              {
+                "id": "po2",
+                "name": "pO₂",
+                "value": "7,0",
+                "unit": "kPa",
+                "refLow": null,
+                "refHigh": null
+              },
+              {
+                "id": "so2",
+                "name": "sO₂",
+                "value": "88",
+                "unit": "%",
+                "refLow": null,
+                "refHigh": null
+              }
+            ]
+          },
+          {
+            "id": "elec",
+            "label": "Elektrolytvärden",
+            "rows": [
+              {
+                "id": "na",
+                "name": "cNa⁺",
+                "value": "140",
+                "unit": "mmol/L",
+                "refLow": 137,
+                "refHigh": 145
+              },
+              {
+                "id": "k",
+                "name": "cK⁺",
+                "value": "4,2",
+                "unit": "mmol/L",
+                "refLow": 3.2,
+                "refHigh": 4.2
+              },
+              {
+                "id": "cl",
+                "name": "cCl⁻",
+                "value": "102",
+                "unit": "mmol/L",
+                "refLow": 98,
+                "refHigh": 106
+              },
+              {
+                "id": "ca",
+                "name": "cCa²⁺",
+                "value": "1,20",
+                "unit": "mmol/L",
+                "refLow": null,
+                "refHigh": null
+              },
+              {
+                "id": "ca74",
+                "name": "cCa²⁺(7.4)c",
+                "value": "1,18",
+                "unit": "mmol/L",
+                "refLow": 1.16,
+                "refHigh": 1.35
+              }
+            ]
+          },
+          {
+            "id": "met",
+            "label": "Metabolitvärden",
+            "rows": [
+              {
+                "id": "glu",
+                "name": "cGlu",
+                "value": "5,8",
+                "unit": "mmol/L",
+                "refLow": 4.2,
+                "refHigh": 6.3
+              },
+              {
+                "id": "lac",
+                "name": "cLac",
+                "value": "1,2",
+                "unit": "mmol/L",
+                "refLow": 0.5,
+                "refHigh": 1.6
+              }
+            ]
+          },
+          {
+            "id": "ox",
+            "label": "Oximetervärden",
+            "rows": [
+              {
+                "id": "hb",
+                "name": "ctHb",
+                "value": "110",
+                "unit": "g/L",
+                "refLow": null,
+                "refHigh": null
+              },
+              {
+                "id": "fo2",
+                "name": "FO₂Hb",
+                "value": "88",
+                "unit": "%",
+                "refLow": 95,
+                "refHigh": 99
+              },
+              {
+                "id": "fco",
+                "name": "FCOHb",
+                "value": "1,0",
+                "unit": "%",
+                "refLow": 0.5,
+                "refHigh": 2.5
+              },
+              {
+                "id": "fhhb",
+                "name": "FHHb",
+                "value": "11",
+                "unit": "%",
+                "refLow": 1,
+                "refHigh": 5
+              },
+              {
+                "id": "fmet",
+                "name": "FMetHb",
+                "value": "0,6",
+                "unit": "%",
+                "refLow": 0.4,
+                "refHigh": 1.5
+              }
+            ]
+          }
+        ]
+      },
+      "subboxes": [
+        {
+          "name": "Undersöker och tolkar acidemi/alkalemi",
+          "studentAction": "Identifierar acidemi",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Respiratorisk/metabol genes, kompensation",
+          "studentAction": "Identifierar respiratorisk acidos med viss metabol kompensation",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Övriga värden (Na, K, Hb, Cl, Ca, glukos, laktat, FCOHb",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "ekg": {
+      "label": "ekg",
+      "image": null,
+      "ecg": null,
+      "blodgas": null,
+      "subboxes": [
+        {
+          "name": "Frekvens",
+          "studentAction": "",
+          "specialCase": "Inget EKG kan beställas just nu",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Rytm",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "QRS",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "STT-sträcka",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "QT-tid",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "handlaggning": {
+      "label": "handläggning",
+      "image": null,
+      "ecg": null,
+      "blodgas": null,
+      "subboxes": [
+        {
+          "name": "Bedömer behov av riktad klinisk undersökning (Ultraljud, PR, Nackstelhet)",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Initierar adekvat behandling",
+          "studentAction": "Identiferar misstänk opioidintox och behandlar med <0,1-0,2 mg Naloxon (ej över 0,2 mg totalt för att förhindra smärtgenombrott)",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true
+        },
+        {
+          "name": "Re-evaluerar (Övervakar och utvärderar effekter av åtgärder)",
+          "studentAction": "Avlägsnar ev. svalgtub (bedömare kan göra kväljningsljud). Identifierar RLS 3 / GCS 13-15 / Verbal på AVPU.",
+          "specialCase": "Naloxonbehandling gör att patienten nu vaknar till och kan svara vid kraftig stimulering. Övriga undersökningar u.a.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "signout": {
+      "label": "signout",
+      "image": null,
+      "ecg": null,
+      "blodgas": null,
+      "subboxes": [
+        {
+          "name": "Formulerar arbetsdiagnos",
+          "studentAction": "Identifierar Opioidintox, med hanterat luftvägsstopp.",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Planerar vidare behandling",
+          "studentAction": "Identifierar risk får återkomst av central andningsdepression pga kort effektduration av Naloxon (kan tillfrågas)",
+          "specialCase": "Vad ska man tänka på för risker vid detta tillstånd?",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Bedömer övervakningsbehov och vårdnivå",
+          "studentAction": "Beslutar om inläggning på AVA/Uppvakningsavdelning/intermediärenhet för bevakning och eventuellt upprepade doser naloxon.",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    }
+  }
+}

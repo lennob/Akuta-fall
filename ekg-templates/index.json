@@ -1,0 +1,15 @@
+{
+  "schema": "ekg-template-index.v1",
+  "templates": [
+    { "id": "sinus", "label": "Sinusrytm (normal)", "file": "./ekg-templates/sinus.json" },
+    { "id": "afib", "label": "Förmaksflimmer", "file": "./ekg-templates/afib.json" },
+    { "id": "flutter2to1", "label": "Förmaksfladder (2:1)", "file": "./ekg-templates/flutter2to1.json" },
+    { "id": "svt", "label": "SVT (AVNRT)", "file": "./ekg-templates/svt.json" },
+    { "id": "vt", "label": "Ventrikeltakykardi", "file": "./ekg-templates/vt.json" },
+    { "id": "stemi-inferior", "label": "STEMI inferior", "file": "./ekg-templates/stemi-inferior.json" },
+    { "id": "stemi-anterior", "label": "STEMI anterior", "file": "./ekg-templates/stemi-anterior.json" },
+    { "id": "hyperk", "label": "Hyperkalemi", "file": "./ekg-templates/hyperk.json" },
+    { "id": "test", "label": "test", "file":"./ekg-templates/Test.json"}
+  ]
+}
+

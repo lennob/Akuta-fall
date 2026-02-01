@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Resultat • Akuta fall</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="overview">
+    <div class="page">
+      <header>
+        <h1>Akuta fall</h1>
+        <p>Resultat</p>
+      </header>
+
+      <main class="card">
+        <div class="result-card">
+          <h2 class="result-title" id="caseName">(Inget fall)</h2>
+
+          <div id="warnings"></div>
+
+          <div class="grid-2">
+            <div class="panel">
+              <div class="kpi">
+                <div class="label">Rätt / Totalt</div>
+                <div class="value" id="rightTotal">0 / 0</div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="kpi">
+                <div class="label">Poäng</div>
+                <div class="value" id="pointsTotal">0</div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="kpi">
+                <div class="label">Basic / Middle / High</div>
+                <div class="value" id="tierCounts">0 / 0 / 0</div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="kpi">
+                <div class="label">Tid</div>
+                <div class="value" id="elapsed">00:00</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="result-details" id="details"></div>
+
+          <div class="actions">
+            <a class="btn-secondary" href="./index.html#step=3">Tillbaka</a>
+            <a class="btn-secondary" href="./compendium.html">Kompendium</a>
+            <a class="btn-primary" id="newCaseLink" href="./index.html#step=2">Nytt fall</a>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const SESSION_SELECTED_CASE = "lenny.selectedCase.v1";
+      const SESSION_TIMER_START = "lenny.timerStartMs.v1";
+      const SESSION_TIMER_ELAPSED = "lenny.timerElapsedMs.v1";
+      const SESSION_TIMER_RUNNING = "lenny.timerRunning.v1";
+      const EVAL_KEY_PREFIX = "lenny.eval.v1.";
+      const CHECKS_KEY_PREFIX = "lenny.checks.v1.";
+      const BOX_NAV_KEY_PREFIX = "lenny.boxNav.v1.";
+      const HISTORY_KEY = "lenny.history.v1";
+      const SESSION_LAST_SAVED_RESULT = "lenny.lastSavedResult.v1";
+      const PLAY_COUNTS_KEY = "lenny.playCounts.v1";
+
+      const TIME_LIMIT_MS = 12 * 60 * 1000;
+      const WEIGHTS = { basic: 1, middle: 3, high: 5 };
+
+      const caseNameEl = document.getElementById("caseName");
+      const warningsEl = document.getElementById("warnings");
+      const rightTotalEl = document.getElementById("rightTotal");
+      const pointsTotalEl = document.getElementById("pointsTotal");
+      const tierCountsEl = document.getElementById("tierCounts");
+      const elapsedEl = document.getElementById("elapsed");
+      const detailsEl = document.getElementById("details");
+      const newCaseLink = document.getElementById("newCaseLink");
+
+      function safeText(value) {
+        return String(value ?? "");
+      }
+
+      function slugify(value) {
+        return String(value ?? "")
+          .toLowerCase()
+          .trim()
+          .replace(/å/g, "a")
+          .replace(/ä/g, "a")
+          .replace(/ö/g, "o")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "")
+          .slice(0, 80);
+      }
+
+      function getEvalKey(caseData) {
+        const title = safeText(caseData?.title);
+        return `${EVAL_KEY_PREFIX}${slugify(title) || "case"}`;
+      }
+
+      function clearStep3State() {
+        const prefixes = [EVAL_KEY_PREFIX, CHECKS_KEY_PREFIX, BOX_NAV_KEY_PREFIX];
+        const toRemove = [];
+        for (let i = 0; i < sessionStorage.length; i += 1) {
+          const key = sessionStorage.key(i);
+          if (!key) continue;
+          if (
+            key === SESSION_SELECTED_CASE ||
+            key === SESSION_TIMER_START ||
+            key === SESSION_TIMER_ELAPSED ||
+            key === SESSION_TIMER_RUNNING ||
+            prefixes.some((p) => key.startsWith(p))
+          ) {
+            toRemove.push(key);
+          }
+        }
+        for (const key of toRemove) sessionStorage.removeItem(key);
+      }
+
+      if (newCaseLink) {
+        newCaseLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          clearStep3State();
+          window.location.href = newCaseLink.href;
+        });
+      }
+
+      function readSelectedCase() {
+        try {
+          const raw = sessionStorage.getItem(SESSION_SELECTED_CASE);
+          if (!raw) return null;
+          return JSON.parse(raw);
+        } catch {
+          return null;
+        }
+      }
+
+      function readHistory() {
+        try {
+          const raw = localStorage.getItem(HISTORY_KEY);
+          if (!raw) return [];
+          const parsed = JSON.parse(raw);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return [];
+        }
+      }
+
+      function writeHistory(items) {
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(Array.isArray(items) ? items : []));
+      }
+
+      function readPlayCounts() {
+        try {
+          const raw = localStorage.getItem(PLAY_COUNTS_KEY);
+          if (!raw) return {};
+          const parsed = JSON.parse(raw);
+          return parsed && typeof parsed === "object" ? parsed : {};
+        } catch {
+          return {};
+        }
+      }
+
+      function writePlayCounts(next) {
+        localStorage.setItem(PLAY_COUNTS_KEY, JSON.stringify(next && typeof next === "object" ? next : {}));
+      }
+
+      function computeMissedItems(caseData, evalState) {
+        const items = [];
+        const boxes = caseData?.boxes && typeof caseData.boxes === "object" ? caseData.boxes : {};
+
+        const order = [
+          "oversikt",
+          "airway",
+          "breathing",
+          "circulation",
+          "disability",
+          "exposure",
+          "blodgas",
+          "ekg",
+          "handlaggning",
+          "signout",
+        ];
+        const boxIds = order
+          .filter((id) => boxes[id])
+          .concat(Object.keys(boxes).filter((id) => !order.includes(id)));
+
+        for (const boxId of boxIds) {
+          const box = boxes[boxId];
+          const subboxes = Array.isArray(box?.subboxes) ? box.subboxes : [];
+          for (let i = 0; i < subboxes.length; i += 1) {
+            const sub = subboxes[i];
+            const key = `${boxId}.${i}`;
+            const grade = String(evalState?.grade?.[key] || "none");
+            if (grade !== "none") continue;
+            items.push({
+              key,
+              boxId,
+              boxLabel: safeText(box?.label || boxId),
+              name: safeText(sub?.name || ""),
+              critical: Boolean(sub?.critical),
+            });
+          }
+        }
+        return items;
+      }
+
+      function saveResultToHistory(caseData, evalState) {
+        const elapsedMs = getElapsedNowMs();
+        const results = computeResults(caseData, evalState);
+        const percent = results.total > 0 ? Math.round((results.right / results.total) * 100) : 0;
+
+        const missed = computeMissedItems(caseData, evalState);
+        const missedCriticalItems = missed.filter((m) => m.critical);
+
+        const signature = JSON.stringify({
+          t: safeText(caseData?.title),
+          e: elapsedMs,
+          r: results.right,
+          n: results.total,
+          p: results.points,
+          mc: results.missedCritical,
+          g: evalState?.grade || {},
+        });
+        const last = sessionStorage.getItem(SESSION_LAST_SAVED_RESULT);
+        if (last === signature) return;
+        sessionStorage.setItem(SESSION_LAST_SAVED_RESULT, signature);
+
+        const history = readHistory();
+        const recent = history.slice(-50);
+        if (recent.some((h) => safeText(h?.signature) === signature)) return;
+
+        const entry = {
+          id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+          caseFilename: safeText(caseData?.__filename || ""),
+          caseTitle: safeText(caseData?.title || "Utan titel"),
+          caseSlug: slugify(caseData?.title || "case"),
+          signature,
+          completedAt: new Date().toISOString(),
+          elapsedMs,
+          right: results.right,
+          total: results.total,
+          percent,
+          points: results.points,
+          basic: results.basic,
+          middle: results.middle,
+          high: results.high,
+          missedCritical: results.missedCritical,
+          missedTotal: missed.length,
+          missed,
+          missedCriticalItems,
+          grades: evalState?.grade || {},
+        };
+
+        history.push(entry);
+        writeHistory(history);
+
+        const filename = safeText(caseData?.__filename || "");
+        if (filename) {
+          const counts = readPlayCounts();
+          counts[filename] = Number(counts[filename] || 0) + 1;
+          writePlayCounts(counts);
+        }
+      }
+
+      function readEval(caseData) {
+        try {
+          const raw = sessionStorage.getItem(getEvalKey(caseData));
+          if (!raw) return { done: {}, grade: {} };
+          const parsed = JSON.parse(raw);
+          const done = parsed?.done && typeof parsed.done === "object" ? parsed.done : {};
+          const grade = parsed?.grade && typeof parsed.grade === "object" ? parsed.grade : {};
+          return { done, grade };
+        } catch {
+          return { done: {}, grade: {} };
+        }
+      }
+
+      function readTimerStartMs() {
+        const raw = sessionStorage.getItem(SESSION_TIMER_START);
+        if (!raw) return null;
+        const n = Number(raw);
+        return Number.isFinite(n) ? n : null;
+      }
+
+      function readElapsedMs() {
+        const raw = sessionStorage.getItem(SESSION_TIMER_ELAPSED);
+        if (!raw) return 0;
+        const n = Number(raw);
+        return Number.isFinite(n) ? Math.max(0, n) : 0;
+      }
+
+      function isTimerRunning() {
+        const raw = sessionStorage.getItem(SESSION_TIMER_RUNNING);
+        if (raw === null) return Boolean(readTimerStartMs());
+        return raw === "true";
+      }
+
+      function getElapsedNowMs() {
+        const start = readTimerStartMs();
+        const base = readElapsedMs();
+        const running = isTimerRunning();
+        const now = Date.now();
+        return running && start ? base + (now - start) : base;
+      }
+
+      function formatTime(ms) {
+        const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+      }
+
+      function computeResults(caseData, evalState) {
+        const res = {
+          total: 0,
+          right: 0,
+          basic: 0,
+          middle: 0,
+          high: 0,
+          points: 0,
+          missedCritical: 0,
+        };
+
+        const boxes = caseData?.boxes && typeof caseData.boxes === "object" ? caseData.boxes : {};
+        for (const boxId of Object.keys(boxes)) {
+          const subboxes = Array.isArray(boxes[boxId]?.subboxes) ? boxes[boxId].subboxes : [];
+          for (let i = 0; i < subboxes.length; i += 1) {
+            res.total += 1;
+            const key = `${boxId}.${i}`;
+            const grade = String(evalState.grade[key] || "none");
+            if (grade !== "none") res.right += 1;
+
+            if (grade === "basic") res.basic += 1;
+            if (grade === "middle") res.middle += 1;
+            if (grade === "high") res.high += 1;
+
+            if (grade === "basic" || grade === "middle" || grade === "high") {
+              res.points += WEIGHTS[grade] || 0;
+            }
+
+            const isCritical = Boolean(subboxes[i]?.critical);
+            if (isCritical && grade === "none") res.missedCritical += 1;
+          }
+        }
+        return res;
+      }
+
+      function renderDetails(caseData, evalState) {
+        if (!detailsEl) return;
+        detailsEl.replaceChildren();
+        const boxes = caseData?.boxes && typeof caseData.boxes === "object" ? caseData.boxes : {};
+
+        const order = [
+          "oversikt",
+          "airway",
+          "breathing",
+          "circulation",
+          "disability",
+          "exposure",
+          "blodgas",
+          "ekg",
+          "handlaggning",
+          "signout",
+        ];
+
+        const boxIds = order.filter((id) => boxes[id]).concat(Object.keys(boxes).filter((id) => !order.includes(id)));
+
+        for (const boxId of boxIds) {
+          const box = boxes[boxId];
+          const subboxes = Array.isArray(box?.subboxes) ? box.subboxes : [];
+          const achieved = subboxes.filter((_, idx) => String(evalState.grade[`${boxId}.${idx}`] || "none") !== "none")
+            .length;
+          const total = subboxes.length;
+          const allOk = total > 0 && achieved === total;
+
+          const boxCard = document.createElement("div");
+          boxCard.className = `result-box ${allOk ? "ok" : "bad"}`;
+
+          const head = document.createElement("div");
+          head.className = "result-box-head";
+
+          const title = document.createElement("div");
+          title.className = "result-box-title";
+          title.textContent = safeText(box?.label || boxId);
+
+          const badge = document.createElement("div");
+          badge.className = "result-box-badge";
+          badge.textContent = `${achieved} / ${total}`;
+
+          head.append(title, badge);
+          boxCard.append(head);
+
+          const list = document.createElement("div");
+          list.className = "result-sub-list";
+
+          for (let i = 0; i < subboxes.length; i += 1) {
+            const sub = subboxes[i];
+            const key = `${boxId}.${i}`;
+            const grade = String(evalState.grade[key] || "none");
+            const isOk = grade !== "none";
+            const critical = Boolean(sub?.critical);
+            const missedCritical = critical && !isOk;
+
+            const row = document.createElement("div");
+            row.className = `result-sub ${isOk ? "ok" : "bad"}`;
+
+            const left = document.createElement("div");
+            left.className = "result-sub-left";
+
+            const name = document.createElement("div");
+            name.className = "result-sub-name";
+            name.textContent = safeText(sub?.name);
+
+            if (missedCritical) {
+              const crit = document.createElement("div");
+              crit.className = "result-sub-critical";
+              crit.textContent = "Kritisk missad";
+              left.append(name, crit);
+            } else {
+              left.append(name);
+            }
+
+            const right = document.createElement("div");
+            right.className = "result-sub-right";
+            right.textContent = grade === "none" ? "Ej uppnått" : grade;
+
+            row.append(left, right);
+            list.append(row);
+          }
+
+          boxCard.append(list);
+          detailsEl.append(boxCard);
+        }
+      }
+
+      function addWarning(text) {
+        const div = document.createElement("div");
+        div.className = "warn";
+        div.textContent = text;
+        warningsEl.append(div);
+      }
+
+      function addOk(text) {
+        const div = document.createElement("div");
+        div.className = "ok";
+        div.textContent = text;
+        warningsEl.append(div);
+      }
+
+      function init() {
+        const caseData = readSelectedCase();
+        if (!caseData) {
+          caseNameEl.textContent = "Inget fall hittades";
+          addWarning("Öppna ett fall först och klicka sedan på Gradera.");
+          return;
+        }
+
+        caseNameEl.textContent = safeText(caseData.title || "Utan titel");
+
+        const evalState = readEval(caseData);
+        const results = computeResults(caseData, evalState);
+        saveResultToHistory(caseData, evalState);
+        renderDetails(caseData, evalState);
+
+        rightTotalEl.textContent = `${results.right} / ${results.total}`;
+        tierCountsEl.textContent = `${results.basic} / ${results.middle} / ${results.high}`;
+        pointsTotalEl.textContent = String(results.points);
+
+        const elapsedMs = getElapsedNowMs();
+        elapsedEl.textContent = formatTime(elapsedMs);
+
+        warningsEl.replaceChildren();
+        if (results.missedCritical > 0) {
+          addWarning(`Du missade ${results.missedCritical} kritisk(a) moment.`);
+        }
+        if (elapsedMs > TIME_LIMIT_MS) {
+          addWarning("Tiden översteg 12 minuter.");
+        }
+        if (results.missedCritical === 0 && elapsedMs <= TIME_LIMIT_MS) {
+          addOk("Inga kritiska varningar.");
+        }
+      }
+
+      init();
+    </script>
+  </body>
+</html>

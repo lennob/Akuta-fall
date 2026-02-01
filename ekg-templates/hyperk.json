@@ -1,0 +1,57 @@
+{
+  "schema": "ekg-template.v1",
+  "id": "hyperk",
+  "label": "Hyperkalemi",
+  "patch": {
+    "template": "hyperk",
+    "rhythm": "Sinusrytm",
+    "hr": 70,
+    "prMs": 180,
+    "qrsMs": 120,
+    "qtMs": 360,
+    "axisDeg": 60,
+    "linkAxis": "off",
+    "pqrst": {
+      "P": { "amp": 0.05, "width": 0.03 },
+      "Q": { "amp": -0.15, "width": 0.008 },
+      "R": { "amp": 1.0, "width": 0.006 },
+      "S": { "amp": -0.25, "width": 0.01 },
+      "T": { "amp": 0.75, "width": 0.035, "tailAmp": 0.0, "tailWidth": 0.05 }
+    },
+    "leads": {
+      "aVL": { "scale": 1.0, "invert": false, "st": 0 },
+      "I": { "scale": 1.0, "invert": false, "st": 0 },
+      "-aVR": { "scale": 1.0, "invert": false, "st": 0 },
+      "II": { "scale": 1.0, "invert": false, "st": 0 },
+      "aVF": { "scale": 1.0, "invert": false, "st": 0 },
+      "III": { "scale": 1.0, "invert": false, "st": 0 },
+      "V1": { "scale": 0.7, "invert": true, "st": 0 },
+      "V2": {
+        "scale": 0.8,
+        "invert": true,
+        "st": 0,
+        "pqrst": { "T": { "amp": 0.95, "width": 0.03, "tailAmp": 0.0, "tailWidth": 0.05 } }
+      },
+      "V3": {
+        "scale": 0.95,
+        "invert": false,
+        "st": 0,
+        "pqrst": { "T": { "amp": 0.95, "width": 0.03, "tailAmp": 0.0, "tailWidth": 0.05 } }
+      },
+      "V4": {
+        "scale": 1.15,
+        "invert": false,
+        "st": 0,
+        "pqrst": { "T": { "amp": 0.95, "width": 0.03, "tailAmp": 0.0, "tailWidth": 0.05 } }
+      },
+      "V5": {
+        "scale": 1.0,
+        "invert": false,
+        "st": 0,
+        "pqrst": { "T": { "amp": 0.95, "width": 0.03, "tailAmp": 0.0, "tailWidth": 0.05 } }
+      },
+      "V6": { "scale": 0.85, "invert": false, "st": 0 }
+    }
+  }
+}
+

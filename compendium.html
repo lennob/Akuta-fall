@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kompendium • Akuta fall</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="compendium">
+    <div class="page">
+      <header>
+        <h1>Akuta fall</h1>
+        <p>Kompendium</p>
+      </header>
+
+      <main class="card">
+        <div class="compendium-wrap">
+          <div class="compendium-head">
+            <div class="compendium-search">
+              <label for="q">Sök fall</label>
+              <input id="q" type="search" placeholder="Sök på titel…" />
+            </div>
+          <div class="compendium-actions">
+            <a class="btn-secondary" href="./index.html#step=1">Tillbaka</a>
+            <a class="btn-secondary" href="./ecg-lab.html">EKG-labb</a>
+            <a class="btn-secondary" href="./blodgas.html">Blodgas-labb</a>
+            <button type="button" class="btn-secondary" id="clearHistoryBtn">Rensa historik</button>
+          </div>
+        </div>
+
+          <section class="panel" aria-label="Fall">
+            <h2 class="panel-title">Alla fall</h2>
+            <p class="status" id="caseStatus"></p>
+            <div class="case-list" id="caseList"></div>
+          </section>
+
+          <section class="panel history-panel" aria-label="Historik">
+            <h2 class="panel-title">Resultathistorik</h2>
+            <p class="status" id="historyStatus"></p>
+            <div class="history-summary" id="historySummary"></div>
+            <div class="history-focus" id="historyFocus"></div>
+            <div class="history-table-wrap">
+              <table class="history-table" id="historyTable" aria-label="Historik">
+                <thead>
+                  <tr>
+                    <th>Datum</th>
+                    <th>Fall</th>
+                    <th>%</th>
+                    <th>Tid</th>
+                    <th>Poäng</th>
+                    <th>Basic/Mid/High</th>
+                    <th>Kritisk</th>
+                    <th>Detaljer</th>
+                  </tr>
+                </thead>
+                <tbody id="historyBody"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const CASE_INDEX_PATH = "./cases/index.json";
+      const HISTORY_KEY = "lenny.history.v1";
+      const PLAY_COUNTS_KEY = "lenny.playCounts.v1";
+      const SESSION_SELECTED_CASE = "lenny.selectedCase.v1";
+      const SESSION_TIMER_START = "lenny.timerStartMs.v1";
+      const SESSION_TIMER_ELAPSED = "lenny.timerElapsedMs.v1";
+      const SESSION_TIMER_RUNNING = "lenny.timerRunning.v1";
+      const EVAL_KEY_PREFIX = "lenny.eval.v1.";
+      const CHECKS_KEY_PREFIX = "lenny.checks.v1.";
+      const BOX_NAV_KEY_PREFIX = "lenny.boxNav.v1.";
+
+      const qEl = document.getElementById("q");
+      const caseStatusEl = document.getElementById("caseStatus");
+      const caseListEl = document.getElementById("caseList");
+      const historyStatusEl = document.getElementById("historyStatus");
+      const historySummaryEl = document.getElementById("historySummary");
+      const historyFocusEl = document.getElementById("historyFocus");
+      const historyBodyEl = document.getElementById("historyBody");
+      const clearHistoryBtn = document.getElementById("clearHistoryBtn");
+      const caseCache = {};
+
+      function safeText(v) {
+        return String(v ?? "");
+      }
+
+      function formatTime(ms) {
+        const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+      }
+
+      function parseSignature(entry) {
+        try {
+          const parsed = JSON.parse(safeText(entry?.signature || ""));
+          return parsed && typeof parsed === "object" ? parsed : null;
+        } catch {
+          return null;
+        }
+      }
+
+      function getGradeMap(entry) {
+        const direct = entry?.grades && typeof entry.grades === "object" ? entry.grades : null;
+        if (direct) return direct;
+        const sig = parseSignature(entry);
+        const g = sig?.g && typeof sig.g === "object" ? sig.g : null;
+        return g || {};
+      }
+
+      function computeMissedItemsFromCase(caseData, gradeMap) {
+        const items = [];
+        const boxes = caseData?.boxes && typeof caseData.boxes === "object" ? caseData.boxes : {};
+        const order = [
+          "oversikt",
+          "airway",
+          "breathing",
+          "circulation",
+          "disability",
+          "exposure",
+          "blodgas",
+          "ekg",
+          "handlaggning",
+          "signout",
+        ];
+        const boxIds = order
+          .filter((id) => boxes[id])
+          .concat(Object.keys(boxes).filter((id) => !order.includes(id)));
+
+        for (const boxId of boxIds) {
+          const box = boxes[boxId];
+          const subs = Array.isArray(box?.subboxes) ? box.subboxes : [];
+          for (let i = 0; i < subs.length; i += 1) {
+            const key = `${boxId}.${i}`;
+            const grade = String(gradeMap?.[key] || "none");
+            if (grade !== "none") continue;
+            const sub = subs[i];
+            items.push({
+              key,
+              boxId,
+              boxLabel: safeText(box?.label || boxId),
+              name: safeText(sub?.name || ""),
+              critical: Boolean(sub?.critical),
+            });
+          }
+        }
+        return items;
+      }
+
+      function getMissedItems(entry) {
+        const fromEntry = Array.isArray(entry?.missed) ? entry.missed : null;
+        if (fromEntry) return fromEntry;
+        const filename = safeText(entry?.caseFilename || "");
+        const caseData = filename ? caseCache[filename] : null;
+        if (!caseData) return [];
+        const gradeMap = getGradeMap(entry);
+        return computeMissedItemsFromCase(caseData, gradeMap);
+      }
+
+      function slugify(value) {
+        return String(value ?? "")
+          .toLowerCase()
+          .trim()
+          .replace(/å/g, "a")
+          .replace(/ä/g, "a")
+          .replace(/ö/g, "o")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "")
+          .slice(0, 80);
+      }
+
+      function setStatus(el, text) {
+        if (!el) return;
+        el.textContent = text || "";
+      }
+
+      async function fetchJson(path) {
+        const res = await fetch(path, { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+      }
+
+      function readHistory() {
+        try {
+          const raw = localStorage.getItem(HISTORY_KEY);
+          if (!raw) return [];
+          const parsed = JSON.parse(raw);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return [];
+        }
+      }
+
+      function writeHistory(items) {
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(Array.isArray(items) ? items : []));
+      }
+
+      function readPlayCounts() {
+        try {
+          const raw = localStorage.getItem(PLAY_COUNTS_KEY);
+          if (!raw) return {};
+          const parsed = JSON.parse(raw);
+          return parsed && typeof parsed === "object" ? parsed : {};
+        } catch {
+          return {};
+        }
+      }
+
+      function countPlayedBySlugFromHistory() {
+        const history = readHistory();
+        const counts = {};
+        for (const h of history) {
+          const slug = safeText(h?.caseSlug);
+          if (!slug) continue;
+          counts[slug] = (counts[slug] || 0) + 1;
+        }
+        return counts;
+      }
+
+      function getPlayedCount(meta, playedBySlug, legacyByFilename) {
+        const slug = slugify(meta?.title || meta?.filename);
+        const fromHistory = Number(playedBySlug[slug] || 0);
+        const fromLegacy = Number(legacyByFilename[meta.filename] || 0);
+        return Math.max(fromHistory, fromLegacy);
+      }
+
+      function renderHistory() {
+        if (!historyBodyEl) return;
+        historyBodyEl.replaceChildren();
+        const history = readHistory()
+          .slice()
+          .sort((a, b) => String(b.completedAt || "").localeCompare(String(a.completedAt || "")));
+
+        if (!history.length) {
+          setStatus(historyStatusEl, "Ingen historik ännu. Gradera ett fall så sparas resultatet här.");
+          if (historySummaryEl) historySummaryEl.replaceChildren();
+          return;
+        }
+
+        setStatus(historyStatusEl, `${history.length} genomförda fall sparade.`);
+
+        const avg =
+          history.reduce((sum, h) => sum + Number(h.percent || 0), 0) / Math.max(1, history.length);
+        const best = history.reduce((m, h) => Math.max(m, Number(h.percent || 0)), 0);
+        if (historySummaryEl) {
+          historySummaryEl.textContent = `Snitt: ${Math.round(avg)}% • Bästa: ${best}%`;
+        }
+
+        for (const h of history) {
+          const tr = document.createElement("tr");
+          const tdDate = document.createElement("td");
+          tdDate.textContent = safeText(h.completedAt ? h.completedAt.slice(0, 16).replace("T", " ") : "");
+
+          const tdCase = document.createElement("td");
+          tdCase.textContent = safeText(h.caseTitle || "");
+
+          const tdPct = document.createElement("td");
+          tdPct.textContent = `${Number(h.percent || 0)}%`;
+
+          const tdTime = document.createElement("td");
+          tdTime.textContent = formatTime(Number(h.elapsedMs || 0));
+
+          const tdPoints = document.createElement("td");
+          tdPoints.textContent = safeText(h.points ?? "");
+
+          const tdTiers = document.createElement("td");
+          tdTiers.textContent = `${Number(h.basic || 0)}/${Number(h.middle || 0)}/${Number(h.high || 0)}`;
+
+          const tdCrit = document.createElement("td");
+          tdCrit.textContent = Number(h.missedCritical || 0) > 0 ? `Missade ${h.missedCritical}` : "";
+
+          const tdDetails = document.createElement("td");
+          const detailsBtn = document.createElement("button");
+          detailsBtn.type = "button";
+          detailsBtn.className = "btn-secondary btn-small";
+          detailsBtn.textContent = "Visa";
+          detailsBtn.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            showHistoryOverlay(h);
+          });
+          tdDetails.append(detailsBtn);
+
+          tr.append(tdDate, tdCase, tdPct, tdTime, tdPoints, tdTiers, tdCrit, tdDetails);
+          historyBodyEl.append(tr);
+        }
+      }
+
+      function renderFocus() {
+        if (!historyFocusEl) return;
+        historyFocusEl.replaceChildren();
+        const history = readHistory();
+        if (!history.length) return;
+
+        const missedAll = [];
+        const missedCritical = [];
+        for (const h of history) {
+          const missed = getMissedItems(h);
+          for (const item of missed) {
+            const row = {
+              ...item,
+              caseTitle: safeText(h.caseTitle || ""),
+              completedAt: safeText(h.completedAt || ""),
+            };
+            missedAll.push(row);
+            if (item.critical) missedCritical.push(row);
+          }
+        }
+
+        const aggregate = (items) => {
+          const map = new Map();
+          for (const it of items) {
+            const key = `${safeText(it.boxLabel)}—${safeText(it.name)}`;
+            const existing =
+              map.get(key) || { key, boxLabel: safeText(it.boxLabel), name: safeText(it.name), count: 0, cases: new Map() };
+            existing.count += 1;
+            const prev = existing.cases.get(it.caseTitle) || 0;
+            existing.cases.set(it.caseTitle, prev + 1);
+            map.set(key, existing);
+          }
+          return Array.from(map.values()).sort((a, b) => b.count - a.count);
+        };
+
+        const topCrit = aggregate(missedCritical).slice(0, 8);
+        const topAll = aggregate(missedAll).slice(0, 8);
+
+        const wrap = document.createElement("div");
+        wrap.className = "focus-wrap";
+
+        const makeCard = (title, rows, showCases) => {
+          const card = document.createElement("div");
+          card.className = "focus-card";
+          const h = document.createElement("div");
+          h.className = "focus-title";
+          h.textContent = title;
+          card.append(h);
+          if (!rows.length) {
+            const p = document.createElement("p");
+            p.className = "status";
+            p.textContent = "Inget att visa.";
+            card.append(p);
+            return card;
+          }
+          const list = document.createElement("div");
+          list.className = "focus-list";
+          for (const m of rows) {
+            const row = document.createElement("div");
+            row.className = "focus-row";
+            const left = document.createElement("div");
+            left.className = "focus-moment";
+            left.textContent = `${m.boxLabel}: ${m.name}`;
+            const right = document.createElement("div");
+            right.className = "focus-meta";
+            if (showCases) {
+              const cases = Array.from(m.cases.keys()).slice(0, 3).join(", ");
+              const more = m.cases.size > 3 ? ` +${m.cases.size - 3}` : "";
+              right.textContent = `${m.count} ggr • ${cases}${more}`;
+            } else {
+              right.textContent = `${m.count} ggr`;
+            }
+            row.append(left, right);
+            list.append(row);
+          }
+          card.append(list);
+          return card;
+        };
+
+        wrap.append(
+          makeCard("Kritiska moment att fokusera på", topCrit, true),
+          makeCard("Vanligaste missade moment", topAll, false),
+        );
+
+        historyFocusEl.append(wrap);
+      }
+
+      const historyOverlay = document.createElement("div");
+      historyOverlay.className = "history-overlay";
+      historyOverlay.hidden = true;
+      historyOverlay.innerHTML = `
+        <div class="history-overlay-panel">
+          <div class="history-overlay-header">
+            <div>
+              <h3 id="historyOverlayTitle"></h3>
+              <p class="history-overlay-sub" id="historyOverlaySub"></p>
+            </div>
+            <button type="button" class="history-overlay-close" id="historyOverlayClose" aria-label="Stäng">&times;</button>
+          </div>
+          <div class="history-overlay-body" id="historyOverlayBody"></div>
+        </div>
+      `;
+      document.body.append(historyOverlay);
+      const historyOverlayTitle = historyOverlay.querySelector("#historyOverlayTitle");
+      const historyOverlaySub = historyOverlay.querySelector("#historyOverlaySub");
+      const historyOverlayBody = historyOverlay.querySelector("#historyOverlayBody");
+      const historyOverlayClose = historyOverlay.querySelector("#historyOverlayClose");
+
+      const hideHistoryOverlay = () => {
+        historyOverlay.classList.remove("open");
+        historyOverlay.hidden = true;
+        document.body.classList.remove("has-modal");
+      };
+
+      const showHistoryOverlay = (entry) => {
+        const missed = getMissedItems(entry);
+        const missedCrit = missed.filter((m) => m.critical);
+
+        historyOverlayTitle.textContent = safeText(entry?.caseTitle || "");
+        const when = safeText(entry?.completedAt ? entry.completedAt.slice(0, 16).replace("T", " ") : "");
+        const pct = `${Number(entry?.percent || 0)}%`;
+        const time = formatTime(Number(entry?.elapsedMs || 0));
+        historyOverlaySub.textContent = `${when} • ${pct} • ${time}`;
+
+        historyOverlayBody.replaceChildren();
+
+        const summary = document.createElement("div");
+        summary.className = "history-overlay-summary";
+        const missedTotal =
+          Number(entry?.missedTotal || 0) || Math.max(0, Number(entry?.total || 0) - Number(entry?.right || 0));
+        const missedCritCount = Number(entry?.missedCritical || missedCrit.length || 0);
+        summary.textContent = `Uppnått: ${Number(entry?.right || 0)}/${Number(entry?.total || 0)} • Missade: ${missedTotal} • Kritiska missade: ${missedCritCount}`;
+        historyOverlayBody.append(summary);
+
+        const renderGroup = (title, items) => {
+          const block = document.createElement("div");
+          block.className = "history-overlay-block";
+          const h = document.createElement("h4");
+          h.textContent = title;
+          block.append(h);
+
+          if (!items.length) {
+            const p = document.createElement("p");
+            p.className = "status";
+            p.textContent = "Inget.";
+            block.append(p);
+            historyOverlayBody.append(block);
+            return;
+          }
+
+          const grouped = new Map();
+          for (const it of items) {
+            const box = safeText(it.boxLabel || it.boxId || "");
+            const arr = grouped.get(box) || [];
+            arr.push(it);
+            grouped.set(box, arr);
+          }
+
+          for (const [boxLabel, arr] of grouped.entries()) {
+            const boxTitle = document.createElement("div");
+            boxTitle.className = "history-overlay-box";
+            boxTitle.textContent = boxLabel;
+            block.append(boxTitle);
+            const ul = document.createElement("ul");
+            ul.className = "history-overlay-list";
+            for (const it of arr) {
+              const li = document.createElement("li");
+              li.textContent = safeText(it.name || "");
+              ul.append(li);
+            }
+            block.append(ul);
+          }
+
+          historyOverlayBody.append(block);
+        };
+
+        renderGroup("Kritiska missade", missedCrit);
+        renderGroup("Missade moment", missed);
+
+        historyOverlay.hidden = false;
+        historyOverlay.classList.add("open");
+        document.body.classList.add("has-modal");
+      };
+
+      historyOverlayClose.addEventListener("click", hideHistoryOverlay);
+      historyOverlay.addEventListener("click", (event) => {
+        if (event.target === historyOverlay) hideHistoryOverlay();
+      });
+
+      function clearForCase(caseData) {
+        const title = safeText(caseData?.title);
+        const slug = slugify(title) || "case";
+        sessionStorage.removeItem(`${EVAL_KEY_PREFIX}${slug}`);
+        sessionStorage.removeItem(`${CHECKS_KEY_PREFIX}${slug}`);
+        sessionStorage.removeItem(`${BOX_NAV_KEY_PREFIX}${slug}`);
+      }
+
+      function resetTimerState() {
+        sessionStorage.removeItem(SESSION_TIMER_START);
+        sessionStorage.setItem(SESSION_TIMER_ELAPSED, "0");
+        sessionStorage.setItem(SESSION_TIMER_RUNNING, "false");
+      }
+
+      async function runCase(filename) {
+        if (location.protocol === "file:") {
+          alert('Öppna via http:// för att kunna läsa "cases/" automatiskt.');
+          return;
+        }
+        const caseData = await fetchJson(`./cases/${filename}`);
+        caseData.__filename = filename;
+        clearForCase(caseData);
+        resetTimerState();
+        sessionStorage.setItem(SESSION_SELECTED_CASE, JSON.stringify(caseData));
+        window.location.href = "./index.html#step=2";
+      }
+
+      function makeCaseCard(meta) {
+        const card = document.createElement("div");
+        card.className = "case-item";
+
+        const head = document.createElement("div");
+        head.className = "case-item-head";
+
+        const titleWrap = document.createElement("div");
+        titleWrap.className = "case-item-head-left";
+
+        const title = document.createElement("div");
+        title.className = "case-item-title";
+        title.textContent = safeText(meta.title || meta.filename);
+
+        const countBadge = document.createElement("div");
+        countBadge.className = "case-item-badge";
+        countBadge.textContent = `${Number(meta.played || 0)} spelat`;
+
+        titleWrap.append(title, countBadge);
+
+        const runBtn = document.createElement("button");
+        runBtn.type = "button";
+        runBtn.className = "btn-primary";
+        runBtn.textContent = "Kör detta fall";
+        runBtn.addEventListener("click", async () => {
+          runBtn.disabled = true;
+          try {
+            await runCase(meta.filename);
+          } catch (err) {
+            alert(`Kunde inte starta fall. (${safeText(err && err.message)})`);
+            runBtn.disabled = false;
+          }
+        });
+
+        head.append(titleWrap, runBtn);
+
+        const body = document.createElement("div");
+        body.className = "case-item-body";
+
+        const desc = document.createElement("div");
+        desc.className = "case-item-desc";
+        const text = safeText(meta.caseText || "").trim();
+        desc.textContent = text ? text : "(Ingen beskrivning i detta fall)";
+
+        const stats = document.createElement("div");
+        stats.className = "case-item-stats";
+        stats.textContent = `${meta.boxCount} box(ar) • ${meta.subCount} moment • Spelat ${Number(meta.played || 0)} ggr`;
+
+        const toggleBtn = document.createElement("button");
+        toggleBtn.type = "button";
+        toggleBtn.className = "case-card-toggle";
+        toggleBtn.textContent = "Visa mer";
+        toggleBtn.addEventListener("click", () => {
+          showCaseOverlay(meta);
+        });
+
+        body.append(desc, stats);
+
+        card.append(head, toggleBtn, body);
+        return card;
+      }
+
+      function renderCases(casesMeta, query) {
+        if (!caseListEl) return;
+        caseListEl.replaceChildren();
+        const q = safeText(query).toLowerCase().trim();
+        const filtered = casesMeta.filter((c) => {
+          if (!q) return true;
+          return safeText(c.title).toLowerCase().includes(q) || safeText(c.filename).toLowerCase().includes(q);
+        });
+
+        setStatus(caseStatusEl, `${filtered.length} / ${casesMeta.length} fall`);
+        for (const meta of filtered) caseListEl.append(makeCaseCard(meta));
+      }
+
+      async function loadCases() {
+        if (location.protocol === "file:") {
+          setStatus(caseStatusEl, 'Öppna via http:// för att läsa "cases/" automatiskt.');
+          return [];
+        }
+
+        setStatus(caseStatusEl, "Laddar fall...");
+        const index = await fetchJson(CASE_INDEX_PATH);
+        const files = Array.isArray(index?.cases) ? index.cases : [];
+        if (!files.length) {
+          setStatus(caseStatusEl, "Inga fall hittades i cases/index.json");
+          return [];
+        }
+
+        const legacyCounts = readPlayCounts();
+        const playedBySlug = countPlayedBySlugFromHistory();
+        const metas = [];
+        for (const filename of files) {
+          try {
+            const data = await fetchJson(`./cases/${filename}`);
+            caseCache[filename] = data;
+            const boxes = data?.boxes && typeof data.boxes === "object" ? data.boxes : {};
+            const boxIds = Object.keys(boxes);
+            const subCount = boxIds.reduce((sum, id) => {
+              const subs = Array.isArray(boxes[id]?.subboxes) ? boxes[id].subboxes : [];
+              return sum + subs.length;
+            }, 0);
+            metas.push({
+              filename,
+              title: safeText(data?.title || ""),
+              caseText: safeText(data?.caseText || ""),
+              boxCount: boxIds.length,
+              subCount,
+              played: 0,
+            });
+          } catch {
+            metas.push({ filename, title: "", caseText: "", boxCount: 0, subCount: 0, played: 0 });
+          }
+        }
+
+        for (const meta of metas) {
+          meta.played = getPlayedCount(meta, playedBySlug, legacyCounts);
+        }
+
+      metas.sort((a, b) => safeText(a.title || a.filename).localeCompare(safeText(b.title || b.filename)));
+      return metas;
+    }
+
+    const overlay = document.createElement("div");
+    overlay.className = "case-overlay";
+    overlay.hidden = true;
+    overlay.innerHTML = `
+      <div class="case-overlay-panel">
+        <div class="case-overlay-header">
+          <div>
+            <h3 id="overlayTitle"></h3>
+            <p class="case-overlay-stats" id="overlayStats"></p>
+          </div>
+          <button type="button" class="case-overlay-close" id="overlayClose" aria-label="Stäng">&times;</button>
+        </div>
+        <p id="overlayDesc"></p>
+        <div class="case-overlay-actions">
+          <button type="button" class="btn-primary" id="overlayRun">Kör detta fall</button>
+        </div>
+      </div>
+    `;
+    document.body.append(overlay);
+    const overlayTitle = overlay.querySelector("#overlayTitle");
+    const overlayStats = overlay.querySelector("#overlayStats");
+    const overlayDesc = overlay.querySelector("#overlayDesc");
+    const overlayRunBtn = overlay.querySelector("#overlayRun");
+    const overlayCloseBtn = overlay.querySelector("#overlayClose");
+
+    const hideOverlay = () => {
+      overlay.classList.remove("open");
+      overlay.hidden = true;
+      document.body.classList.remove("has-modal");
+      overlayRunBtn.disabled = false;
+      overlayRunBtn.onclick = null;
+    };
+
+    const showCaseOverlay = (meta) => {
+      overlayTitle.textContent = safeText(meta.title || meta.filename);
+      overlayStats.textContent = `${meta.boxCount} boxar • ${meta.subCount} moment • Spelat ${Number(meta.played || 0)} ggr`;
+      overlayDesc.textContent = safeText(meta.caseText || "(Ingen beskrivning i detta fall)");
+      overlay.hidden = false;
+      overlay.classList.add("open");
+      document.body.classList.add("has-modal");
+      overlayRunBtn.onclick = async () => {
+        overlayRunBtn.disabled = true;
+        try {
+          await runCase(meta.filename);
+          hideOverlay();
+        } catch (err) {
+          alert(`Kunde inte starta fall. (${safeText(err && err.message)})`);
+          overlayRunBtn.disabled = false;
+        }
+      };
+    };
+
+    overlayCloseBtn.addEventListener("click", hideOverlay);
+    overlay.addEventListener("click", (event) => {
+      if (event.target === overlay) hideOverlay();
+    });
+
+    async function init() {
+        renderHistory();
+
+        if (clearHistoryBtn) {
+          clearHistoryBtn.addEventListener("click", () => {
+            const ok = window.confirm("Rensa all resultathistorik?");
+            if (!ok) return;
+            writeHistory([]);
+            renderHistory();
+            renderFocus();
+          });
+        }
+
+        const casesMeta = await loadCases();
+        renderCases(casesMeta, "");
+        renderFocus();
+
+        if (qEl) {
+          qEl.addEventListener("input", () => {
+            renderCases(casesMeta, qEl.value);
+          });
+        }
+      }
+
+      init().catch((err) => {
+        setStatus(caseStatusEl, `Kunde inte ladda fall. (${safeText(err && err.message)})`);
+      });
+    </script>
+  </body>
+</html>

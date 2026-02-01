@@ -1,0 +1,448 @@
+{
+  "schemaVersion": 3,
+  "title": "Fall G",
+  "caseText": "S: 78-årig Man. Bor på SÄBO, har hittats av personalen medvetandesänkt och konfusorisk. Ambulansen kommer om 1 minut med patienten.\nB: Hypertoni. CABG för något år sedan. Kronisk KAD.\nA: Har sedan en längre tid varit trött och orkeslös, sedan imorse varit mer konfusorisk, och när personalen fann patienten i sängen medvetandesänkt så larmade de. INGEN misstanke om trauma.",
+  "boxes": {
+    "oversikt": {
+      "label": "översikt",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "Skyddskläder, handskar, förkläde.",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersök tecken till hjärtstopp",
+          "studentAction": "Bedömer att det inte finns tecken till hjärtstopp",
+          "specialCase": "Patienten är vaken, men gravt medvetandepåverkad (RLS 3) så mumlar lite otydligt till svar när studenten skakar på dem.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true
+        },
+        {
+          "name": "Tecken till katastrofal blödning",
+          "studentAction": "Undersöker översiktligt kroppen",
+          "specialCase": "Inga tecken på stor blödning.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "airway": {
+      "label": "airway",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "Inspektera ansikte",
+          "studentAction": "",
+          "specialCase": "Inga synliga skador",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Inspektera hals",
+          "studentAction": "",
+          "specialCase": "Inga synliga skador",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Inspektera munnen och svalg med ficklampa",
+          "studentAction": "",
+          "specialCase": "Ingen främmande kropp i mun eller svalg",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Lyssna på andning",
+          "studentAction": "Titta i munnen sedan utföra ett manuellt handgrepp (t.ex haklyft) → Snarkningar slutar och patienten andas regelbundet - sätter en näskantarell som tolereras väl (SVALGTUB TOLERERAS INTE - gör att patienten börjar hulka och kommer till slut att kräkas).",
+          "specialCase": "Snarkande andning, något oregelbunden",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true
+        }
+      ]
+    },
+    "breathing": {
+      "label": "breathing",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "Beräkna och bedöm andningsfrekvens",
+          "studentAction": "",
+          "specialCase": "28/min",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Bedöm saturation (%)",
+          "studentAction": "Ordinerar ≥10 L syrgas på oxymask → Saturation kommer att stiga till 95%",
+          "specialCase": "Saturation: 90%",
+          "tiers": [
+            "basic",
+            "middle"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Inspektion av bröstkorg, avseende symmetriska andningsrörelser, synliga skador",
+          "studentAction": "",
+          "specialCase": "Inga synliga skador, höjer sig liksidigt.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Auskultation över lungfälten",
+          "studentAction": "",
+          "specialCase": "Svaga andningsljud, inga säkra krepitationer/rassel",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Palpation av bröstkorgen",
+          "studentAction": "",
+          "specialCase": "Ingen smärta",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "circulation": {
+      "label": "circulation",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "Bestäm hjärtfrekvens",
+          "studentAction": "",
+          "specialCase": "Hjärtfrekvens 112",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Bestäm blodtryck",
+          "studentAction": "Ordinerar 500 ml bolus vätska i övertryck → Trycket kommer sedan att stiga till 87/46 på 2 min → vidare 500 ml kommer inte höja trycket avsevärt → ska identifieras som en septisk chock",
+          "specialCase": "BP 85/45",
+          "tiers": [
+            "basic",
+            "high"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Bestäm kapillär återfyllnadstid",
+          "studentAction": "",
+          "specialCase": "Kapillär återfyllnad 4-5 sekunder",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Bedömning av perifera pulsationer bilateralt",
+          "studentAction": "",
+          "specialCase": "Inga pulsar i radialis, tydliga och liksidiga i femoralis.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Bedömning av perifer cirkulation",
+          "studentAction": "",
+          "specialCase": "Kall perifert",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Palpation av buk, becken och lårben",
+          "studentAction": "",
+          "specialCase": "Reagerar lite om man dunkar på flankerna. Bäcken/lårben u.a.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Ordination av venösa infarter",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Ordination av blodgas ± glukos",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "disability": {
+      "label": "disability",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "Bedömning av medvetandegrad (RLS/GCS)",
+          "studentAction": "Identifierar RLS 3",
+          "specialCase": "mycket slö, kräver skakningar och rop för att öppna ögonen litet och mumla något (RLS 3)",
+          "tiers": [
+            "basic",
+            "middle"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersökning av ögon",
+          "studentAction": "",
+          "specialCase": "Likstora och centrerade pupiller som reagerar normalt på ljus",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersökning av grov kraft i armar och ben",
+          "studentAction": "",
+          "specialCase": "Grov kraft u.a",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersökning av sensorik armar och ben",
+          "studentAction": "",
+          "specialCase": "Sensorik u.a",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Ordination av kapillär glukos",
+          "studentAction": "",
+          "specialCase": "Kapillärt glukos: 6,6 mM",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "exposure": {
+      "label": "exposure",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "bestämning av kroppstemperatur",
+          "studentAction": "Identifierar feber",
+          "specialCase": "Temperatur 38,8°",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "inspektion av kroppens fram- och baksida",
+          "studentAction": "",
+          "specialCase": "Framsida och baksida u.a. Kateterpåsen (har kronisk KAD) är mörk och grumlig.",
+          "tiers": [
+            "basic",
+            "middle"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "blodgas": {
+      "label": "blodgas",
+      "image": {
+        "filename": "fall-g-blodgas-image-2-jpg",
+        "suggestedPath": "assets/blodgas/fall-g-blodgas-image-2-jpg",
+        "originalName": "image (2).jpg",
+        "mime": "image/jpeg"
+      },
+      "subboxes": [
+        {
+          "name": "Undersöker och tolkar acidemi/alkalemi",
+          "studentAction": "",
+          "specialCase": "Acidemi",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Respiratorisk/metabol genes, kompensation",
+          "studentAction": "",
+          "specialCase": "Metabol acidos utan respiratorisk kompensation",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Övriga värden (Na, K, Hb, Cl, Ca, glukos, laktat, FCOHb",
+          "studentAction": "Identifierar förhöjt laktat, förhöjt kalium",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "ekg": {
+      "label": "ekg",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "Frekvens",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Rytm",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "QRS",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "STT-sträcka",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "QT-tid",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "handlaggning": {
+      "label": "handläggning",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "Bedömer behov av riktad klinisk undersökning (Ultraljud, PR, Nackstelhet)",
+          "studentAction": "Ordinerar blododlingar och urinodlingar INNAN antibiotika ordineras\nFrågar om känd allergi innan antibiotika ordineras",
+          "specialCase": "Ingen känd allergi",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true
+        },
+        {
+          "name": "Initierar adekvat behandling",
+          "studentAction": "Ordinerar ett intravenöst antibiotika med urinvägstäckning - Förslagsvis Meropenem 1 g i.v och tillägg av gentamicin 5-7 mg/kg då det förligger septisk chock\nDå blodtrycket fortsatt är lågt ska studenten föreslå vasopressorer som nästa steg i behandlingen",
+          "specialCase": "",
+          "tiers": [
+            "basic",
+            "high"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Re-evaluerar (Övervakar och utvärderar effekter av åtgärder)",
+          "studentAction": "Identifierar fortsatt lågt blodtryck",
+          "specialCase": "Inga större förändringar",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "signout": {
+      "label": "signout",
+      "image": null,
+      "subboxes": [
+        {
+          "name": "Formulerar arbetsdiagnos",
+          "studentAction": "Identifierar sepsis med chock, ev. urogenital",
+          "specialCase": "",
+          "tiers": [
+            "basic",
+            "middle"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Planerar vidare behandling",
+          "studentAction": "Initierar antibiotikabehandling, identifierar behov av vasopressorer",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Bedömer övervakningsbehov och vårdnivå",
+          "studentAction": "Ska identifiera behov av IVA-vård då patienten behöver vasopressorer",
+          "specialCase": "",
+          "tiers": [
+            "basic",
+            "high"
+          ],
+          "critical": false
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,301 @@
+{
+  "schema": "ekg-lab.v1",
+  "createdAt": "2026-01-29T16:19:31.791Z",
+  "settings": {
+    "rhythm": "Sinusrytm",
+    "age": 73,
+    "sex": "kvinna",
+    "hr": 74,
+    "speed": 50,
+    "gain": 10,
+    "noise": 0.035,
+    "wander": 0.06,
+    "pqrst": {
+      "P": {
+        "amp": 0.12,
+        "width": 0.03
+      },
+      "Q": {
+        "amp": -0.15,
+        "width": 0.008
+      },
+      "R": {
+        "amp": 1,
+        "width": 0.006
+      },
+      "S": {
+        "amp": -0.25,
+        "width": 0.01
+      },
+      "T": {
+        "amp": 0.35,
+        "width": 0.06,
+        "tailAmp": 0,
+        "tailWidth": 0.05
+      }
+    },
+    "leads": {
+      "aVL": {
+        "scale": 0.55,
+        "invert": false,
+        "st": 0,
+        "pqrst": {
+          "R": {
+            "amp": 2,
+            "width": 0.043
+          },
+          "S": {
+            "amp": -0.46,
+            "width": 0.007
+          },
+          "T": {
+            "amp": -0.51,
+            "width": 0.06,
+            "tailAmp": 0,
+            "tailWidth": 0.05
+          }
+        }
+      },
+      "I": {
+        "scale": 0.9,
+        "invert": false,
+        "st": 0,
+        "pqrst": {
+          "R": {
+            "amp": 0.67,
+            "width": 0.03
+          },
+          "S": {
+            "amp": 0.42,
+            "width": 0.053
+          },
+          "T": {
+            "amp": 0.12,
+            "width": 0.06,
+            "tailAmp": 0,
+            "tailWidth": 0.05
+          }
+        }
+      },
+      "-aVR": {
+        "scale": 0.7,
+        "invert": false,
+        "st": 0,
+        "pqrst": {
+          "R": {
+            "amp": 1,
+            "width": 0.028
+          },
+          "S": {
+            "amp": -0.25,
+            "width": 0.01
+          },
+          "T": {
+            "amp": -0.44,
+            "width": 0.06,
+            "tailAmp": 0,
+            "tailWidth": 0.05
+          }
+        }
+      },
+      "II": {
+        "scale": 1.1,
+        "invert": false,
+        "st": 0,
+        "pqrst": {}
+      },
+      "aVF": {
+        "scale": 0.75,
+        "invert": false,
+        "st": 0,
+        "pqrst": {
+          "T": {
+            "amp": 0.87,
+            "width": 0.06,
+            "tailAmp": 0,
+            "tailWidth": 0.05
+          },
+          "S": {
+            "amp": -0.25,
+            "width": 0.01
+          },
+          "R": {
+            "amp": -1.84,
+            "width": 0.03
+          },
+          "Q": {
+            "amp": 0.38,
+            "width": 0.072
+          }
+        }
+      },
+      "III": {
+        "scale": 0.45,
+        "invert": false,
+        "st": 0,
+        "pqrst": {
+          "T": {
+            "amp": 0.64,
+            "width": 0.086,
+            "tailAmp": 0,
+            "tailWidth": 0.05
+          },
+          "S": {
+            "amp": -2,
+            "width": 0.03
+          },
+          "R": {
+            "amp": 1.28,
+            "width": 0.006
+          },
+          "Q": {
+            "amp": 0.87,
+            "width": 0.017
+          }
+        }
+      },
+      "V1": {
+        "scale": 0.7,
+        "invert": true,
+        "st": 0,
+        "pqrst": {
+          "S": {
+            "amp": 1.78,
+            "width": 0.03
+          },
+          "R": {
+            "amp": -0.4,
+            "width": 0.006
+          },
+          "T": {
+            "amp": -0.64,
+            "width": 0.086,
+            "tailAmp": 0,
+            "tailWidth": 0.05
+          },
+          "Q": {
+            "amp": -0.8,
+            "width": 0.024
+          }
+        }
+      },
+      "V2": {
+        "scale": 0.8,
+        "invert": true,
+        "st": 0,
+        "pqrst": {
+          "S": {
+            "amp": 2,
+            "width": 0.03
+          },
+          "R": {
+            "amp": -0.09,
+            "width": 0.006
+          },
+          "T": {
+            "amp": -0.64,
+            "width": 0.086,
+            "tailAmp": 0,
+            "tailWidth": 0.05
+          },
+          "Q": {
+            "amp": -0.8,
+            "width": 0.024
+          }
+        }
+      },
+      "V3": {
+        "scale": 0.95,
+        "invert": false,
+        "st": 0,
+        "pqrst": {
+          "T": {
+            "amp": 0.64,
+            "width": 0.086,
+            "tailAmp": 0,
+            "tailWidth": 0.05
+          },
+          "S": {
+            "amp": -2,
+            "width": 0.03
+          },
+          "R": {
+            "amp": -0.09,
+            "width": 0.006
+          },
+          "Q": {
+            "amp": -0.8,
+            "width": 0.024
+          }
+        }
+      },
+      "V4": {
+        "scale": 1.15,
+        "invert": false,
+        "st": 0,
+        "pqrst": {
+          "R": {
+            "amp": -0.38,
+            "width": 0.006
+          },
+          "S": {
+            "amp": -0.09,
+            "width": 0.02
+          },
+          "Q": {
+            "amp": 0.33,
+            "width": 0.022
+          },
+          "T": {
+            "amp": 0.17,
+            "width": 0.08,
+            "tailAmp": 0,
+            "tailWidth": 0.05
+          }
+        }
+      },
+      "V5": {
+        "scale": 1,
+        "invert": false,
+        "st": 0,
+        "pqrst": {
+          "R": {
+            "amp": 0.89,
+            "width": 0.043
+          },
+          "S": {
+            "amp": -0.33,
+            "width": 0.012
+          },
+          "T": {
+            "amp": 0.2,
+            "width": 0.035,
+            "tailAmp": 0,
+            "tailWidth": 0.05
+          }
+        }
+      },
+      "V6": {
+        "scale": 0.85,
+        "invert": false,
+        "st": 0,
+        "pqrst": {
+          "R": {
+            "amp": 0.89,
+            "width": 0.043
+          },
+          "S": {
+            "amp": -0.33,
+            "width": 0.012
+          },
+          "T": {
+            "amp": 0.2,
+            "width": 0.035,
+            "tailAmp": 0,
+            "tailWidth": 0.05
+          }
+        }
+      }
+    }
+  }
+}
