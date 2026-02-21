@@ -53,7 +53,7 @@
           ],
           "critical": false,
           "openCustomEmbed": true,
-          "openCustomEmbedLabel": "Oppna defib-overlay"
+          "openCustomEmbedLabel": "Visa defibrillator för studenten"
         },
         {
           "name": "Studenten kanner pa pulsen",
