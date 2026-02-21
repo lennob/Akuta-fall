@@ -521,6 +521,7 @@
       const urlParams = new URLSearchParams(window.location.search);
       const isIframeEmbed = window.self !== window.top;
       const isCaseEmbed = urlParams.get("embed") === "case" || isIframeEmbed;
+      const requestedCaseRhythm = String(urlParams.get("rhythm") || "").toLowerCase();
       if (isCaseEmbed) {
         document.body.classList.add("case-embed");
       }
@@ -1010,6 +1011,11 @@
           state.hr = 92;
           state.lastBeepBeatIndex = null;
           setResult("ROSC efter stot, rytm stabiliseras...", "good");
+          emitCaseEvent("defib-success", {
+            shocks: state.shocks,
+            energy: state.energy,
+            sourceRhythm: source || "",
+          });
           if (source === "vfib") {
             emitCaseEvent("vf-defib-success", { shocks: state.shocks, energy: state.energy });
           }
@@ -1168,8 +1174,11 @@
       setTimeout(emitEmbedHeight, 800);
 
       if (isCaseEmbed) {
-        setScenarioRhythm("vfib");
-        setResult("Patient i VF, defibrillera", "warn");
+        const allowed = ["sinus", "vt", "vfib", "pea", "asystole"];
+        const startRhythm = allowed.includes(requestedCaseRhythm) ? requestedCaseRhythm : "vfib";
+        setScenarioRhythm(startRhythm);
+        const startLabel = rhythms.find((r) => r.id === startRhythm)?.label || startRhythm;
+        setResult(`Patient i ${startLabel}`, startRhythm === "vfib" || startRhythm === "vt" ? "warn" : "");
       }
       setPower(false);
       requestAnimationFrame(drawFrame);

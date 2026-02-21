@@ -117,6 +117,20 @@
         flex-wrap: wrap;
       }
 
+      .hb-defib-settings {
+        border: 1px solid rgba(28, 78, 135, 0.28);
+        background: rgba(28, 78, 135, 0.05);
+        border-radius: 10px;
+        padding: 10px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .hb-defib-settings h2 {
+        margin: 0;
+        font-size: 0.95rem;
+      }
+
       .hb-status {
         color: #64748b;
         margin: 0;
@@ -150,6 +164,20 @@
             <input id="autoDefibCheck" type="checkbox" checked />
             Automarkera Defibrilator subbox 4 vid lyckad VF-defibrillering
           </label>
+          <div class="hb-defib-settings">
+            <h2>Defib-inställningar</h2>
+            <div class="hb-field">
+              <label for="startRhythm">Starttillstand i defib</label>
+              <select id="startRhythm">
+                <option value="sinus">Sinus</option>
+                <option value="vt">VT</option>
+                <option value="vfib" selected>VF</option>
+                <option value="pea">PEA</option>
+                <option value="asystole">Asystole</option>
+              </select>
+            </div>
+            <p class="hb-status">Styr vilken rytm som visas nar defib-overlayn oppnas i caset.</p>
+          </div>
         </div>
       </section>
 
@@ -215,6 +243,7 @@
       const caseTitleEl = document.getElementById("caseTitle");
       const caseTextEl = document.getElementById("caseText");
       const autoDefibCheckEl = document.getElementById("autoDefibCheck");
+      const startRhythmEl = document.getElementById("startRhythm");
 
       function safeText(value) {
         return String(value ?? "");
@@ -308,6 +337,7 @@
         const title = safeText(caseTitleEl.value).trim() || "FALL-HEART-NEW";
         const caseText = safeText(caseTextEl.value).trim();
         const autoDefib = Boolean(autoDefibCheckEl.checked);
+        const rhythm = safeText(startRhythmEl?.value || "vfib").trim() || "vfib";
 
         const boxes = {};
 
@@ -356,7 +386,7 @@
           if (section.id === "defibrilator") {
             box.customEmbed = {
               type: "iframe",
-              src: "./defib-workspace.html?embed=case",
+              src: `./defib-workspace.html?embed=case&rhythm=${encodeURIComponent(rhythm)}`,
               title: "Defib Workspace",
               height: 960,
               display: "overlay",
