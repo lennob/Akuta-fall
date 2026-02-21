@@ -21,7 +21,7 @@
           "studentAction": "Patienten har ventrikelflimmer (VF). Defibrillera patienten korrekt i simulatorn.",
           "specialCase": "Subboxen markeras automatiskt när korrekt defibrillering genomförts.",
           "openCustomEmbed": true,
-          "openCustomEmbedLabel": "Öppna defib-overlay",
+          "openCustomEmbedLabel": "Visa defribrillator för studenten",
           "completeOnEvent": "vf-defib-success",
           "autoGradeOnEvent": "basic",
           "tiers": [
