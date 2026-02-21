@@ -1,0 +1,1066 @@
+﻿<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Defib Console Workspace</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <style>
+      :root {
+        --shell: #d2dae1;
+        --shell-dark: #aab4bf;
+        --panel-bg: #4a5057;
+        --panel-inset: #20272d;
+        --panel-green: #53b291;
+        --monitor-bg: #000;
+        --trace: #2dc75c;
+        --grid-major: rgba(216, 82, 82, 0.32);
+        --grid-minor: rgba(216, 82, 82, 0.17);
+      }
+
+      * { box-sizing: border-box; }
+
+      body.defib-workspace {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, sans-serif;
+        background: radial-gradient(circle at 24% 0%, #dce4eb, #b5c1cd 58%, #99a8b7 100%);
+        color: #e2e8f0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+      }
+
+      .sim-wrap {
+        width: min(1320px, 100%);
+        display: grid;
+        gap: 10px;
+      }
+
+      .sim-header {
+        background: #101821;
+        border: 1px solid #1f2a37;
+        border-radius: 12px;
+        padding: 10px 14px;
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .sim-header h1 {
+        margin: 0;
+        font-size: 1.08rem;
+        letter-spacing: 0.02em;
+      }
+
+      .sim-header p {
+        margin: 2px 0 0;
+        font-size: 0.86rem;
+        color: #95a3b5;
+      }
+
+      .tag {
+        background: rgba(45, 199, 92, 0.14);
+        color: #97eab1;
+        border: 1px solid rgba(45, 199, 92, 0.35);
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        white-space: nowrap;
+      }
+
+      .device {
+        background: linear-gradient(165deg, var(--shell) 0%, #c0c9d2 26%, #aeb8c2 72%, var(--shell-dark) 100%);
+        border: 1px solid rgba(0, 0, 0, 0.32);
+        border-radius: 20px;
+        padding: 14px;
+        box-shadow: 0 24px 50px rgba(15, 23, 42, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 332px;
+        gap: 14px;
+      }
+
+      .monitor-shell {
+        background: #111921;
+        border: 2px solid #394653;
+        border-radius: 14px;
+        padding: 10px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .status-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .workspace-status {
+        background: #101821;
+        border: 1px solid #1f2a37;
+        border-radius: 10px;
+        padding: 8px;
+      }
+
+      .test-conditions {
+        background: #101821;
+        border: 1px solid #1f2a37;
+        border-radius: 10px;
+        padding: 10px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .test-conditions h2 {
+        margin: 0;
+        font-size: 0.95rem;
+        color: #dce7f5;
+      }
+
+      .test-conditions p {
+        margin: 0;
+        font-size: 0.82rem;
+        color: #9fb0c3;
+      }
+
+      .condition-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .condition-btn {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        background: linear-gradient(180deg, #1f252b, #11161b);
+        color: #e2ebf7;
+        font-weight: 800;
+        padding: 9px 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+
+      .chip {
+        border: 1px solid rgba(255, 255, 255, 0.24);
+        background: rgba(148, 163, 184, 0.18);
+        color: #deebf9;
+        border-radius: 5px;
+        padding: 4px 8px;
+        font-size: 0.79rem;
+        font-weight: 700;
+      }
+
+      .chip.good {
+        color: #99f3b3;
+        border-color: rgba(45, 199, 92, 0.72);
+        background: rgba(45, 199, 92, 0.2);
+      }
+
+      .chip.warn {
+        color: #ffe4a4;
+        border-color: rgba(229, 186, 65, 0.82);
+        background: rgba(229, 186, 65, 0.24);
+      }
+
+      .ecg-wrap {
+        position: relative;
+        background: var(--monitor-bg);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 8px;
+        overflow: hidden;
+        min-height: 420px;
+      }
+
+      .ecg-wrap canvas {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .shock-flash {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        background: rgba(255, 255, 255, 0.9);
+        pointer-events: none;
+      }
+
+      .shock-flash.active { animation: shock-flash 220ms ease; }
+
+      @keyframes shock-flash {
+        0% { opacity: 0; }
+        30% { opacity: 1; }
+        100% { opacity: 0; }
+      }
+
+      .control-shell {
+        background: linear-gradient(180deg, #7f8790 0%, #646e78 100%);
+        border: 1px solid rgba(0, 0, 0, 0.45);
+        border-radius: 12px;
+        padding: 8px;
+        display: grid;
+      }
+
+      .control-panel {
+        background: linear-gradient(180deg, #5a6169 0%, #4a525a 100%);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 10px;
+        padding: 8px;
+        display: grid;
+        grid-template-rows: auto auto auto auto 1fr;
+        gap: 8px;
+      }
+
+      .top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .icon-strip {
+        display: flex;
+        gap: 8px;
+        opacity: 0.85;
+        font-size: 0.8rem;
+      }
+
+      .on-btn {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 999px;
+        background: linear-gradient(180deg, #2cdd6f, #1ea151);
+        color: #fff;
+        min-width: 110px;
+        padding: 8px 14px;
+        font-weight: 900;
+        font-size: 0.95rem;
+        letter-spacing: 0.03em;
+      }
+
+      .on-btn.off {
+        background: linear-gradient(180deg, #7d8692, #59626f);
+      }
+
+      .rows {
+        display: grid;
+        gap: 8px;
+      }
+
+      .logic-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        align-items: start;
+      }
+
+      .bottom-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        align-items: start;
+      }
+
+      .left-col,
+      .right-col {
+        display: grid;
+        gap: 8px;
+        align-content: start;
+      }
+
+      .btn,
+      .btn-sm,
+      .btn-wide,
+      .btn-yellow,
+      .btn-orange,
+      .energy-btn {
+        border: 1px solid rgba(255, 255, 255, 0.17);
+        border-radius: 13px;
+        background: linear-gradient(180deg, #1f252b, #0f1317);
+        color: #f8fafc;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        font-size: 0.88rem;
+      }
+
+      .btn { padding: 8px 10px; }
+      .btn-sm { padding: 7px 8px; font-size: 0.76rem; }
+      .btn-wide { padding: 8px 10px; }
+
+      .btn.analyze {
+        color: #e5ba41;
+      }
+
+      .btn-yellow {
+        border-color: rgba(0, 0, 0, 0.35);
+        background: linear-gradient(180deg, #ffd75a 0%, #e5ba41 100%);
+        color: #2a2a2a;
+        padding: 8px 10px;
+      }
+
+      .energy-block {
+        background: #1b2127;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 10px;
+        padding: 7px;
+        display: grid;
+        gap: 7px;
+      }
+
+      .shock-module {
+        background: linear-gradient(180deg, #7f8790 0%, #6e7781 100%);
+        border: 1px solid rgba(0, 0, 0, 0.35);
+        border-radius: 10px;
+        padding: 6px 8px 8px;
+        display: grid;
+        gap: 6px;
+        align-content: start;
+      }
+
+      .energy-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #d8e1ea;
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+
+      .energy-value {
+        font-size: 1.35rem;
+        font-weight: 900;
+      }
+
+      .energy-controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .energy-btn { padding: 7px 8px; font-size: 0.76rem; }
+
+      .btn-orange {
+        width: 82px;
+        height: 82px;
+        margin: 0 auto;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.22);
+        background: radial-gradient(circle at 30% 20%, #ffba6a 0%, #ff891a 58%, #ec6e00 100%);
+        color: #fff;
+        font-size: 2rem;
+      }
+
+      .btn-orange:disabled { opacity: 0.45; }
+
+      .lead-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .pacer-zone {
+        background: linear-gradient(180deg, #58b796 0%, #3b9f7e 100%);
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+        padding: 8px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .pacer-zone .btn-wide {
+        width: 100%;
+      }
+
+      .lower-stack {
+        display: grid;
+        gap: 8px;
+      }
+
+      .disabled { opacity: 0.58; }
+
+      @media (max-width: 990px) {
+        .device { grid-template-columns: 1fr; }
+        .condition-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+    </style>
+  </head>
+  <body class="defib-workspace">
+    <main class="sim-wrap">
+      <section class="sim-header">
+        <div>
+          <h1>Defib Simulator Workspace</h1>
+          <p>Trana pa realistiskt flode: strom pa, valj energi, analysera, ladda och ge stot.</p>
+        </div>
+        <div class="tag">TRAINING</div>
+      </section>
+
+      <section class="device">
+        <section class="monitor-shell">
+          <div class="ecg-wrap">
+            <canvas id="ecgCanvas" width="1600" height="520"></canvas>
+            <div class="shock-flash" id="shockFlash" aria-hidden="true"></div>
+          </div>
+        </section>
+
+        <section class="control-shell" id="controlShell">
+          <div class="control-panel">
+            <div class="top-row">
+              <div class="icon-strip"><span>●</span><span>⚡</span><span>🔧</span></div>
+              <button type="button" class="on-btn off" id="powerBtn">OFF</button>
+            </div>
+
+            <div class="rows">
+              <div class="logic-row">
+                <div class="left-col">
+                  <button type="button" class="btn" id="cprBtn">CPR</button>
+                  <button type="button" class="btn analyze" id="analyzeBtn">Analyze</button>
+                  <div class="lead-row">
+                    <button type="button" class="btn-sm" id="leadBtn">Lead</button>
+                    <button type="button" class="btn-sm" id="sizeBtn">Size</button>
+                  </div>
+                  <button type="button" class="btn" id="syncBtn">Sync</button>
+                </div>
+                <div class="right-col">
+                  <div class="shock-module">
+                    <div class="energy-block">
+                      <div class="energy-title">
+                        <span>ENERGY SELECT</span>
+                        <span class="energy-value" id="energyValue">200 J</span>
+                      </div>
+                      <div class="energy-controls">
+                        <button type="button" class="energy-btn" id="energyDownBtn">▼ DOWN</button>
+                        <button type="button" class="energy-btn" id="energyUpBtn">▲ UP</button>
+                      </div>
+                    </div>
+                    <button type="button" class="btn-yellow" id="chargeBtn">CHARGE</button>
+                    <button type="button" class="btn-orange" id="defibBtn" disabled>⚡</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bottom-row">
+              <div class="left-col lower-stack">
+                <button type="button" class="btn-yellow" id="alarmsBtn">ALARMS</button>
+                <button type="button" class="btn" id="optionsBtn">Options</button>
+                <button type="button" class="btn" id="eventBtn">Event / Rhythm</button>
+              </div>
+              <div class="right-col">
+                <div class="pacer-zone">
+                  <button type="button" class="btn-wide" id="pacerBtn">Pacer</button>
+                  <button type="button" class="btn-wide" id="rateBtn">Rate</button>
+                  <button type="button" class="btn-wide" id="currentBtn">Current</button>
+                  <button type="button" class="btn-wide" id="pauseBtn">Pause</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+      </section>
+
+      <section class="workspace-status" aria-label="Workspace status">
+        <div class="status-row">
+          <div class="chip" id="rhythmChip">Rytm: OFF</div>
+          <div class="chip" id="rateChip">HF: -</div>
+          <div class="chip" id="shockChip">Stotar: 0</div>
+          <div class="chip" id="chargeChip">Laddning: Ej laddad</div>
+          <div class="chip" id="scoreChip">Poang: 0</div>
+          <div class="chip" id="timerChip">Tid: 0.0 s</div>
+          <div class="chip" id="resultChip">Status: Maskin av</div>
+        </div>
+      </section>
+
+      <section class="test-conditions" aria-label="Patient conditions">
+        <h2>Testa patienttillstand</h2>
+        <p>Valj ett tillstand for att satta rytmen direkt i workspace-laget.</p>
+        <div class="condition-grid">
+          <button type="button" class="condition-btn" data-rhythm="sinus">Sinus</button>
+          <button type="button" class="condition-btn" data-rhythm="vt">VT</button>
+          <button type="button" class="condition-btn" data-rhythm="vfib">VF</button>
+          <button type="button" class="condition-btn" data-rhythm="pea">PEA</button>
+          <button type="button" class="condition-btn" data-rhythm="asystole">Asystole</button>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const canvas = document.getElementById("ecgCanvas");
+      const ctx = canvas ? canvas.getContext("2d") : null;
+      const shockFlash = document.getElementById("shockFlash");
+
+      const rhythmChip = document.getElementById("rhythmChip");
+      const rateChip = document.getElementById("rateChip");
+      const shockChip = document.getElementById("shockChip");
+      const chargeChip = document.getElementById("chargeChip");
+      const resultChip = document.getElementById("resultChip");
+      const scoreChip = document.getElementById("scoreChip");
+      const timerChip = document.getElementById("timerChip");
+      const energyValue = document.getElementById("energyValue");
+
+      const powerBtn = document.getElementById("powerBtn");
+      const chargeBtn = document.getElementById("chargeBtn");
+      const defibBtn = document.getElementById("defibBtn");
+      const analyzeBtn = document.getElementById("analyzeBtn");
+      const cprBtn = document.getElementById("cprBtn");
+      const eventBtn = document.getElementById("eventBtn");
+      const energyUpBtn = document.getElementById("energyUpBtn");
+      const energyDownBtn = document.getElementById("energyDownBtn");
+      const syncBtn = document.getElementById("syncBtn");
+      const leadBtn = document.getElementById("leadBtn");
+      const sizeBtn = document.getElementById("sizeBtn");
+      const alarmsBtn = document.getElementById("alarmsBtn");
+      const optionsBtn = document.getElementById("optionsBtn");
+      const pacerBtn = document.getElementById("pacerBtn");
+      const rateBtn = document.getElementById("rateBtn");
+      const currentBtn = document.getElementById("currentBtn");
+      const pauseBtn = document.getElementById("pauseBtn");
+      const controlShell = document.getElementById("controlShell");
+      const conditionBtns = document.querySelectorAll("[data-rhythm]");
+
+      const state = {
+        powerOn: false,
+        running: false,
+        rhythm: "sinus",
+        hr: 82,
+        shocks: 0,
+        energy: 200,
+        charged: false,
+        chargingUntil: 0,
+        chargeExpireAt: 0,
+        sync: false,
+        score: 0,
+        timer: 0,
+        t: 0,
+        lastTs: 0,
+        lastBeepBeatIndex: null,
+        soundEnabled: false,
+      };
+
+      let audioCtx = null;
+      const pxPerSec = 220;
+
+      const rhythms = [
+        { id: "sinus", hr: 82, label: "Sinus" },
+        { id: "vt", hr: 170, label: "VT" },
+        { id: "vfib", hr: 0, label: "VF" },
+        { id: "pea", hr: 45, label: "PEA" },
+        { id: "asystole", hr: 0, label: "Asystoli" },
+      ];
+
+      function ensureAudio() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === "suspended") audioCtx.resume();
+      }
+
+      function beep(freq = 900, ms = 35, gain = 0.02) {
+        if (!audioCtx || !state.soundEnabled) return;
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const amp = audioCtx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = freq;
+        amp.gain.setValueAtTime(0.0001, now);
+        amp.gain.exponentialRampToValueAtTime(gain, now + 0.004);
+        amp.gain.exponentialRampToValueAtTime(0.0001, now + ms / 1000);
+        osc.connect(amp).connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + ms / 1000);
+      }
+
+      function playButtonClick() {
+        if (!state.soundEnabled) return;
+        if (!audioCtx) return;
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const amp = audioCtx.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(520, now);
+        osc.frequency.exponentialRampToValueAtTime(380, now + 0.03);
+        amp.gain.setValueAtTime(0.0001, now);
+        amp.gain.exponentialRampToValueAtTime(0.012, now + 0.003);
+        amp.gain.exponentialRampToValueAtTime(0.0001, now + 0.045);
+        osc.connect(amp).connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.05);
+      }
+
+      function playChargeStartTone() {
+        if (!state.soundEnabled || !audioCtx) return;
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const amp = audioCtx.createGain();
+        osc.type = "square";
+        osc.frequency.setValueAtTime(300, now);
+        osc.frequency.linearRampToValueAtTime(360, now + 0.08);
+        amp.gain.setValueAtTime(0.0001, now);
+        amp.gain.exponentialRampToValueAtTime(0.02, now + 0.006);
+        amp.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
+        osc.connect(amp).connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.11);
+      }
+
+      function playChargeReadyTone() {
+        if (!state.soundEnabled || !audioCtx) return;
+        const now = audioCtx.currentTime;
+        const tones = [740, 980];
+        tones.forEach((freq, i) => {
+          const t = now + i * 0.09;
+          const osc = audioCtx.createOscillator();
+          const amp = audioCtx.createGain();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(freq, t);
+          amp.gain.setValueAtTime(0.0001, t);
+          amp.gain.exponentialRampToValueAtTime(0.018, t + 0.008);
+          amp.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
+          osc.connect(amp).connect(audioCtx.destination);
+          osc.start(t);
+          osc.stop(t + 0.075);
+        });
+      }
+
+      function gaussian(x, mu, sigma) {
+        const z = (x - mu) / sigma;
+        return Math.exp(-0.5 * z * z);
+      }
+
+      function noise(t) {
+        const x = Math.sin(t * 12.9898) * 43758.5453;
+        return (x - Math.floor(x) - 0.5) * 2;
+      }
+
+      function sampleSinus(tSec) {
+        const rr = 60 / Math.max(30, state.hr);
+        const ph = ((tSec % rr) + rr) % rr / rr;
+        return (
+          0.11 * gaussian(ph, 0.19, 0.028) +
+          -0.18 * gaussian(ph, 0.365, 0.011) +
+          1.25 * gaussian(ph, 0.395, 0.0065) +
+          -0.28 * gaussian(ph, 0.425, 0.014) +
+          0.34 * gaussian(ph, 0.67, 0.06) +
+          0.03 * Math.sin(2 * Math.PI * 0.2 * tSec)
+        );
+      }
+
+      function sampleVT(tSec) {
+        const rr = 60 / Math.max(80, state.hr);
+        const ph = ((tSec % rr) + rr) % rr / rr;
+        return -0.14 * gaussian(ph, 0.24, 0.03) + 1.1 * gaussian(ph, 0.33, 0.045) - 0.85 * gaussian(ph, 0.43, 0.05);
+      }
+
+      function sampleVFib(tSec) {
+        const coarse = Math.sin(2 * Math.PI * 4.8 * tSec);
+        const medium = 0.52 * Math.sin(2 * Math.PI * 6.1 * tSec + 0.7);
+        const fine = 0.18 * Math.sin(2 * Math.PI * 7.2 * tSec + 1.3);
+        return 0.34 * (coarse + medium + fine);
+      }
+
+      function samplePEA(tSec) {
+        const rr = 60 / Math.max(25, state.hr);
+        const ph = ((tSec % rr) + rr) % rr / rr;
+        return (
+          0.08 * gaussian(ph, 0.2, 0.03) +
+          -0.1 * gaussian(ph, 0.37, 0.013) +
+          0.7 * gaussian(ph, 0.4, 0.01) +
+          -0.16 * gaussian(ph, 0.44, 0.016) +
+          0.2 * gaussian(ph, 0.68, 0.07)
+        );
+      }
+
+      function sampleAsystole(tSec) {
+        return 0.008 * noise(tSec * 4);
+      }
+
+      function sampleAt(tSec) {
+        if (!state.powerOn) return 0;
+        if (state.rhythm === "vfib") return sampleVFib(tSec);
+        if (state.rhythm === "vt") return sampleVT(tSec);
+        if (state.rhythm === "pea") return samplePEA(tSec);
+        if (state.rhythm === "asystole") return sampleAsystole(tSec);
+        return sampleSinus(tSec);
+      }
+
+      function setResult(msg, kind = "") {
+        resultChip.textContent = `Status: ${msg}`;
+        resultChip.className = `chip ${kind}`;
+      }
+
+      function setCharge(charged) {
+        state.charged = Boolean(charged);
+        if (!charged) state.chargeExpireAt = 0;
+        defibBtn.disabled = !(state.powerOn && state.charged);
+        if (state.charged) {
+          chargeChip.textContent = "Laddning: Laddad";
+          chargeChip.className = "chip warn";
+        } else if (state.chargingUntil) {
+          chargeChip.textContent = "Laddning: Laddar";
+          chargeChip.className = "chip warn";
+        } else {
+          chargeChip.textContent = "Laddning: Ej laddad";
+          chargeChip.className = "chip";
+        }
+      }
+
+      function updateCoreUiEnabled() {
+        const off = !state.powerOn;
+        const ids = [
+          chargeBtn,
+          analyzeBtn,
+          cprBtn,
+          eventBtn,
+          energyUpBtn,
+          energyDownBtn,
+          syncBtn,
+          leadBtn,
+          sizeBtn,
+          alarmsBtn,
+          optionsBtn,
+          pacerBtn,
+          rateBtn,
+          currentBtn,
+          pauseBtn,
+        ];
+        ids.forEach((el) => { el.disabled = off; });
+        controlShell.classList.toggle("disabled", off);
+        powerBtn.disabled = false;
+      }
+
+      function updateChips() {
+        if (!state.powerOn) {
+          rhythmChip.textContent = "Rytm: OFF";
+          rateChip.textContent = "HF: -";
+          scoreChip.textContent = `Poang: ${state.score}`;
+          timerChip.textContent = `Tid: ${state.timer.toFixed(1)} s`;
+          shockChip.textContent = `Stotar: ${state.shocks}`;
+          energyValue.textContent = `${state.energy} J`;
+          return;
+        }
+
+        const shockable = state.rhythm === "vfib" || state.rhythm === "vt";
+        const label = rhythms.find((r) => r.id === state.rhythm)?.label || state.rhythm;
+        rhythmChip.textContent = `Rytm: ${label}`;
+        rhythmChip.className = `chip ${shockable ? "warn" : state.rhythm === "sinus" ? "good" : ""}`;
+
+        rateChip.textContent = `HF: ${state.rhythm === "vfib" || state.rhythm === "asystole" ? "-" : state.hr}`;
+        shockChip.textContent = `Stotar: ${state.shocks}`;
+        scoreChip.textContent = `Poang: ${state.score}`;
+        timerChip.textContent = `Tid: ${state.timer.toFixed(1)} s`;
+        energyValue.textContent = `${state.energy} J`;
+      }
+
+      function setPower(on) {
+        state.powerOn = on;
+        state.running = on;
+        state.chargingUntil = 0;
+        setCharge(false);
+        state.lastBeepBeatIndex = null;
+        if (!on) {
+          state.timer = 0;
+          powerBtn.textContent = "OFF";
+          powerBtn.classList.add("off");
+          setResult("Maskin av");
+        } else {
+          powerBtn.textContent = "ON";
+          powerBtn.classList.remove("off");
+          state.rhythm = "sinus";
+          state.hr = 82;
+          setResult("Monitor aktiv", "good");
+        }
+        updateCoreUiEnabled();
+        updateChips();
+      }
+
+      function isShockable() {
+        return state.rhythm === "vfib" || state.rhythm === "vt";
+      }
+
+      function setScenarioRhythm(rhythmId) {
+        const next = rhythms.find((r) => r.id === rhythmId);
+        if (!next) return;
+        state.rhythm = next.id;
+        state.hr = next.hr;
+        state.lastBeepBeatIndex = null;
+        setCharge(false);
+        setResult(`Scenario: ${next.label}`, (next.id === "vfib" || next.id === "vt") ? "warn" : "");
+        updateChips();
+      }
+
+      function analyze() {
+        if (!state.powerOn) return;
+        if (isShockable()) {
+          setResult("Shock advised", "warn");
+        } else {
+          setResult("No shock advised", "good");
+        }
+      }
+
+      function scoreShockDecision(shocked) {
+        const shouldShock = isShockable();
+        if (shocked && shouldShock) {
+          state.score += 2;
+        } else if (shocked && !shouldShock) {
+          state.score -= 2;
+        } else if (!shocked && shouldShock) {
+          state.score -= 1;
+        } else {
+          state.score += 1;
+        }
+      }
+
+      function defib() {
+        if (!state.powerOn) return;
+        ensureAudio();
+        if (!state.charged) {
+          setResult("Ladda innan stot", "warn");
+          return;
+        }
+
+        setCharge(false);
+        state.shocks += 1;
+        scoreShockDecision(true);
+
+        shockFlash.classList.remove("active");
+        void shockFlash.offsetWidth;
+        shockFlash.classList.add("active");
+        beep(1600, 85, 0.03);
+
+        if (isShockable()) {
+          state.rhythm = "sinus";
+          state.hr = 92;
+          setResult("ROSC efter stot", "good");
+        } else {
+          setResult("Icke-shockbar rytm, fortsatt HLR", "warn");
+        }
+
+        updateChips();
+      }
+
+      function maybeBeep() {
+        if (!state.powerOn || !audioCtx || !state.soundEnabled) return;
+        const rhythmic = state.rhythm === "sinus" || state.rhythm === "pea" || state.rhythm === "vt";
+        if (!rhythmic) return;
+
+        const rr = 60 / Math.max(30, state.hr);
+        const rOffset = (state.rhythm === "vt" ? 0.34 : 0.395) * rr;
+        const beatIndex = Math.floor((state.t - rOffset) / rr);
+
+        if (state.lastBeepBeatIndex === null) {
+          state.lastBeepBeatIndex = beatIndex;
+          return;
+        }
+
+        if (beatIndex <= state.lastBeepBeatIndex) return;
+        for (let i = state.lastBeepBeatIndex + 1; i <= beatIndex; i += 1) {
+          const f = state.rhythm === "vt" ? 730 : state.rhythm === "pea" ? 860 : 960;
+          beep(f, 34, 0.022);
+        }
+        state.lastBeepBeatIndex = beatIndex;
+      }
+
+      function drawGrid(w, h) {
+        const s = 12;
+        const major = getComputedStyle(document.documentElement).getPropertyValue("--grid-major").trim() || "rgba(216, 82, 82, 0.32)";
+        const minor = getComputedStyle(document.documentElement).getPropertyValue("--grid-minor").trim() || "rgba(216, 82, 82, 0.17)";
+        ctx.fillStyle = state.powerOn ? "#000" : "#101821";
+        ctx.fillRect(0, 0, w, h);
+
+        for (let x = 0; x <= w; x += s) {
+          ctx.strokeStyle = x % (s * 5) === 0 ? major : minor;
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, h);
+          ctx.stroke();
+        }
+
+        for (let y = 0; y <= h; y += s) {
+          ctx.strokeStyle = y % (s * 5) === 0 ? major : minor;
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(w, y);
+          ctx.stroke();
+        }
+      }
+
+      function mvToY(mv, h) {
+        return h * 0.5 - mv * 94;
+      }
+
+      function drawFrame(ts) {
+        if (!ctx || !canvas) return;
+        if (!state.lastTs) state.lastTs = ts;
+        const dt = Math.max(0, Math.min(0.05, (ts - state.lastTs) / 1000));
+        state.lastTs = ts;
+
+        if (state.running) {
+          state.t += dt;
+          state.timer += dt;
+        }
+
+        if (state.powerOn && state.chargingUntil && ts >= state.chargingUntil) {
+          state.chargingUntil = 0;
+          state.chargeExpireAt = performance.now() + 10000;
+          setCharge(true);
+          setResult("Laddad, klar for stot", "warn");
+          playChargeReadyTone();
+        }
+
+        if (state.charged && state.chargeExpireAt && performance.now() >= state.chargeExpireAt) {
+          setCharge(false);
+          scoreShockDecision(false);
+          setResult("Laddning timeout", "warn");
+        }
+
+        const w = canvas.width;
+        const h = canvas.height;
+        drawGrid(w, h);
+
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--trace') || "#2dc75c";
+        ctx.beginPath();
+        for (let x = 0; x < w; x += 1) {
+          const tAtX = state.t - (w - x) / pxPerSec;
+          const y = mvToY(sampleAt(tAtX), h);
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        if (!state.powerOn) {
+          ctx.fillStyle = "rgba(228, 236, 246, 0.82)";
+          ctx.font = "700 42px Segoe UI";
+          ctx.textAlign = "center";
+          ctx.fillText("DEVICE OFF", w * 0.5, h * 0.52);
+        }
+
+        maybeBeep();
+        updateChips();
+        requestAnimationFrame(drawFrame);
+      }
+
+      powerBtn.addEventListener("click", () => {
+        ensureAudio();
+        state.soundEnabled = true;
+        setPower(!state.powerOn);
+      });
+
+      chargeBtn.addEventListener("click", () => {
+        if (!state.powerOn) return;
+        if (state.charged || state.chargingUntil) return;
+        state.chargingUntil = performance.now() + 1200;
+        setCharge(false);
+        setResult("Laddar...", "warn");
+        playChargeStartTone();
+      });
+
+      defibBtn.addEventListener("click", defib);
+      analyzeBtn.addEventListener("click", analyze);
+
+      cprBtn.addEventListener("click", () => {
+        if (!state.powerOn) return;
+        setResult("CPR aktiv", "good");
+      });
+
+      eventBtn.addEventListener("click", () => {
+        if (!state.powerOn) return;
+        const idx = rhythms.findIndex((r) => r.id === state.rhythm);
+        const next = rhythms[(idx + 1) % rhythms.length];
+        setScenarioRhythm(next.id);
+      });
+
+      energyUpBtn.addEventListener("click", () => {
+        if (!state.powerOn) return;
+        state.energy = Math.min(360, state.energy + 10);
+        updateChips();
+      });
+
+      energyDownBtn.addEventListener("click", () => {
+        if (!state.powerOn) return;
+        state.energy = Math.max(50, state.energy - 10);
+        updateChips();
+      });
+
+      syncBtn.addEventListener("click", () => {
+        if (!state.powerOn) return;
+        state.sync = !state.sync;
+        syncBtn.style.color = state.sync ? "#e5ba41" : "#f8fafc";
+        setResult(state.sync ? "SYNC pa" : "SYNC av", state.sync ? "warn" : "");
+      });
+
+      leadBtn.addEventListener("click", () => {
+        if (!state.powerOn) return;
+        setResult("Lead II", "good");
+      });
+
+      sizeBtn.addEventListener("click", () => {
+        if (!state.powerOn) return;
+        const up = canvas.width === 1600 ? 1900 : 1600;
+        canvas.width = up;
+        setResult(up === 1900 ? "Gain upp" : "Gain normal", "good");
+      });
+
+      alarmsBtn.addEventListener("click", () => {
+        if (!state.powerOn) return;
+        setResult("Alarm kvitterat", "good");
+      });
+
+      optionsBtn.addEventListener("click", () => {
+        if (!state.powerOn) return;
+        setResult("Options oppnad", "good");
+      });
+
+      pacerBtn.addEventListener("click", () => {
+        if (!state.powerOn) return;
+        setResult("Pacer standby", "good");
+      });
+
+      rateBtn.addEventListener("click", () => {
+        if (!state.powerOn) return;
+        setResult("Pacer rate +10", "good");
+      });
+
+      currentBtn.addEventListener("click", () => {
+        if (!state.powerOn) return;
+        setResult("Pacer current +5 mA", "good");
+      });
+
+      pauseBtn.addEventListener("click", () => {
+        if (!state.powerOn) return;
+        setResult("Pacer paus", "warn");
+      });
+
+      conditionBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (!state.powerOn) {
+            setResult("Starta maskinen for att byta tillstand", "warn");
+            return;
+          }
+          ensureAudio();
+          playButtonClick();
+          const rhythmId = btn.getAttribute("data-rhythm");
+          if (!rhythmId) return;
+          setScenarioRhythm(rhythmId);
+        });
+      });
+
+      document.querySelectorAll(".control-panel button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (btn.disabled) return;
+          ensureAudio();
+          playButtonClick();
+        });
+      });
+
+      document.addEventListener("pointerdown", () => {
+        ensureAudio();
+        state.soundEnabled = true;
+      }, { once: true });
+
+      setPower(false);
+      requestAnimationFrame(drawFrame);
+    </script>
+  </body>
+</html>
