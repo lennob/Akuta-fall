@@ -576,6 +576,8 @@
         lastBeepBeatIndex: null,
         soundEnabled: false,
         gainScale: 1,
+        postShockRecoveryAt: 0,
+        postShockSourceRhythm: "",
       };
 
       let audioCtx = null;
@@ -806,6 +808,8 @@
         state.powerOn = on;
         state.running = on;
         state.chargingUntil = 0;
+        state.postShockRecoveryAt = 0;
+        state.postShockSourceRhythm = "";
         setCharge(false);
         state.lastBeepBeatIndex = null;
         if (!on) {
@@ -857,6 +861,8 @@
       function setScenarioRhythm(rhythmId) {
         const next = rhythms.find((r) => r.id === rhythmId);
         if (!next) return;
+        state.postShockRecoveryAt = 0;
+        state.postShockSourceRhythm = "";
         state.rhythm = next.id;
         state.hr = next.hr;
         state.lastBeepBeatIndex = null;
@@ -905,10 +911,9 @@
         beep(1600, 85, 0.03);
 
         if (isShockable()) {
-          state.rhythm = "sinus";
-          state.hr = 92;
-          setResult("ROSC efter stot", "good");
-          emitCaseEvent("vf-defib-success", { shocks: state.shocks, energy: state.energy });
+          state.postShockRecoveryAt = performance.now() + 1800;
+          state.postShockSourceRhythm = state.rhythm;
+          setResult("Stot levererad, analyserar rytm...", "warn");
         } else {
           setResult("Icke-shockbar rytm, fortsatt HLR", "warn");
         }
@@ -971,6 +976,20 @@
           setCharge(false);
           scoreShockDecision(false);
           setResult("Laddning timeout", "warn");
+        }
+
+        if (state.powerOn && state.postShockRecoveryAt && performance.now() >= state.postShockRecoveryAt) {
+          const source = state.postShockSourceRhythm;
+          state.postShockRecoveryAt = 0;
+          state.postShockSourceRhythm = "";
+          state.rhythm = "sinus";
+          state.hr = 92;
+          state.lastBeepBeatIndex = null;
+          setResult("ROSC efter stot", "good");
+          if (source === "vfib") {
+            emitCaseEvent("vf-defib-success", { shocks: state.shocks, energy: state.energy });
+          }
+          updateChips();
         }
 
         const w = canvas.width;

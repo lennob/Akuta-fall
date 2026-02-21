@@ -133,7 +133,7 @@
     <main class="hb-wrap">
       <section class="hb-card hb-head">
         <h1>Heart Case Builder</h1>
-        <p>Skapa hjartstoppsfall med fasta steg: Oversikt, Defibrilator, 4H och 4T, Reevaluering &amp; sign-out.</p>
+        <p>Skapa hjartstoppsfall med fasta steg: Översikt, Defibrilator, 4H och 4T, Reevaluering &amp; sign-out.</p>
       </section>
 
       <section class="hb-card">
@@ -167,11 +167,11 @@
       const TEMPLATE = [
         {
           id: "oversikt",
-          label: "Oversikt",
+          label: "Översikt",
           subboxes: [
-            "Identifiera att hjartstopp ar aktuellt",
+            "Identifiera att hjärtstopp är aktuellt",
             "Agera som teamledare och ordinerar adekvata roller.",
-            "Studenten forklarar hur man kopplar defibrilatorn",
+            "Studenten förklarar hur man kopplar defibrilatorn",
           ],
         },
         {
@@ -179,23 +179,23 @@
           label: "Defibrilator",
           subboxes: [
             "Defibrilator uppkopplad.",
-            "Studenten kanner pa pulsen",
+            "Studenten känner på pulsen",
             "Studenten analyserar rytmen korrekt",
-            "Studenten utfor korrekt atgard.",
+            "Studenten utför korrekt åtgärd.",
           ],
         },
         {
           id: "h4t4",
           label: "4H och 4T",
           subboxes: [
-            "Undersoker tecken pa hypoxi",
-            "Undersoker tecken pa hypovolemi",
-            "Undersoker tecken pa hyper/hypokalemi",
-            "Undersoker tecken pa hypotermi",
-            "Undersoker tecken pa tryckpneumothorax",
-            "Undersoker tecken pa tamponad",
-            "Undersoker tecken pa trombos",
-            "Undersoker tecken pa intox",
+            "Undersöker tecken pa hypoxi",
+            "Undersöker tecken pa hypovolemi",
+            "Undersöker tecken pa hyper/hypokalemi",
+            "Undersöker tecken pa hypotermi",
+            "Undersöker tecken pa tryckpneumothorax",
+            "Undersöker tecken pa tamponad",
+            "Undersöker tecken pa trombos",
+            "Undersöker tecken pa inTox",
           ],
         },
         {
@@ -204,7 +204,7 @@
           subboxes: [
             "Reevaluerar A-E",
             "Ordinerar adekvat behandling",
-            "Ordinerar adekvat vardniva",
+            "Ordinerar adekvat vård",
           ],
         },
       ];
@@ -241,18 +241,18 @@
         const sayField = document.createElement("div");
         sayField.className = "hb-field";
         const sayLabel = document.createElement("label");
-        sayLabel.textContent = "Vad du ska saga";
+        sayLabel.textContent = "Vad du ska säga";
         const sayInput = document.createElement("textarea");
-        sayInput.placeholder = "Vad observatorn ska saga i detta steg";
+        sayInput.placeholder = "Vad observatorn ska säga i detta steg";
         sayInput.dataset.field = "specialCase";
         sayField.append(sayLabel, sayInput);
 
         const doField = document.createElement("div");
         doField.className = "hb-field";
         const doLabel = document.createElement("label");
-        doLabel.textContent = "Vad studenten ska gora";
+        doLabel.textContent = "Vad studenten ska göra";
         const doInput = document.createElement("textarea");
-        doInput.placeholder = "Forvantad studentatgard";
+        doInput.placeholder = "Förväntad studentåtgärd";
         doInput.dataset.field = "studentAction";
         doField.append(doLabel, doInput);
 

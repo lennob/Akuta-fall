@@ -1,0 +1,212 @@
+{
+  "schemaVersion": 3,
+  "title": "FALL-HEART-NEW",
+  "caseText": "TEST",
+  "boxes": {
+    "oversikt": {
+      "label": "oversikt",
+      "image": null,
+      "ecg": null,
+      "blodgas": null,
+      "subboxes": [
+        {
+          "name": "Identifiera att hjartstopp ar aktuellt",
+          "studentAction": "TEST",
+          "specialCase": "TEST",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Agera som teamledare och ordinerar adekvata roller.",
+          "studentAction": "TEST",
+          "specialCase": "TEST",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Studenten forklarar hur man kopplar defibrilatorn",
+          "studentAction": "TEST",
+          "specialCase": "TEST",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "defibrilator": {
+      "label": "defibrilator",
+      "image": null,
+      "ecg": null,
+      "blodgas": null,
+      "subboxes": [
+        {
+          "name": "Defibrilator uppkopplad.",
+          "studentAction": "TEST",
+          "specialCase": "TEST",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false,
+          "openCustomEmbed": true,
+          "openCustomEmbedLabel": "Oppna defib-overlay"
+        },
+        {
+          "name": "Studenten kanner pa pulsen",
+          "studentAction": "TEST",
+          "specialCase": "TEST",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Studenten analyserar rytmen korrekt",
+          "studentAction": "TEST",
+          "specialCase": "TEST",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Studenten utfor korrekt atgard.",
+          "studentAction": "TEST",
+          "specialCase": "TEST",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false,
+          "completeOnEvent": "vf-defib-success",
+          "autoGradeOnEvent": "basic"
+        }
+      ],
+      "customEmbed": {
+        "type": "iframe",
+        "src": "./defib-workspace.html?embed=case",
+        "title": "Defib Workspace",
+        "height": 960,
+        "display": "overlay"
+      }
+    },
+    "h4t4": {
+      "label": "4h och 4t",
+      "image": null,
+      "ecg": null,
+      "blodgas": null,
+      "subboxes": [
+        {
+          "name": "Undersoker tecken pa hypoxi",
+          "studentAction": "TEST",
+          "specialCase": "TEST",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersoker tecken pa hypovolemi",
+          "studentAction": "TEST",
+          "specialCase": "TEST",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersoker tecken pa hyper/hypokalemi",
+          "studentAction": "TEST",
+          "specialCase": "TEST",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersoker tecken pa hypotermi",
+          "studentAction": "TEST",
+          "specialCase": "TEST",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersoker tecken pa tryckpneumothorax",
+          "studentAction": "TEST",
+          "specialCase": "TEST",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersoker tecken pa tamponad",
+          "studentAction": "TEST",
+          "specialCase": "TEST",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersoker tecken pa trombos",
+          "studentAction": "TEST",
+          "specialCase": "TEST",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersoker tecken pa intox",
+          "studentAction": "TEST",
+          "specialCase": "TEST",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "reevaluering_signout": {
+      "label": "reevaluering & sign-out",
+      "image": null,
+      "ecg": null,
+      "blodgas": null,
+      "subboxes": [
+        {
+          "name": "Reevaluerar A-E",
+          "studentAction": "TEST",
+          "specialCase": "TEST",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Ordinerar adekvat behandling",
+          "studentAction": "TEST",
+          "specialCase": "TEST",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Ordinerar adekvat vardniva",
+          "studentAction": "TEST",
+          "specialCase": "TEST",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    }
+  }
+}
