@@ -7,11 +7,8 @@
     <link rel="stylesheet" href="./styles.css" />
     <link rel="icon" type="image/png" href="favicon.png">
   </head>
-  <body>
+  <body class="index-page">
     <div class="page">
-      <header>
-        <h1>Akuta fall</h1>
-        <p>Öva på ett flertal olika akuta fall!</p>
       <!-- </header
       Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MXR0EE17S7"></script>
@@ -23,37 +20,121 @@
   gtag('config', 'G-MXR0EE17S7');
 </script>
 
-      <nav class="card step-nav" aria-label="Steg">
-        <div class="step-nav-row">
-          <div class="step-info-buttons">
-            <button type="button" class="btn-secondary step-info-btn" id="aboutBtn">
-              Om denna sida
-            </button>
-            <div class="steps" id="stepsList"></div>
-          </div>
-        </div>
-      </nav>
-
-      <div class="info-panel" id="aboutPanel" hidden>
-        <p>
-          Denna hemsida är menat som ett hjälpmedel för att öva på sin egna tid på akuta fall som kan komma på
-          OSCE (och säkert på mottagningen också). De flesta fallen är baserade på anteckningar från min tid
-          som termin-11 student vid temadagarna på akutkursen 2025 på Lunds universitet, och andra är baserade
-          på gamla OSCE-fall. Fallen är menade att användas av helst två personer, där en person agerar som
-          bedömare och en som undersökande läkare. Vi har lagt till en blodgas och EKG på fallen som ska visas
-          till den undersökande läkaren utan att de ser informationen i fallet. Kom ihåg att fallen är ihopskrivna av
-          studenter som snabbt tagit anteckningar på temadagarna, ta inte allting som direkt sanning utan att du
-          själv vet att det stämmer. Handläggning och behandling kan snabbt förändra sig, så därför uppskattar
-          vi gärna feedback från er!
-        </p>
-      </div>
-
       <main class="card">
-        <section class="content" data-step="1" id="step-1"></section>
-        <section class="content" data-step="2" id="step-2">
+        <header>
+          <h1>Akuta fall</h1>
+        </header>
+        <nav class="step-nav" aria-label="Steg">
+          <div class="step-nav-row">
+            <div class="step-info-buttons">
+              <div class="steps" id="stepsList"></div>
+            </div>
+          </div>
+        </nav>
+        <section class="content" data-step="1" id="step-1">
+          <div class="about-guide">
+            <div class="about-guide-head step-head">
+              <h2>Hur du använder hemsidan</h2>
+              <p>Rör musen mellan varje del för att se vad varje del gör.</p>
+            </div>
+            <div class="about-guide-layout">
+              <div class="about-guide-visual" id="aboutGuideVisual" aria-label="Forhandsvisning av korlaget">
+                <div
+                  class="active-case-title about-hotspot"
+                  data-help-title="Titel"
+                  data-help-text="Visar aktivt fall sa att alla vet vilket scenario ni ar i."
+                >
+                  Fall 1
+                </div>
+                <div class="timer-centered">
+                  <div
+                    class="timer about-hotspot"
+                    data-help-title="Timer"
+                    data-help-text="Visar hur lang tid som har gatt sedan ni startade fallet."
+                  >
+                    <span class="label">Tid</span>
+                    <span class="value">07:42</span>
+                  </div>
+                </div>
+                <div class="timer-controls">
+                  <button type="button" class="btn-secondary" tabindex="-1">Paus</button>
+                </div>
+                <div
+                  class="box-stepbar about-hotspot"
+                  data-help-title="Stegknappar for boxar"
+                  data-help-text="Snabbnavigera mellan Översikt, A-E, Blodgas, EKG, Handlaggning och Sign-out."
+                >
+                  <button type="button" class="box-step-btn" aria-current="step">Översikt</button>
+                  <button type="button" class="box-step-btn">Airway</button>
+                  <button type="button" class="box-step-btn">Breathing</button>
+                  <button type="button" class="box-step-btn">Circulation</button>
+                  <button type="button" class="box-step-btn">Disability</button>
+                  <button type="button" class="box-step-btn">Exposure</button>
+                  <button type="button" class="box-step-btn">Blodgas</button>
+                  <button type="button" class="box-step-btn">EKG</button>
+                </div>
+                <div
+                  class="box-stage about-hotspot"
+                  data-help-title="Aktiv box"
+                  data-help-text="Har visas den information ni jobbar med just nu i simulationen."
+                >
+                  <button type="button" class="box-side-btn" disabled>←</button>
+                  <div class="box-single">
+                    <div class="box-card">
+                      <div class="box-head">
+                        <div class="box-spacer"></div>
+                        <div class="title">Översikt</div>
+                        <div class="box-spacer"></div>
+                      </div>
+                      <div class="box-body">
+                        <div class="sub-card">
+                          <div class="sub-head">
+                            <div class="name">Initial bedömning</div>
+                          </div>
+                          <div class="say-block">
+                            <div class="label">Vad du ska saga</div>
+                            <div class="text">Patienten ar kallsvettig, blek och har tilltagande smarta.</div>
+                          </div>
+                          <div class="do-box">
+                            <div class="do-box-row">
+                              <div>
+                                <label>
+                                  <span class="do-label">Vad studenten ska gora: </span>
+                                  Prioritera A-E och initiera adekvat overvakning.
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <button type="button" class="box-side-btn" disabled>→</button>
+                </div>
+                <div
+                  class="box-progress-row about-hotspot"
+                  data-help-title="Box-progress"
+                  data-help-text="Ger en snabb översikt över hur långt ni kommit i fallet."
+                >
+                  <div class="box-progress">1 / 10</div>
+                </div>
+                <div class="about-hover-box" id="aboutHoverBox" hidden>
+                  <h4 id="aboutHoverTitle"></h4>
+                  <p id="aboutHoverText"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="content" data-step="2" id="step-2"></section>
+        <section class="content" data-step="3" id="step-3">
           <div class="step-stage" aria-label="Navigering mellan steg">
             <button type="button" class="step-side-btn" id="step2PrevBtn" aria-label="Föregående steg">←</button>
             <div class="case-card">
+              <div class="step-head">
+                <h2>Slumpat fall</h2>
+                <p>Läs scenariot, fördela roller och starta när ni är redo.</p>
+              </div>
               <div class="case-title-row">
                 <h2 class="case-title" id="caseTitle">Slumpar fall...</h2>
                 <button type="button" class="btn-icon" id="refreshCaseBtn" aria-label="Slumpa nytt fall">
@@ -75,7 +156,7 @@
             <button type="button" class="step-side-btn" id="step2NextBtn" aria-label="Nästa steg">→</button>
           </div>
         </section>
-        <section class="content" data-step="3" id="step-3">
+        <section class="content" data-step="4" id="step-4">
           <h2 class="active-case-title" id="activeCaseTitle"></h2>
           <div class="timer-centered">
             <div class="timer">
@@ -105,23 +186,22 @@
     <script>
       const instructions = {
         prep:
-          "Hur hemsidan funkar:<br>Du kan välja att antingen välja fall själv från kompendiet genom att klicka på \"kompendium\", eller så kan du klicka på knappen \"Fall\" så får du ett slumpvalt fall.<br><br>Ni ska helst vara två personer, där en person agerar som bedömare och en som är undersökande läkare.<br><br>Den undersökande läkaren kommer inte att få se skärmen, bortsett från när hen kollar på blodgasen och EKG. Resten av informationen kommer att avslöja information om fallet.<br><br>I slutet kommer man att få en summering av poäng från vad man har undersökt och vad man har missat. Missade kritiska moment räknas som ett underkänt fall. Resten av poängen är menade som feedback för vad man ska tänka på till nästa gång.",
+          "<ul><li>Du kan antingen välja fall själv från kompendiet genom att klicka på \"kompendium\", eller så kan du klicka på knappen \"Fall\" så får du ett slumpvalt fall.</li><li>Ni ska helst vara två personer, där en person agerar som bedömare och en som är undersökande läkare.</li><li>Den undersökande läkaren kommer inte att få se skärmen, bortsett från när hen kollar på blodgasen och EKG. Resten av informationen kommer att avslöja information om fallet.</li><li>I slutet kommer man att få en summering av poäng från vad man har undersökt och vad man har missat. Missade kritiska moment räknas som ett underkänt fall. Resten av poängen är menade som feedback för vad man ska tänka på till nästa gång.</li></ul>",
         doing: [
           "",
         ],
       };
 
       const steps = [
-        { id: 1, title: "Förberedelser", desc: "Samla material och förstå syftet" },
-        { id: 2, title: "Fall översikt", desc: "SBAR och bedömning i A–E" },
-        { id: 3, title: "Kör fallet", desc: "Samla dina lärdomar" },
+        { id: 1, title: "Om sidan", desc: "Se grannssnittet och komponenterna" },
+        { id: 2, title: "Förberedelser", desc: "Samla material och forsta syftet" },
+        { id: 3, title: "Slumpat fall", desc: "SBAR och bedomning i A-E" },
+        { id: 4, title: "Kör fallet", desc: "Kor boxarna och samla lardomar" },
       ];
 
       const stepsList = document.getElementById("stepsList");
       const sections = Array.from(document.querySelectorAll(".content"));
-      const introSection = document.getElementById("step-1");
-      const aboutBtn = document.getElementById("aboutBtn");
-      const aboutPanel = document.getElementById("aboutPanel");
+      const introSection = document.getElementById("step-2");
       const caseTitleEl = document.getElementById("caseTitle");
       const caseTextEl = document.getElementById("caseText");
       const caseStatusEl = document.getElementById("caseStatus");
@@ -129,6 +209,7 @@
       let step1NextBtn = null;
       let step2PrevBtn = null;
       let step2NextBtn = null;
+      let aboutNextBtn = null;
       let randomCaseBtn = null;
       let refreshCaseBtn = null;
       const startBtn = document.getElementById("startBtn");
@@ -876,7 +957,7 @@
         sessionStorage.setItem(SESSION_TIMER_ELAPSED, "0");
         sessionStorage.setItem(SESSION_TIMER_RUNNING, "true");
         ensureTimerRunning();
-        location.hash = "#step=3";
+        location.hash = "#step=4";
       }
 
       let countdownHandle = null;
@@ -1404,12 +1485,12 @@
       }
 
       function onStepActivated(stepId) {
-        if (stepId === 2) {
+        if (stepId === 3) {
           loadRandomCaseIfNeeded().catch((err) => {
             setCaseStatus(`Kunde inte ladda fall. (${safeText(err && err.message)})`);
           });
         }
-        if (stepId === 3) {
+        if (stepId === 4) {
           const selected = readSelectedCase();
           if (selected) {
             renderSelectedCaseIntoStep3(selected);
@@ -1479,7 +1560,6 @@
         prevBtn.id = "step1PrevBtn";
         prevBtn.setAttribute("aria-label", "Föregående steg");
         prevBtn.textContent = "←";
-        prevBtn.disabled = true;
 
         const nextBtn = document.createElement("button");
         nextBtn.type = "button";
@@ -1491,9 +1571,13 @@
         const panel = document.createElement("div");
         panel.className = "step-panel";
 
+        const introHead = document.createElement("div");
+        introHead.className = "step-head";
+        introHead.innerHTML = "<h2>Förberedelser</h2><p>Innan ni börjar:</p>";
+
         const introBlock = document.createElement("div");
         introBlock.className = "intro";
-        introBlock.innerHTML = `<h1>Förberedelser</h1><p>${instructions.prep}</p>`;
+        introBlock.innerHTML = `${instructions.prep}`;
 
         const infoBlock = document.createElement("div");
         infoBlock.className = "intro-info";
@@ -1501,7 +1585,7 @@
           "" +
           instructions.doing.map((item) => `<p>${item}</p>`).join("");
 
-        panel.append(introBlock, infoBlock);
+        panel.append(introHead, introBlock, infoBlock);
         stage.append(prevBtn, panel, nextBtn);
 
         const cta = document.createElement("div");
@@ -1530,6 +1614,7 @@
       }
 
       function refreshStepButtons() {
+        aboutNextBtn = document.getElementById("aboutNextBtn");
         step1PrevBtn = document.getElementById("step1PrevBtn");
         step1NextBtn = document.getElementById("step1NextBtn");
         step2PrevBtn = document.getElementById("step2PrevBtn");
@@ -1538,17 +1623,68 @@
         refreshCaseBtn = document.getElementById("refreshCaseBtn");
       }
 
+      function setupAboutGuideHover() {
+        const visual = document.getElementById("aboutGuideVisual");
+        const hoverBox = document.getElementById("aboutHoverBox");
+        const hoverTitle = document.getElementById("aboutHoverTitle");
+        const hoverText = document.getElementById("aboutHoverText");
+        const hotspots = Array.from(document.querySelectorAll(".about-hotspot[data-help-title]"));
+        if (!visual || !hoverBox || !hoverTitle || !hoverText || !hotspots.length) return;
+
+        const clearActive = () => {
+          hotspots.forEach((part) => part.classList.remove("about-part-active"));
+          hoverBox.hidden = true;
+        };
+
+        const placeHoverBox = (target) => {
+          const visualRect = visual.getBoundingClientRect();
+          const targetRect = target.getBoundingClientRect();
+          const boxRect = hoverBox.getBoundingClientRect();
+          const downTop = targetRect.bottom - visualRect.top + 8;
+          const upTop = targetRect.top - visualRect.top - boxRect.height - 8;
+          const top = downTop + boxRect.height + 8 <= visual.clientHeight ? downTop : Math.max(8, upTop);
+          const maxLeft = Math.max(8, visual.clientWidth - boxRect.width - 8);
+          const left = Math.max(8, Math.min(maxLeft, targetRect.left - visualRect.left));
+          hoverBox.style.top = `${top}px`;
+          hoverBox.style.left = `${left}px`;
+        };
+
+        const activateHotspot = (part) => {
+          if (!part) return;
+          clearActive();
+          part.classList.add("about-part-active");
+          hoverTitle.textContent = String(part.dataset.helpTitle || "");
+          hoverText.textContent = String(part.dataset.helpText || "");
+          hoverBox.hidden = false;
+          placeHoverBox(part);
+        };
+
+        hotspots.forEach((part) => {
+          if (!part.hasAttribute("tabindex")) part.tabIndex = 0;
+          part.addEventListener("mouseenter", () => activateHotspot(part));
+          part.addEventListener("focus", () => activateHotspot(part));
+          part.addEventListener("click", () => activateHotspot(part));
+          part.addEventListener("mouseleave", () => {
+            if (part.matches(":focus")) return;
+            clearActive();
+          });
+          part.addEventListener("blur", clearActive);
+        });
+      }
+
       function init() {
         renderIntro();
         refreshStepButtons();
-        if (step1PrevBtn) step1PrevBtn.addEventListener("click", () => (location.hash = "#step=3"));
-        if (step1NextBtn) step1NextBtn.addEventListener("click", () => (location.hash = "#step=2"));
-        if (step2PrevBtn) step2PrevBtn.addEventListener("click", () => (location.hash = "#step=1"));
-        if (step2NextBtn) step2NextBtn.addEventListener("click", () => (location.hash = "#step=3"));
+        setupAboutGuideHover();
+        if (aboutNextBtn) aboutNextBtn.addEventListener("click", () => (location.hash = "#step=2"));
+        if (step1PrevBtn) step1PrevBtn.addEventListener("click", () => (location.hash = "#step=1"));
+        if (step1NextBtn) step1NextBtn.addEventListener("click", () => (location.hash = "#step=3"));
+        if (step2PrevBtn) step2PrevBtn.addEventListener("click", () => (location.hash = "#step=2"));
+        if (step2NextBtn) step2NextBtn.addEventListener("click", () => (location.hash = "#step=4"));
         if (randomCaseBtn)
           randomCaseBtn.addEventListener("click", () => {
-            if (location.hash !== "#step=2") {
-              location.hash = "#step=2";
+            if (location.hash !== "#step=3") {
+              location.hash = "#step=3";
             }
             loadRandomCaseIfNeeded().catch((err) => {
               setCaseStatus(`Kunde inte ladda fall. (${safeText(err && err.message)})`);
@@ -1564,12 +1700,6 @@
         if (pauseBtn) pauseBtn.addEventListener("click", togglePause);
         if (gradeBtn) gradeBtn.addEventListener("click", goToOverview);
         if (gradeControlsEl) gradeControlsEl.style.display = "none";
-        if (aboutBtn && aboutPanel) {
-          aboutBtn.addEventListener("click", () => {
-            const open = aboutPanel.classList.toggle("open");
-            aboutPanel.hidden = !open;
-          });
-        }
 
         const goRelative = (delta) => {
           const selected = readSelectedCase();
@@ -1599,3 +1729,13 @@
     </script>
   </body>
 </html>
+
+
+
+
+
+
+
+
+
+
