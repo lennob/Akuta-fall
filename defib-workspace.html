@@ -578,6 +578,7 @@
         gainScale: 1,
         postShockRecoveryAt: 0,
         postShockSourceRhythm: "",
+        rhythmBlend: null,
       };
 
       let audioCtx = null;
@@ -673,8 +674,8 @@
         return (x - Math.floor(x) - 0.5) * 2;
       }
 
-      function sampleSinus(tSec) {
-        const rr = 60 / Math.max(30, state.hr);
+      function sampleSinus(tSec, hr) {
+        const rr = 60 / Math.max(30, hr);
         const ph = ((tSec % rr) + rr) % rr / rr;
         return (
           0.11 * gaussian(ph, 0.19, 0.028) +
@@ -686,8 +687,8 @@
         );
       }
 
-      function sampleVT(tSec) {
-        const rr = 60 / Math.max(80, state.hr);
+      function sampleVT(tSec, hr) {
+        const rr = 60 / Math.max(80, hr);
         const ph = ((tSec % rr) + rr) % rr / rr;
         return -0.14 * gaussian(ph, 0.24, 0.03) + 1.1 * gaussian(ph, 0.33, 0.045) - 0.85 * gaussian(ph, 0.43, 0.05);
       }
@@ -699,8 +700,8 @@
         return 0.34 * (coarse + medium + fine);
       }
 
-      function samplePEA(tSec) {
-        const rr = 60 / Math.max(25, state.hr);
+      function samplePEA(tSec, hr) {
+        const rr = 60 / Math.max(25, hr);
         const ph = ((tSec % rr) + rr) % rr / rr;
         return (
           0.08 * gaussian(ph, 0.2, 0.03) +
@@ -715,13 +716,25 @@
         return 0.008 * noise(tSec * 4);
       }
 
+      function sampleByRhythm(rhythmId, hr, tSec) {
+        if (rhythmId === "vfib") return sampleVFib(tSec);
+        if (rhythmId === "vt") return sampleVT(tSec, hr);
+        if (rhythmId === "pea") return samplePEA(tSec, hr);
+        if (rhythmId === "asystole") return sampleAsystole(tSec);
+        return sampleSinus(tSec, hr);
+      }
+
       function sampleAt(tSec) {
         if (!state.powerOn) return 0;
-        if (state.rhythm === "vfib") return sampleVFib(tSec);
-        if (state.rhythm === "vt") return sampleVT(tSec);
-        if (state.rhythm === "pea") return samplePEA(tSec);
-        if (state.rhythm === "asystole") return sampleAsystole(tSec);
-        return sampleSinus(tSec);
+        const blend = state.rhythmBlend;
+        if (!blend) return sampleByRhythm(state.rhythm, state.hr, tSec);
+        const pRaw = (performance.now() - blend.startMs) / Math.max(1, blend.durationMs);
+        const p = Math.max(0, Math.min(1, pRaw));
+        const s = p * p * (3 - 2 * p);
+        const from = sampleByRhythm(blend.fromRhythm, blend.fromHr, tSec);
+        const to = sampleByRhythm(blend.toRhythm, blend.toHr, tSec);
+        if (p >= 1) state.rhythmBlend = null;
+        return from * (1 - s) + to * s;
       }
 
       function resizeCanvasToDisplaySize() {
@@ -810,6 +823,7 @@
         state.chargingUntil = 0;
         state.postShockRecoveryAt = 0;
         state.postShockSourceRhythm = "";
+        state.rhythmBlend = null;
         setCharge(false);
         state.lastBeepBeatIndex = null;
         if (!on) {
@@ -863,6 +877,7 @@
         if (!next) return;
         state.postShockRecoveryAt = 0;
         state.postShockSourceRhythm = "";
+        state.rhythmBlend = null;
         state.rhythm = next.id;
         state.hr = next.hr;
         state.lastBeepBeatIndex = null;
@@ -982,10 +997,19 @@
           const source = state.postShockSourceRhythm;
           state.postShockRecoveryAt = 0;
           state.postShockSourceRhythm = "";
+          const sourceHr = source === "vt" ? 170 : source === "pea" ? 45 : source === "sinus" ? 82 : 0;
+          state.rhythmBlend = {
+            fromRhythm: source || state.rhythm,
+            fromHr: sourceHr || state.hr,
+            toRhythm: "sinus",
+            toHr: 92,
+            startMs: performance.now(),
+            durationMs: 1500,
+          };
           state.rhythm = "sinus";
           state.hr = 92;
           state.lastBeepBeatIndex = null;
-          setResult("ROSC efter stot", "good");
+          setResult("ROSC efter stot, rytm stabiliseras...", "good");
           if (source === "vfib") {
             emitCaseEvent("vf-defib-success", { shocks: state.shocks, energy: state.energy });
           }
