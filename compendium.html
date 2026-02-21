@@ -625,7 +625,12 @@
           meta.played = getPlayedCount(meta, playedBySlug, legacyCounts);
         }
 
-      metas.sort((a, b) => safeText(a.title || a.filename).localeCompare(safeText(b.title || b.filename)));
+      metas.sort((a, b) =>
+        safeText(a.title || a.filename).localeCompare(safeText(b.title || b.filename), "sv", {
+          numeric: true,
+          sensitivity: "base",
+        }),
+      );
       return metas;
     }
 

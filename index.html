@@ -200,6 +200,7 @@
       ];
 
       const stepsList = document.getElementById("stepsList");
+      const pageEl = document.querySelector(".page");
       const sections = Array.from(document.querySelectorAll(".content"));
       const introSection = document.getElementById("step-2");
       const caseTitleEl = document.getElementById("caseTitle");
@@ -231,9 +232,13 @@
       const SESSION_TIMER_START = "lenny.timerStartMs.v1";
       const SESSION_TIMER_ELAPSED = "lenny.timerElapsedMs.v1";
       const SESSION_TIMER_RUNNING = "lenny.timerRunning.v1";
+      const embedFrameByWindow = new Map();
       let timerHandle = null;
       const BOX_ORDER = [
         "oversikt",
+        "defibrilator",
+        "h4t4",
+        "reevaluering_signout",
         "airway",
         "breathing",
         "circulation",
@@ -247,6 +252,7 @@
       const CHECKS_KEY_PREFIX = "lenny.checks.v1.";
       const EVAL_KEY_PREFIX = "lenny.eval.v1.";
       const BOX_NAV_KEY_PREFIX = "lenny.boxNav.v1.";
+      const CASE_EVENTS_KEY_PREFIX = "lenny.caseEvents.v1.";
 
       function renderSteps(activeStep) {
         stepsList.innerHTML = "";
@@ -274,6 +280,7 @@
           const isActive = idMatch === activeStep;
           section.dataset.active = isActive ? "true" : "false";
         });
+        if (pageEl) pageEl.classList.toggle("step4-wide", Number(activeStep) === 4);
         renderSteps(activeStep);
         onStepActivated(activeStep);
       }
@@ -340,6 +347,73 @@
 
       function writeEval(caseData, next) {
         sessionStorage.setItem(getEvalKey(caseData), JSON.stringify(next || { done: {}, grade: {} }));
+      }
+
+      function getCaseEventsKey(caseData) {
+        const title = safeText(caseData?.title);
+        return `${CASE_EVENTS_KEY_PREFIX}${slugify(title) || "case"}`;
+      }
+
+      function readCaseEvents(caseData) {
+        try {
+          const raw = sessionStorage.getItem(getCaseEventsKey(caseData));
+          if (!raw) return [];
+          const parsed = JSON.parse(raw);
+          if (!Array.isArray(parsed)) return [];
+          return parsed.map((v) => safeText(v)).filter(Boolean);
+        } catch {
+          return [];
+        }
+      }
+
+      function writeCaseEvents(caseData, events) {
+        const list = Array.isArray(events) ? Array.from(new Set(events.map((v) => safeText(v)).filter(Boolean))) : [];
+        sessionStorage.setItem(getCaseEventsKey(caseData), JSON.stringify(list));
+      }
+
+      function hasCaseEvent(caseData, eventName) {
+        const key = safeText(eventName).trim();
+        if (!key) return false;
+        return readCaseEvents(caseData).includes(key);
+      }
+
+      function recordCaseEvent(caseData, eventName) {
+        const key = safeText(eventName).trim();
+        if (!key) return false;
+        const events = readCaseEvents(caseData);
+        if (events.includes(key)) return false;
+        events.push(key);
+        writeCaseEvents(caseData, events);
+        return true;
+      }
+
+      function applyCaseEventCompletions(caseData, eventName) {
+        const key = safeText(eventName).trim();
+        if (!caseData || !key) return 0;
+        const boxes = caseData?.boxes && typeof caseData.boxes === "object" ? caseData.boxes : {};
+        const evalState = readEval(caseData);
+        let changed = 0;
+        for (const [boxId, box] of Object.entries(boxes)) {
+          const subboxes = Array.isArray(box?.subboxes) ? box.subboxes : [];
+          for (let i = 0; i < subboxes.length; i += 1) {
+            const sub = subboxes[i] || {};
+            const trigger = safeText(sub.completeOnEvent).trim();
+            if (trigger !== key) continue;
+            const doneKey = `${boxId}.${i}`;
+            const gradeRaw = safeText(sub.autoGradeOnEvent).trim();
+            const targetGrade =
+              gradeRaw === "middle" || gradeRaw === "high" || gradeRaw === "basic"
+                ? gradeRaw
+                : "basic";
+            if (evalState.done[doneKey] !== true || safeText(evalState.grade[doneKey]) !== targetGrade) {
+              evalState.done[doneKey] = true;
+              evalState.grade[doneKey] = targetGrade;
+              changed += 1;
+            }
+          }
+        }
+        if (changed > 0) writeEval(caseData, evalState);
+        return changed;
       }
 
       function getChecksKey(caseData) {
@@ -1105,8 +1179,47 @@
         body.className = "box-body";
 
         let mediaRenderer = null;
+        const customEmbed =
+          box?.customEmbed && typeof box.customEmbed === "object" ? box.customEmbed : null;
+        const customEmbedDisplay = safeText(customEmbed?.display || "inline").toLowerCase();
+        if (
+          customEmbed &&
+          String(customEmbed.type || "iframe") === "iframe" &&
+          customEmbedDisplay !== "overlay"
+        ) {
+          const wrap = document.createElement("div");
+          wrap.className = "embed-wrap";
+          const frame = document.createElement("iframe");
+          frame.className = "embed-frame";
+          frame.loading = "lazy";
+          frame.referrerPolicy = "no-referrer";
+          frame.setAttribute("scrolling", "no");
+          frame.title = safeText(customEmbed.title || box.label || boxId || "Inbaddat innehall");
+          frame.src = safeText(customEmbed.src || "");
+          const customHeight = Number(customEmbed.height);
+          if (Number.isFinite(customHeight)) {
+            frame.style.height = `${Math.max(360, Math.min(1400, Math.floor(customHeight)))}px`;
+          }
+          frame.addEventListener("load", () => {
+            try {
+              if (frame.contentWindow) embedFrameByWindow.set(frame.contentWindow, frame);
+              const doc = frame.contentDocument;
+              if (!doc) return;
+              const h = Math.max(
+                doc.documentElement ? doc.documentElement.scrollHeight : 0,
+                doc.body ? doc.body.scrollHeight : 0,
+              );
+              if (h > 0) frame.style.height = `${Math.max(360, h)}px`;
+            } catch {
+              // ignore
+            }
+          });
+          wrap.append(frame);
+          body.append(wrap);
+        }
+
         const ecgData = box.ecg;
-        if (boxId === "ekg" && ecgData) {
+        if (!customEmbed && boxId === "ekg" && ecgData) {
           const wrap = document.createElement("div");
           wrap.className = "img-wrap";
           const canvas = document.createElement("canvas");
@@ -1131,7 +1244,7 @@
             p.textContent = "Kunde inte rendera EKG från JSON.";
             body.append(p);
           }
-        } else if (!(boxId === "blodgas" && box.blodgas)) {
+        } else if (!customEmbed && !(boxId === "blodgas" && box.blodgas)) {
           const imagePath =
             (box.image && (box.image.suggestedPath || box.image.filename)) || "";
           if (imagePath) {
@@ -1146,7 +1259,7 @@
         }
 
         const bgData = box.blodgas;
-        if (boxId === "blodgas" && bgData) {
+        if (!customEmbed && boxId === "blodgas" && bgData) {
           const wrap = document.createElement("div");
           body.append(wrap);
           try {
@@ -1256,6 +1369,53 @@
           const gradeKey = doneKey;
           const currentGrade = String(evalState.grade[gradeKey] || "none");
           const groupName = `grade-${boxId}-${i}`;
+          const requiredEvent = safeText(sub.completeOnEvent).trim();
+          const isEventLocked = Boolean(requiredEvent && !hasCaseEvent(caseData, requiredEvent));
+          const showCustomEmbedBtn =
+            Boolean(sub.openCustomEmbed) &&
+            Boolean(customEmbed) &&
+            String(customEmbed.type || "iframe") === "iframe";
+
+          if (showCustomEmbedBtn) {
+            const openBtn = document.createElement("button");
+            openBtn.type = "button";
+            openBtn.className = "btn-primary open-embed-btn";
+            openBtn.textContent = safeText(sub.openCustomEmbedLabel || "Öppna simulator");
+            openBtn.addEventListener("click", (e) => {
+              e.stopPropagation();
+              const src = safeText(customEmbed.src || "").trim();
+              if (!src) return;
+              showMediaViewer(customEmbed.title || box.label || boxId, (container) => {
+                const frameWrap = document.createElement("div");
+                frameWrap.className = "embed-wrap";
+                const frame = document.createElement("iframe");
+                frame.className = "embed-frame embed-frame-overlay";
+                frame.loading = "lazy";
+                frame.referrerPolicy = "no-referrer";
+                frame.setAttribute("scrolling", "no");
+                frame.title = safeText(customEmbed.title || box.label || boxId || "Inbaddat innehall");
+                frame.src = src;
+                frame.addEventListener("load", () => {
+                  try {
+                    if (frame.contentWindow) embedFrameByWindow.set(frame.contentWindow, frame);
+                  } catch {
+                    // ignore
+                  }
+                });
+                frameWrap.append(frame);
+                container.append(frameWrap);
+              });
+            });
+            subCard.append(openBtn);
+          }
+
+          if (isEventLocked) {
+            subCard.classList.add("locked");
+            const lockHint = document.createElement("p");
+            lockHint.className = "status";
+            lockHint.textContent = "Låst: slutför defibrillering i simulatorn för att markera denna punkt.";
+            subCard.append(lockHint);
+          }
 
           const makeGrade = (value, label) => {
             const wrap = document.createElement("label");
@@ -1265,8 +1425,10 @@
             input.name = groupName;
             input.value = value;
             input.checked = currentGrade === value;
+            input.disabled = isEventLocked;
             input.addEventListener("click", (e) => e.stopPropagation());
             input.addEventListener("change", () => {
+              if (isEventLocked) return;
               updateGrade(gradeKey, value);
               subCard.classList.toggle("done", value !== "none");
               subCard.setAttribute("aria-pressed", value !== "none" ? "true" : "false");
@@ -1310,6 +1472,10 @@
           subCard.tabIndex = 0;
           subCard.setAttribute("role", "button");
           const toggleDone = () => {
+            if (isEventLocked) {
+              setCaseStatus("Denna punkt låses upp efter korrekt VF-defibrillering i simulatorn.");
+              return;
+            }
             const current = Boolean(readEval(caseData).done[doneKey]);
             const next = !current;
             const gradeBefore = String(evalState.grade[gradeKey] || "none");
@@ -1501,6 +1667,31 @@
           ensureTimerRunning();
         }
       }
+
+      window.addEventListener("message", (event) => {
+        const data = event && event.data && typeof event.data === "object" ? event.data : null;
+        if (!data) return;
+        if (safeText(data.type) === "akuta-embed-height") {
+          const frame = embedFrameByWindow.get(event.source);
+          const h = Number(data.height);
+          if (frame && Number.isFinite(h) && h > 0) {
+            frame.style.height = `${Math.max(360, Math.floor(h))}px`;
+          }
+          return;
+        }
+        if (safeText(data.type) !== "akuta-case-event") return;
+        const eventName = safeText(data.eventName).trim();
+        if (!eventName) return;
+
+        const selected = readSelectedCase();
+        if (!selected) return;
+
+        recordCaseEvent(selected, eventName);
+        const changed = applyCaseEventCompletions(selected, eventName);
+        if (changed > 0 && Number(document.querySelector(".step-section[data-active='true']")?.dataset.step) === 4) {
+          renderCaseBoxesIntoStep3(selected);
+        }
+      });
 
       const mediaViewer = document.createElement("div");
       mediaViewer.id = "mediaViewer";

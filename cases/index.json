@@ -1,4 +1,4 @@
-{
+﻿{
   "cases": [
     "case-fall-1.json",
     "case-fall-2.json",
@@ -11,16 +11,7 @@
     "case-fall-9.json",
     "case-fall-10.json",
     "case-fall-11.json",
-    "case-fall-12.json"
-    
-    
-    
-    
-    
-
-    
-
-
-]
+    "case-fall-12.json",
+    "case-fall-heart-test.json"
+  ]
 }
-

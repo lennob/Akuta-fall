@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 3,
+  "title": "FALL-HEART-TEST",
+  "caseText": "Testfall for hjartstopp. Detta fall visar endast defibrillator-workspace.",
+  "boxes": {
+    "oversikt": {
+      "label": "oversikt",
+      "image": null,
+      "ecg": null,
+      "blodgas": null,
+      "customEmbed": {
+        "type": "iframe",
+        "src": "./defib-workspace.html?embed=case",
+        "title": "Defib Workspace",
+        "height": 960,
+        "display": "overlay"
+      },
+      "subboxes": [
+        {
+          "name": "Defibrillera VF",
+          "studentAction": "Patienten har ventrikelflimmer (VF). Defibrillera patienten korrekt i simulatorn.",
+          "specialCase": "Subboxen markeras automatiskt när korrekt defibrillering genomförts.",
+          "openCustomEmbed": true,
+          "openCustomEmbedLabel": "Öppna defib-overlay",
+          "completeOnEvent": "vf-defib-success",
+          "autoGradeOnEvent": "basic",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    }
+  }
+}

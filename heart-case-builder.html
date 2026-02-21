@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Heart Case Builder</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <style>
+      body.heart-builder {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, sans-serif;
+        background: #f8f8f7;
+        color: #0f172a;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .hb-wrap {
+        width: min(1100px, 100%);
+        display: grid;
+        gap: 12px;
+      }
+
+      .hb-card {
+        background: #fff;
+        border: 1px solid rgba(15, 23, 42, 0.16);
+        border-radius: 12px;
+        padding: 14px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .hb-head h1 {
+        margin: 0;
+        font-size: 1.4rem;
+      }
+
+      .hb-head p {
+        margin: 6px 0 0;
+        color: #64748b;
+      }
+
+      .hb-grid {
+        display: grid;
+        gap: 10px;
+      }
+
+      .hb-field {
+        display: grid;
+        gap: 6px;
+      }
+
+      .hb-field label {
+        font-weight: 700;
+      }
+
+      .hb-field input[type="text"],
+      .hb-field textarea,
+      .hb-field select {
+        width: 100%;
+        border: 1px solid rgba(15, 23, 42, 0.2);
+        border-radius: 8px;
+        padding: 8px 10px;
+        font: inherit;
+      }
+
+      .hb-field textarea {
+        min-height: 70px;
+        resize: vertical;
+      }
+
+      .hb-section {
+        border: 1px solid rgba(15, 23, 42, 0.14);
+        border-radius: 10px;
+        padding: 10px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .hb-section h2 {
+        margin: 0;
+        font-size: 1.05rem;
+      }
+
+      .hb-subbox {
+        border: 1px solid rgba(15, 23, 42, 0.12);
+        border-radius: 8px;
+        padding: 10px;
+        display: grid;
+        gap: 8px;
+        background: #fafbfc;
+      }
+
+      .hb-subbox h3 {
+        margin: 0;
+        font-size: 0.95rem;
+      }
+
+      .hb-row {
+        display: grid;
+        gap: 8px;
+        grid-template-columns: 1fr 180px;
+        align-items: end;
+      }
+
+      .hb-check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+      }
+
+      .hb-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .hb-status {
+        color: #64748b;
+        margin: 0;
+      }
+
+      @media (max-width: 820px) {
+        .hb-row {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body class="heart-builder">
+    <main class="hb-wrap">
+      <section class="hb-card hb-head">
+        <h1>Heart Case Builder</h1>
+        <p>Skapa hjartstoppsfall med fasta steg: Oversikt, Defibrilator, 4H och 4T, Reevaluering &amp; sign-out.</p>
+      </section>
+
+      <section class="hb-card">
+        <div class="hb-grid">
+          <div class="hb-field">
+            <label for="caseTitle">Case title</label>
+            <input id="caseTitle" type="text" value="FALL-HEART-NEW" />
+          </div>
+          <div class="hb-field">
+            <label for="caseText">Case text</label>
+            <textarea id="caseText" placeholder="S/B/A eller fri beskrivning"></textarea>
+          </div>
+          <label class="hb-check">
+            <input id="autoDefibCheck" type="checkbox" checked />
+            Automarkera Defibrilator subbox 4 vid lyckad VF-defibrillering
+          </label>
+        </div>
+      </section>
+
+      <section class="hb-card" id="sectionsHost"></section>
+
+      <section class="hb-card">
+        <div class="hb-actions">
+          <button type="button" class="btn-primary" id="exportBtn">Exportera heart case (.json)</button>
+        </div>
+        <p class="hb-status" id="status">Klar att exportera.</p>
+      </section>
+    </main>
+
+    <script>
+      const TEMPLATE = [
+        {
+          id: "oversikt",
+          label: "Oversikt",
+          subboxes: [
+            "Identifiera att hjartstopp ar aktuellt",
+            "Agera som teamledare och ordinerar adekvata roller.",
+            "Studenten forklarar hur man kopplar defibrilatorn",
+          ],
+        },
+        {
+          id: "defibrilator",
+          label: "Defibrilator",
+          subboxes: [
+            "Defibrilator uppkopplad.",
+            "Studenten kanner pa pulsen",
+            "Studenten analyserar rytmen korrekt",
+            "Studenten utfor korrekt atgard.",
+          ],
+        },
+        {
+          id: "h4t4",
+          label: "4H och 4T",
+          subboxes: [
+            "Undersoker tecken pa hypoxi",
+            "Undersoker tecken pa hypovolemi",
+            "Undersoker tecken pa hyper/hypokalemi",
+            "Undersoker tecken pa hypotermi",
+            "Undersoker tecken pa tryckpneumothorax",
+            "Undersoker tecken pa tamponad",
+            "Undersoker tecken pa trombos",
+            "Undersoker tecken pa intox",
+          ],
+        },
+        {
+          id: "reevaluering_signout",
+          label: "Reevaluering & sign-out",
+          subboxes: [
+            "Reevaluerar A-E",
+            "Ordinerar adekvat behandling",
+            "Ordinerar adekvat vardniva",
+          ],
+        },
+      ];
+
+      const sectionsHost = document.getElementById("sectionsHost");
+      const exportBtn = document.getElementById("exportBtn");
+      const statusEl = document.getElementById("status");
+      const caseTitleEl = document.getElementById("caseTitle");
+      const caseTextEl = document.getElementById("caseText");
+      const autoDefibCheckEl = document.getElementById("autoDefibCheck");
+
+      function safeText(value) {
+        return String(value ?? "");
+      }
+
+      function slugify(value) {
+        return safeText(value)
+          .toLowerCase()
+          .trim()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "")
+          .slice(0, 80);
+      }
+
+      function makeSubboxEditor(section, index, name) {
+        const wrap = document.createElement("article");
+        wrap.className = "hb-subbox";
+        wrap.dataset.sectionId = section.id;
+        wrap.dataset.subIndex = String(index);
+
+        const h3 = document.createElement("h3");
+        h3.textContent = `${index + 1}. ${name}`;
+
+        const sayField = document.createElement("div");
+        sayField.className = "hb-field";
+        const sayLabel = document.createElement("label");
+        sayLabel.textContent = "Vad du ska saga";
+        const sayInput = document.createElement("textarea");
+        sayInput.placeholder = "Vad observatorn ska saga i detta steg";
+        sayInput.dataset.field = "specialCase";
+        sayField.append(sayLabel, sayInput);
+
+        const doField = document.createElement("div");
+        doField.className = "hb-field";
+        const doLabel = document.createElement("label");
+        doLabel.textContent = "Vad studenten ska gora";
+        const doInput = document.createElement("textarea");
+        doInput.placeholder = "Forvantad studentatgard";
+        doInput.dataset.field = "studentAction";
+        doField.append(doLabel, doInput);
+
+        const row = document.createElement("div");
+        row.className = "hb-row";
+
+        const critWrap = document.createElement("label");
+        critWrap.className = "hb-check";
+        const critInput = document.createElement("input");
+        critInput.type = "checkbox";
+        critInput.dataset.field = "critical";
+        critWrap.append(critInput, document.createTextNode("Kritisk subbox"));
+
+        const tierField = document.createElement("div");
+        tierField.className = "hb-field";
+        const tierLabel = document.createElement("label");
+        tierLabel.textContent = "Tier";
+        const tierSelect = document.createElement("select");
+        tierSelect.dataset.field = "tier";
+        tierSelect.innerHTML = `
+          <option value="basic">basic</option>
+          <option value="middle">middle</option>
+          <option value="high">high</option>
+        `;
+        tierField.append(tierLabel, tierSelect);
+
+        row.append(critWrap, tierField);
+
+        wrap.append(h3, sayField, doField, row);
+        return wrap;
+      }
+
+      function renderTemplateEditors() {
+        sectionsHost.replaceChildren();
+        for (const section of TEMPLATE) {
+          const sec = document.createElement("section");
+          sec.className = "hb-section";
+          sec.dataset.sectionId = section.id;
+
+          const h2 = document.createElement("h2");
+          h2.textContent = section.label;
+          sec.append(h2);
+
+          section.subboxes.forEach((name, index) => {
+            sec.append(makeSubboxEditor(section, index, name));
+          });
+
+          sectionsHost.append(sec);
+        }
+      }
+
+      function collectCaseData() {
+        const title = safeText(caseTitleEl.value).trim() || "FALL-HEART-NEW";
+        const caseText = safeText(caseTextEl.value).trim();
+        const autoDefib = Boolean(autoDefibCheckEl.checked);
+
+        const boxes = {};
+
+        for (const section of TEMPLATE) {
+          const sectionEl = sectionsHost.querySelector(`.hb-section[data-section-id="${section.id}"]`);
+          const subboxes = [];
+          if (!sectionEl) continue;
+
+          const editors = Array.from(sectionEl.querySelectorAll(".hb-subbox"));
+          for (let i = 0; i < editors.length; i += 1) {
+            const editor = editors[i];
+            const specialCase = safeText(editor.querySelector('[data-field="specialCase"]')?.value).trim();
+            const studentAction = safeText(editor.querySelector('[data-field="studentAction"]')?.value).trim();
+            const critical = Boolean(editor.querySelector('[data-field="critical"]')?.checked);
+            const tier = safeText(editor.querySelector('[data-field="tier"]')?.value).trim() || "basic";
+
+            const sub = {
+              name: section.subboxes[i],
+              studentAction,
+              specialCase,
+              tiers: [tier],
+              critical,
+            };
+
+            if (section.id === "defibrilator" && i === 0) {
+              sub.openCustomEmbed = true;
+              sub.openCustomEmbedLabel = "Oppna defib-overlay";
+            }
+
+            if (section.id === "defibrilator" && i === 3 && autoDefib) {
+              sub.completeOnEvent = "vf-defib-success";
+              sub.autoGradeOnEvent = "basic";
+            }
+
+            subboxes.push(sub);
+          }
+
+          const box = {
+            label: section.label.toLowerCase(),
+            image: null,
+            ecg: null,
+            blodgas: null,
+            subboxes,
+          };
+
+          if (section.id === "defibrilator") {
+            box.customEmbed = {
+              type: "iframe",
+              src: "./defib-workspace.html?embed=case",
+              title: "Defib Workspace",
+              height: 960,
+              display: "overlay",
+            };
+          }
+
+          boxes[section.id] = box;
+        }
+
+        return {
+          schemaVersion: 3,
+          title,
+          caseText,
+          boxes,
+        };
+      }
+
+      function downloadJson(filename, data) {
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.append(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      exportBtn.addEventListener("click", () => {
+        try {
+          const payload = collectCaseData();
+          const filename = `case-${slugify(payload.title) || "fall-heart"}.json`;
+          downloadJson(filename, payload);
+          statusEl.textContent = `Exporterade ${filename}. Lagg filen i cases/.`;
+        } catch (err) {
+          statusEl.textContent = `Kunde inte exportera: ${safeText(err && err.message)}`;
+        }
+      });
+
+      renderTemplateEditors();
+    </script>
+  </body>
+</html>

@@ -32,6 +32,12 @@
         padding: 16px;
       }
 
+      body.defib-workspace.case-embed .workspace-status,
+      body.defib-workspace.case-embed .test-conditions,
+      body.defib-workspace.case-embed .sim-header {
+        display: none;
+      }
+
       .sim-wrap {
         width: min(1320px, 100%);
         display: grid;
@@ -81,6 +87,7 @@
         display: grid;
         grid-template-columns: minmax(0, 1fr) 332px;
         gap: 14px;
+        align-items: stretch;
       }
 
       .monitor-shell {
@@ -90,6 +97,7 @@
         padding: 10px;
         display: grid;
         gap: 8px;
+        min-height: 760px;
       }
 
       .status-row {
@@ -171,13 +179,15 @@
         border: 1px solid rgba(255, 255, 255, 0.15);
         border-radius: 8px;
         overflow: hidden;
-        min-height: 420px;
+        min-height: 680px;
+        height: 100%;
       }
 
       .ecg-wrap canvas {
         width: 100%;
-        height: auto;
+        height: 100%;
         display: block;
+        aspect-ratio: auto;
       }
 
       .shock-flash {
@@ -238,10 +248,28 @@
         font-weight: 900;
         font-size: 0.95rem;
         letter-spacing: 0.03em;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
       }
 
       .on-btn.off {
         background: linear-gradient(180deg, #7d8692, #59626f);
+      }
+
+      .on-light {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #334155;
+        border: 1px solid rgba(255, 255, 255, 0.36);
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+      }
+
+      .on-btn:not(.off) .on-light {
+        background: #97f3b3;
+        box-shadow: 0 0 10px rgba(45, 199, 92, 0.85), inset 0 0 0 1px rgba(255, 255, 255, 0.25);
       }
 
       .rows {
@@ -384,6 +412,8 @@
       @media (max-width: 990px) {
         .device { grid-template-columns: 1fr; }
         .condition-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .monitor-shell { min-height: 560px; }
+        .ecg-wrap { min-height: 500px; }
       }
     </style>
   </head>
@@ -409,7 +439,7 @@
           <div class="control-panel">
             <div class="top-row">
               <div class="icon-strip"><span>●</span><span>⚡</span><span>🔧</span></div>
-              <button type="button" class="on-btn off" id="powerBtn">OFF</button>
+              <button type="button" class="on-btn off" id="powerBtn"><span class="on-light" aria-hidden="true"></span><span>ON</span></button>
             </div>
 
             <div class="rows">
@@ -488,6 +518,13 @@
     </main>
 
     <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const isIframeEmbed = window.self !== window.top;
+      const isCaseEmbed = urlParams.get("embed") === "case" || isIframeEmbed;
+      if (isCaseEmbed) {
+        document.body.classList.add("case-embed");
+      }
+
       const canvas = document.getElementById("ecgCanvas");
       const ctx = canvas ? canvas.getContext("2d") : null;
       const shockFlash = document.getElementById("shockFlash");
@@ -538,6 +575,7 @@
         lastTs: 0,
         lastBeepBeatIndex: null,
         soundEnabled: false,
+        gainScale: 1,
       };
 
       let audioCtx = null;
@@ -684,6 +722,18 @@
         return sampleSinus(tSec);
       }
 
+      function resizeCanvasToDisplaySize() {
+        if (!canvas || !ctx) return;
+        const rect = canvas.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        const width = Math.max(1, Math.round(rect.width * dpr));
+        const height = Math.max(1, Math.round(rect.height * dpr));
+        if (canvas.width !== width || canvas.height !== height) {
+          canvas.width = width;
+          canvas.height = height;
+        }
+      }
+
       function setResult(msg, kind = "") {
         resultChip.textContent = `Status: ${msg}`;
         resultChip.className = `chip ${kind}`;
@@ -760,14 +810,10 @@
         state.lastBeepBeatIndex = null;
         if (!on) {
           state.timer = 0;
-          powerBtn.textContent = "OFF";
           powerBtn.classList.add("off");
           setResult("Maskin av");
         } else {
-          powerBtn.textContent = "ON";
           powerBtn.classList.remove("off");
-          state.rhythm = "sinus";
-          state.hr = 82;
           setResult("Monitor aktiv", "good");
         }
         updateCoreUiEnabled();
@@ -776,6 +822,36 @@
 
       function isShockable() {
         return state.rhythm === "vfib" || state.rhythm === "vt";
+      }
+
+      function emitCaseEvent(eventName, payload = {}) {
+        if (!eventName) return;
+        if (!window.parent || window.parent === window) return;
+        window.parent.postMessage(
+          {
+            source: "defib-workspace",
+            type: "akuta-case-event",
+            eventName: String(eventName),
+            payload: payload && typeof payload === "object" ? payload : {},
+          },
+          "*",
+        );
+      }
+
+      function emitEmbedHeight() {
+        if (!window.parent || window.parent === window) return;
+        const h = Math.max(
+          document.documentElement ? document.documentElement.scrollHeight : 0,
+          document.body ? document.body.scrollHeight : 0,
+        );
+        window.parent.postMessage(
+          {
+            source: "defib-workspace",
+            type: "akuta-embed-height",
+            height: h,
+          },
+          "*",
+        );
       }
 
       function setScenarioRhythm(rhythmId) {
@@ -832,6 +908,7 @@
           state.rhythm = "sinus";
           state.hr = 92;
           setResult("ROSC efter stot", "good");
+          emitCaseEvent("vf-defib-success", { shocks: state.shocks, energy: state.energy });
         } else {
           setResult("Icke-shockbar rytm, fortsatt HLR", "warn");
         }
@@ -862,35 +939,17 @@
       }
 
       function drawGrid(w, h) {
-        const s = 12;
-        const major = getComputedStyle(document.documentElement).getPropertyValue("--grid-major").trim() || "rgba(216, 82, 82, 0.32)";
-        const minor = getComputedStyle(document.documentElement).getPropertyValue("--grid-minor").trim() || "rgba(216, 82, 82, 0.17)";
         ctx.fillStyle = state.powerOn ? "#000" : "#101821";
         ctx.fillRect(0, 0, w, h);
-
-        for (let x = 0; x <= w; x += s) {
-          ctx.strokeStyle = x % (s * 5) === 0 ? major : minor;
-          ctx.beginPath();
-          ctx.moveTo(x, 0);
-          ctx.lineTo(x, h);
-          ctx.stroke();
-        }
-
-        for (let y = 0; y <= h; y += s) {
-          ctx.strokeStyle = y % (s * 5) === 0 ? major : minor;
-          ctx.beginPath();
-          ctx.moveTo(0, y);
-          ctx.lineTo(w, y);
-          ctx.stroke();
-        }
       }
 
       function mvToY(mv, h) {
-        return h * 0.5 - mv * 94;
+        return h * 0.5 - mv * 94 * state.gainScale;
       }
 
       function drawFrame(ts) {
         if (!ctx || !canvas) return;
+        resizeCanvasToDisplaySize();
         if (!state.lastTs) state.lastTs = ts;
         const dt = Math.max(0, Math.min(0.05, (ts - state.lastTs) / 1000));
         state.lastTs = ts;
@@ -997,9 +1056,8 @@
 
       sizeBtn.addEventListener("click", () => {
         if (!state.powerOn) return;
-        const up = canvas.width === 1600 ? 1900 : 1600;
-        canvas.width = up;
-        setResult(up === 1900 ? "Gain upp" : "Gain normal", "good");
+        state.gainScale = state.gainScale === 1 ? 1.35 : 1;
+        setResult(state.gainScale > 1 ? "Gain upp" : "Gain normal", "good");
       });
 
       alarmsBtn.addEventListener("click", () => {
@@ -1059,6 +1117,17 @@
         state.soundEnabled = true;
       }, { once: true });
 
+      window.addEventListener("resize", resizeCanvasToDisplaySize);
+      window.addEventListener("resize", emitEmbedHeight);
+      window.addEventListener("load", emitEmbedHeight);
+      setTimeout(emitEmbedHeight, 0);
+      setTimeout(emitEmbedHeight, 250);
+      setTimeout(emitEmbedHeight, 800);
+
+      if (isCaseEmbed) {
+        setScenarioRhythm("vfib");
+        setResult("Patient i VF, defibrillera", "warn");
+      }
       setPower(false);
       requestAnimationFrame(drawFrame);
     </script>
