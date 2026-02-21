@@ -1,0 +1,212 @@
+{
+  "schemaVersion": 3,
+  "title": "Hjärtstopp fall 1",
+  "caseText": "S: 56-årig man, plötsligt försämrats i ambulans, hjärtstopp konstaterades, kompressioner pågår i ambulans\nB: Känd hypertoni, diabetes typ 2\nA: Kallade på ambulans på grund av akut andnöd och bröstsmärta",
+  "boxes": {
+    "oversikt": {
+      "label": "översikt",
+      "image": null,
+      "ecg": null,
+      "blodgas": null,
+      "subboxes": [
+        {
+          "name": "Identifiera att hjärtstopp är aktuellt",
+          "studentAction": "Ber kompressioner att pausa. Undersöker medvetande och lyssnar på andning. Identifierar hjärtstopp.",
+          "specialCase": "Patienten inkommer och ambulanspersonal håller på med kompressioner. Patienten är medvetslös och andas inte (När studenten undersöker andning och medvetande)",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true
+        },
+        {
+          "name": "Agera som teamledare och ordinerar adekvata roller.",
+          "studentAction": "Ordinerar en assistent att hantera luftväg, en att hantera kompressioner och en som hanterar infarter/läkemedel/hämtar defibrillator",
+          "specialCase": "Du har tre assistenter i rummet.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Studenten förklarar hur man kopplar defibrilatorn",
+          "studentAction": "Studenten ska korrekt visa vart elektroderna ska sättas.",
+          "specialCase": "Vart på patienten sätter man elektroderna?",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "defibrilator": {
+      "label": "defibrillator",
+      "image": null,
+      "ecg": null,
+      "blodgas": null,
+      "subboxes": [
+        {
+          "name": "Defibrillator uppkopplad.",
+          "studentAction": "Studenten sätter på defibrillatorn. Ber kompressioner att pausa och analyserar rytm.",
+          "specialCase": "Nu är defibrillatorn uppkopplad, den är avstängd. DU får sätta på den.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false,
+          "openCustomEmbed": true,
+          "openCustomEmbedLabel": "Oppna defib-overlay"
+        },
+        {
+          "name": "Studenten känner på pulsen",
+          "studentAction": "Studenten palperar adekvat rytm under analys.",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true
+        },
+        {
+          "name": "Studenten analyserar rytmen korrekt",
+          "studentAction": "Identifierar ventrikelflimmer",
+          "specialCase": "Vad ser du för rytm på defibrillatorn?",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Studenten utför korrekt åtgärd.",
+          "studentAction": "Laddar defibrillatorn till 200 Joule, ber kompressioner att pausa, ber personal att hålla sig undan, defibrillerar patienten",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true,
+          "completeOnEvent": "vf-defib-success",
+          "autoGradeOnEvent": "basic"
+        }
+      ],
+      "customEmbed": {
+        "type": "iframe",
+        "src": "./defib-workspace.html?embed=case&rhythm=vfib",
+        "title": "Defib Workspace",
+        "height": 960,
+        "display": "overlay"
+      }
+    },
+    "h4t4": {
+      "label": "4h och 4t",
+      "image": null,
+      "ecg": null,
+      "blodgas": null,
+      "subboxes": [
+        {
+          "name": "Undersöker tecken på hypoxi",
+          "studentAction": "Visar kunskap på behov av säkrad luftväg och adekvat syrgasbehov (≥15L).",
+          "specialCase": "Narkos har kommit till rummet.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersöker tecken på hypovolemi",
+          "studentAction": "Undersöker tecken på blödning.",
+          "specialCase": "Du har en ultraljudsmaskin i rummet.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersöker tecken på hyper/hypokalemi",
+          "studentAction": "Ordinerar venös blodgas.",
+          "specialCase": "Blodgas är normal.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersöker tecken på hypotermi",
+          "studentAction": "",
+          "specialCase": "Temperatur är 36,7°C",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersöker tecken på tryckpneumothorax",
+          "studentAction": "Undersöker thorax med ultraljud på adekvat sätt",
+          "specialCase": "Inga tecken på övertryckspneumothorax",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersöker tecken på tamponad",
+          "studentAction": "Undersöker thorax med ultraljud på adekvat sätt.",
+          "specialCase": "Inga tecken på tamponad.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersöker tecken på trombos",
+          "studentAction": "Undersöker tecken på massiv lungemboli med hjälp av ultraljud på hjärta och vena cava. Visar kunskap på att man kan undersöka tecken på infarkt med hjälp av EKG.",
+          "specialCase": "Ultraljud på hjärtat visar ingen förstorad högerkammare, vena cava ser normal ut. Om patienten hade varit i post-ROSC, hur hade du velat undersöka andra tecken på trombos?",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true
+        },
+        {
+          "name": "Undersöker tecken på inTox",
+          "studentAction": "",
+          "specialCase": "Inga tecken på intox.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "reevaluering_signout": {
+      "label": "reevaluering & sign-out",
+      "image": null,
+      "ecg": null,
+      "blodgas": null,
+      "subboxes": [
+        {
+          "name": "Reevaluerar A-E",
+          "studentAction": "Visar kunskap på adekvat behandling med amiodaron/cordarone (300 mg) samt adrenalin (1 mg, 0,1 mg/ml)",
+          "specialCase": "Vi spolar fram till 3e defibrilleringen, vad hade du gjort om du sett samma rytm? Efter en till defibrillering återfår du ROSC, vad vill du göra nu?",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true
+        },
+        {
+          "name": "Ordinerar adekvat behandling",
+          "studentAction": "Identifierar behov av akut PCI.",
+          "specialCase": "EKG visar tecken på infarkt. Vad vill du göra nu?",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true
+        },
+        {
+          "name": "Ordinerar adekvat vårdnivå",
+          "studentAction": "Visar kunskap på att post-ROSC ska patienter till IVA",
+          "specialCase": "Vart ska patienten efter sin PCI?",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    }
+  }
+}
