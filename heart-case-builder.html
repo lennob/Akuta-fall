@@ -131,6 +131,18 @@
         font-size: 0.95rem;
       }
 
+      .hb-seq-list {
+        display: grid;
+        gap: 8px;
+      }
+
+      .hb-seq-item {
+        display: grid;
+        grid-template-columns: 140px 1fr;
+        gap: 8px;
+        align-items: center;
+      }
+
       .hb-status {
         color: #64748b;
         margin: 0;
@@ -138,6 +150,9 @@
 
       @media (max-width: 820px) {
         .hb-row {
+          grid-template-columns: 1fr;
+        }
+        .hb-seq-item {
           grid-template-columns: 1fr;
         }
       }
@@ -175,6 +190,14 @@
                 <option value="pea">PEA</option>
                 <option value="asystole">Asystole</option>
               </select>
+            </div>
+            <div class="hb-field">
+              <label for="requiredShocks">Antal lyckade stotar innan slutrytm</label>
+              <input id="requiredShocks" type="text" inputmode="numeric" value="1" />
+            </div>
+            <div class="hb-field">
+              <label>Rytm efter varje lyckad stot</label>
+              <div id="shockPlanHost" class="hb-seq-list" aria-label="Shock sequence editor"></div>
             </div>
             <p class="hb-status">Styr vilken rytm som visas nar defib-overlayn oppnas i caset.</p>
           </div>
@@ -244,6 +267,23 @@
       const caseTextEl = document.getElementById("caseText");
       const autoDefibCheckEl = document.getElementById("autoDefibCheck");
       const startRhythmEl = document.getElementById("startRhythm");
+      const requiredShocksEl = document.getElementById("requiredShocks");
+      const shockPlanHostEl = document.getElementById("shockPlanHost");
+      const RHYTHM_OPTIONS = [
+        { value: "sinus", label: "Sinus" },
+        { value: "vt", label: "VT" },
+        { value: "vfib", label: "VF" },
+        { value: "pea", label: "PEA" },
+        { value: "asystole", label: "Asystole" },
+      ];
+      const EVENT_OPTIONS = [
+        { value: "", label: "Ingen auto-check" },
+        { value: "defib-sequence-complete", label: "Defib-sekvens klar" },
+        { value: "defib-success", label: "Defib lyckad (en stot)" },
+        { value: "vf-defib-success", label: "VF till sinus lyckad" },
+        { value: "drug-adrenalin-correct", label: "Adrenalin korrekt" },
+        { value: "drug-cordarone-adrenalin-correct", label: "Cordarone + Adrenalin korrekt" },
+      ];
 
       function safeText(value) {
         return String(value ?? "");
@@ -256,6 +296,50 @@
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/(^-|-$)/g, "")
           .slice(0, 80);
+      }
+
+      function clampShockCount(value) {
+        const n = Number.parseInt(String(value || "").trim(), 10);
+        if (!Number.isFinite(n)) return 1;
+        return Math.max(1, Math.min(10, n));
+      }
+
+      function readShockPlanValues() {
+        if (!shockPlanHostEl) return [];
+        return Array.from(shockPlanHostEl.querySelectorAll("select[data-shock-step]"))
+          .map((el) => safeText(el.value).trim().toLowerCase())
+          .filter(Boolean);
+      }
+
+      function renderShockPlanEditors() {
+        if (!shockPlanHostEl || !requiredShocksEl) return;
+        const count = clampShockCount(requiredShocksEl.value);
+        requiredShocksEl.value = String(count);
+        const prev = readShockPlanValues();
+        shockPlanHostEl.replaceChildren();
+
+        for (let i = 0; i < count; i += 1) {
+          const row = document.createElement("div");
+          row.className = "hb-seq-item";
+
+          const label = document.createElement("label");
+          label.textContent = `Efter stot ${i + 1}`;
+
+          const sel = document.createElement("select");
+          sel.dataset.shockStep = String(i + 1);
+          for (const opt of RHYTHM_OPTIONS) {
+            const o = document.createElement("option");
+            o.value = opt.value;
+            o.textContent = opt.label;
+            sel.append(o);
+          }
+
+          const defaultValue = i === count - 1 ? "sinus" : "vfib";
+          sel.value = prev[i] || defaultValue;
+
+          row.append(label, sel);
+          shockPlanHostEl.append(row);
+        }
       }
 
       function makeSubboxEditor(section, index, name) {
@@ -310,7 +394,44 @@
 
         row.append(critWrap, tierField);
 
-        wrap.append(h3, sayField, doField, row);
+        const autoField = document.createElement("div");
+        autoField.className = "hb-field";
+        const autoLabel = document.createElement("label");
+        autoLabel.textContent = "Auto-check on event";
+        const autoSelect = document.createElement("select");
+        autoSelect.dataset.field = "completeOnEvent";
+        for (const opt of EVENT_OPTIONS) {
+          const o = document.createElement("option");
+          o.value = opt.value;
+          o.textContent = opt.label;
+          autoSelect.append(o);
+        }
+        autoField.append(autoLabel, autoSelect);
+
+        const autoGradeField = document.createElement("div");
+        autoGradeField.className = "hb-field";
+        const autoGradeLabel = document.createElement("label");
+        autoGradeLabel.textContent = "Auto-grade";
+        const autoGradeSelect = document.createElement("select");
+        autoGradeSelect.dataset.field = "autoGradeOnEvent";
+        autoGradeSelect.innerHTML = `
+          <option value="basic">basic</option>
+          <option value="middle">middle</option>
+          <option value="high">high</option>
+        `;
+        autoGradeField.append(autoGradeLabel, autoGradeSelect);
+
+        if (section.id === "defibrilator" && index === 3) {
+          autoSelect.value = "defib-sequence-complete";
+          autoGradeSelect.value = "basic";
+        }
+
+        autoSelect.addEventListener("change", () => {
+          autoGradeField.style.display = autoSelect.value ? "" : "none";
+        });
+        autoGradeField.style.display = autoSelect.value ? "" : "none";
+
+        wrap.append(h3, sayField, doField, row, autoField, autoGradeField);
         return wrap;
       }
 
@@ -338,6 +459,8 @@
         const caseText = safeText(caseTextEl.value).trim();
         const autoDefib = Boolean(autoDefibCheckEl.checked);
         const rhythm = safeText(startRhythmEl?.value || "vfib").trim() || "vfib";
+        const shockCount = clampShockCount(requiredShocksEl?.value || "1");
+        const shockPlan = readShockPlanValues().slice(0, shockCount);
 
         const boxes = {};
 
@@ -353,6 +476,8 @@
             const studentAction = safeText(editor.querySelector('[data-field="studentAction"]')?.value).trim();
             const critical = Boolean(editor.querySelector('[data-field="critical"]')?.checked);
             const tier = safeText(editor.querySelector('[data-field="tier"]')?.value).trim() || "basic";
+            const completeOnEvent = safeText(editor.querySelector('[data-field="completeOnEvent"]')?.value).trim();
+            const autoGradeOnEvent = safeText(editor.querySelector('[data-field="autoGradeOnEvent"]')?.value).trim() || "basic";
 
             const sub = {
               name: section.subboxes[i],
@@ -367,8 +492,11 @@
               sub.openCustomEmbedLabel = "Oppna defib-overlay";
             }
 
-            if (section.id === "defibrilator" && i === 3 && autoDefib) {
-              sub.completeOnEvent = "vf-defib-success";
+            if (completeOnEvent) {
+              sub.completeOnEvent = completeOnEvent;
+              sub.autoGradeOnEvent = autoGradeOnEvent;
+            } else if (section.id === "defibrilator" && i === 3 && autoDefib) {
+              sub.completeOnEvent = "defib-sequence-complete";
               sub.autoGradeOnEvent = "basic";
             }
 
@@ -386,7 +514,9 @@
           if (section.id === "defibrilator") {
             box.customEmbed = {
               type: "iframe",
-              src: `./defib-workspace.html?embed=case&rhythm=${encodeURIComponent(rhythm)}`,
+              src:
+                `./defib-workspace.html?embed=case&rhythm=${encodeURIComponent(rhythm)}` +
+                `&shockPlan=${encodeURIComponent(shockPlan.join(","))}`,
               title: "Defib Workspace",
               height: 960,
               display: "overlay",
@@ -427,7 +557,16 @@
         }
       });
 
+      if (requiredShocksEl) {
+        requiredShocksEl.addEventListener("change", renderShockPlanEditors);
+        requiredShocksEl.addEventListener("input", () => {
+          const raw = safeText(requiredShocksEl.value).replace(/[^0-9]/g, "");
+          requiredShocksEl.value = raw;
+        });
+      }
+
       renderTemplateEditors();
+      renderShockPlanEditors();
     </script>
   </body>
 </html>

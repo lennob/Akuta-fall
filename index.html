@@ -1871,7 +1871,7 @@
         if (step1PrevBtn) step1PrevBtn.addEventListener("click", () => (location.hash = "#step=1"));
         if (step1NextBtn) step1NextBtn.addEventListener("click", () => (location.hash = "#step=3"));
         if (step2PrevBtn) step2PrevBtn.addEventListener("click", () => (location.hash = "#step=2"));
-        if (step2NextBtn) step2NextBtn.addEventListener("click", () => (location.hash = "#step=4"));
+        if (step2NextBtn) step2NextBtn.addEventListener("click", startCountdownThenGo);
         if (randomCaseBtn)
           randomCaseBtn.addEventListener("click", () => {
             if (location.hash !== "#step=3") {

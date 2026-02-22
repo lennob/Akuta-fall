@@ -402,6 +402,23 @@
         width: 100%;
       }
 
+      .med-zone {
+        margin-top: 8px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .btn-med {
+        width: 100%;
+        border: 1px solid rgba(80, 7, 9, 0.55);
+        border-radius: 10px;
+        background: linear-gradient(180deg, #b72b30 0%, #8f1f24 100%);
+        color: #fff;
+        font-weight: 900;
+        letter-spacing: 0.02em;
+        padding: 9px 10px;
+      }
+
       .lower-stack {
         display: grid;
         gap: 8px;
@@ -485,6 +502,10 @@
                   <button type="button" class="btn-wide" id="currentBtn">Current</button>
                   <button type="button" class="btn-wide" id="pauseBtn">Pause</button>
                 </div>
+                <div class="med-zone">
+                  <button type="button" class="btn-med" id="adrenalinBtn">Adrenalin</button>
+                  <button type="button" class="btn-med" id="cordaroneAdrenalinBtn">Cordarone + Adrenalin</button>
+                </div>
               </div>
             </div>
 
@@ -522,6 +543,7 @@
       const isIframeEmbed = window.self !== window.top;
       const isCaseEmbed = urlParams.get("embed") === "case" || isIframeEmbed;
       const requestedCaseRhythm = String(urlParams.get("rhythm") || "").toLowerCase();
+      const requestedShockPlan = String(urlParams.get("shockPlan") || "");
       if (isCaseEmbed) {
         document.body.classList.add("case-embed");
       }
@@ -556,6 +578,8 @@
       const rateBtn = document.getElementById("rateBtn");
       const currentBtn = document.getElementById("currentBtn");
       const pauseBtn = document.getElementById("pauseBtn");
+      const adrenalinBtn = document.getElementById("adrenalinBtn");
+      const cordaroneAdrenalinBtn = document.getElementById("cordaroneAdrenalinBtn");
       const controlShell = document.getElementById("controlShell");
       const conditionBtns = document.querySelectorAll("[data-rhythm]");
 
@@ -580,6 +604,8 @@
         postShockRecoveryAt: 0,
         postShockSourceRhythm: "",
         rhythmBlend: null,
+        caseShockPlan: [],
+        caseShockIndex: 0,
       };
 
       let audioCtx = null;
@@ -592,6 +618,22 @@
         { id: "pea", hr: 45, label: "PEA" },
         { id: "asystole", hr: 0, label: "Asystoli" },
       ];
+
+      function rhythmHrFor(id) {
+        if (id === "vt") return 170;
+        if (id === "pea") return 45;
+        if (id === "sinus") return 82;
+        return 0;
+      }
+
+      function parseShockPlan(raw) {
+        const allowed = new Set(["sinus", "vt", "vfib", "pea", "asystole"]);
+        return String(raw || "")
+          .split(",")
+          .map((v) => String(v || "").trim().toLowerCase())
+          .filter((v) => allowed.has(v))
+          .slice(0, 10);
+      }
 
       function ensureAudio() {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -789,6 +831,8 @@
           rateBtn,
           currentBtn,
           pauseBtn,
+          adrenalinBtn,
+          cordaroneAdrenalinBtn,
         ];
         ids.forEach((el) => { el.disabled = off; });
         controlShell.classList.toggle("disabled", off);
@@ -879,6 +923,7 @@
         state.postShockRecoveryAt = 0;
         state.postShockSourceRhythm = "";
         state.rhythmBlend = null;
+        state.caseShockIndex = 0;
         state.rhythm = next.id;
         state.hr = next.hr;
         state.lastBeepBeatIndex = null;
@@ -907,6 +952,48 @@
         } else {
           state.score += 1;
         }
+      }
+
+      function giveAdrenalin() {
+        if (!state.powerOn) return;
+        const correct = state.rhythm === "pea" || state.rhythm === "asystole";
+        if (correct) {
+          state.score += 1;
+          setResult("Adrenalin givet korrekt", "good");
+          emitCaseEvent("drug-adrenalin-correct", {
+            rhythm: state.rhythm,
+            shocks: state.shocks,
+          });
+        } else {
+          state.score -= 1;
+          setResult("Adrenalin ej forstahandsatgard i denna rytm", "warn");
+          emitCaseEvent("drug-adrenalin-incorrect", {
+            rhythm: state.rhythm,
+            shocks: state.shocks,
+          });
+        }
+        updateChips();
+      }
+
+      function giveCordaroneAdrenalin() {
+        if (!state.powerOn) return;
+        const correct = state.rhythm === "vfib" || state.rhythm === "vt";
+        if (correct) {
+          state.score += 1;
+          setResult("Cordarone + Adrenalin givet korrekt", "good");
+          emitCaseEvent("drug-cordarone-adrenalin-correct", {
+            rhythm: state.rhythm,
+            shocks: state.shocks,
+          });
+        } else {
+          state.score -= 1;
+          setResult("Cordarone + Adrenalin ej ratt atgard i denna rytm", "warn");
+          emitCaseEvent("drug-cordarone-adrenalin-incorrect", {
+            rhythm: state.rhythm,
+            shocks: state.shocks,
+          });
+        }
+        updateChips();
       }
 
       function defib() {
@@ -998,25 +1085,58 @@
           const source = state.postShockSourceRhythm;
           state.postShockRecoveryAt = 0;
           state.postShockSourceRhythm = "";
-          const sourceHr = source === "vt" ? 170 : source === "pea" ? 45 : source === "sinus" ? 82 : 0;
+          const sourceHr = rhythmHrFor(source || state.rhythm);
+          let targetRhythm = "sinus";
+          let sequenceCompleted = false;
+
+          if (isShockable() && Array.isArray(state.caseShockPlan) && state.caseShockPlan.length > 0) {
+            const idx = Math.max(0, Math.min(state.caseShockIndex, state.caseShockPlan.length - 1));
+            targetRhythm = state.caseShockPlan[idx] || "sinus";
+            state.caseShockIndex = Math.min(state.caseShockIndex + 1, state.caseShockPlan.length);
+            sequenceCompleted = state.caseShockIndex >= state.caseShockPlan.length;
+          } else {
+            sequenceCompleted = true;
+          }
+
+          const targetHr = rhythmHrFor(targetRhythm);
           state.rhythmBlend = {
             fromRhythm: source || state.rhythm,
             fromHr: sourceHr || state.hr,
-            toRhythm: "sinus",
-            toHr: 92,
+            toRhythm: targetRhythm,
+            toHr: targetHr || (targetRhythm === "sinus" ? 92 : 0),
             startMs: performance.now(),
             durationMs: 1500,
           };
-          state.rhythm = "sinus";
-          state.hr = 92;
+          state.rhythm = targetRhythm;
+          state.hr = targetRhythm === "sinus" ? 92 : targetHr;
           state.lastBeepBeatIndex = null;
-          setResult("ROSC efter stot, rytm stabiliseras...", "good");
+          const shockableNext = targetRhythm === "vfib" || targetRhythm === "vt";
+          if (targetRhythm === "sinus") {
+            setResult("ROSC efter stot, rytm stabiliseras...", "good");
+          } else if (shockableNext) {
+            setResult(`Rytm efter stot: ${targetRhythm.toUpperCase()} - ny analys/stot behovs`, "warn");
+          } else {
+            setResult(`Rytm efter stot: ${targetRhythm.toUpperCase()} - fortsatt HLR/atgarder`, "warn");
+          }
           emitCaseEvent("defib-success", {
             shocks: state.shocks,
             energy: state.energy,
             sourceRhythm: source || "",
+            targetRhythm,
+            shockIndex: state.caseShockIndex,
           });
-          if (source === "vfib") {
+          if (sequenceCompleted) {
+            emitCaseEvent("defib-sequence-complete", {
+              shocks: state.shocks,
+              energy: state.energy,
+              sourceRhythm: source || "",
+              targetRhythm,
+              totalRequired: Array.isArray(state.caseShockPlan) && state.caseShockPlan.length
+                ? state.caseShockPlan.length
+                : 1,
+            });
+          }
+          if (sequenceCompleted && source === "vfib" && targetRhythm === "sinus") {
             emitCaseEvent("vf-defib-success", { shocks: state.shocks, energy: state.energy });
           }
           updateChips();
@@ -1139,6 +1259,9 @@
         setResult("Pacer paus", "warn");
       });
 
+      adrenalinBtn.addEventListener("click", giveAdrenalin);
+      cordaroneAdrenalinBtn.addEventListener("click", giveCordaroneAdrenalin);
+
       conditionBtns.forEach((btn) => {
         btn.addEventListener("click", () => {
           if (!state.powerOn) {
@@ -1176,6 +1299,8 @@
       if (isCaseEmbed) {
         const allowed = ["sinus", "vt", "vfib", "pea", "asystole"];
         const startRhythm = allowed.includes(requestedCaseRhythm) ? requestedCaseRhythm : "vfib";
+        state.caseShockPlan = parseShockPlan(requestedShockPlan);
+        state.caseShockIndex = 0;
         setScenarioRhythm(startRhythm);
         const startLabel = rhythms.find((r) => r.id === startRhythm)?.label || startRhythm;
         setResult(`Patient i ${startLabel}`, startRhythm === "vfib" || startRhythm === "vt" ? "warn" : "");
