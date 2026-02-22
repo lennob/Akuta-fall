@@ -408,6 +408,10 @@
         gap: 8px;
       }
 
+      .med-zone[hidden] {
+        display: none !important;
+      }
+
       .btn-med {
         width: 100%;
         border: 1px solid rgba(80, 7, 9, 0.55);
@@ -502,7 +506,7 @@
                   <button type="button" class="btn-wide" id="currentBtn">Current</button>
                   <button type="button" class="btn-wide" id="pauseBtn">Pause</button>
                 </div>
-                <div class="med-zone">
+                <div class="med-zone" hidden>
                   <button type="button" class="btn-med" id="adrenalinBtn">Adrenalin</button>
                   <button type="button" class="btn-med" id="cordaroneAdrenalinBtn">Cordarone + Adrenalin</button>
                 </div>

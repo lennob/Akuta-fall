@@ -22,7 +22,10 @@
 
       <main class="card">
         <header>
-          <h1>Akuta fall</h1>
+          <div class="page-title-row">
+            <h1>Akuta fall</h1>
+            <a class="btn-secondary header-compendium-btn" id="headerCompendiumBtn" href="./compendium.html">Kompendium</a>
+          </div>
         </header>
         <nav class="step-nav" aria-label="Steg">
           <div class="step-nav-row">
@@ -201,6 +204,7 @@
 
       const stepsList = document.getElementById("stepsList");
       const pageEl = document.querySelector(".page");
+      const headerCompendiumBtn = document.getElementById("headerCompendiumBtn");
       const sections = Array.from(document.querySelectorAll(".content"));
       const introSection = document.getElementById("step-2");
       const caseTitleEl = document.getElementById("caseTitle");
@@ -1762,6 +1766,9 @@
         const panel = document.createElement("div");
         panel.className = "step-panel";
 
+        const panelTop = document.createElement("div");
+        panelTop.className = "step-panel-top";
+
         const introHead = document.createElement("div");
         introHead.className = "step-head";
         introHead.innerHTML = "<h2>Förberedelser</h2><p>Innan ni börjar:</p>";
@@ -1776,24 +1783,11 @@
           "" +
           instructions.doing.map((item) => `<p>${item}</p>`).join("");
 
-        panel.append(introHead, introBlock, infoBlock);
         stage.append(prevBtn, panel, nextBtn);
 
-        const cta = document.createElement("div");
-        cta.className = "step-cta";
-        const randomBtn = document.createElement("button");
-        randomBtn.type = "button";
-        randomBtn.className = "btn-primary";
-        randomBtn.id = "randomCaseBtn";
-        randomBtn.textContent = "Slumpvalt fall";
-        const compendiumLink = document.createElement("a");
-        compendiumLink.className = "btn-secondary";
-        compendiumLink.id = "compendiumBtn";
-        compendiumLink.href = "./compendium.html";
-        compendiumLink.textContent = "Kompendium";
-        cta.append(randomBtn, compendiumLink);
-
-        introSection.append(stage, cta);
+        panelTop.append(introHead);
+        panel.append(panelTop, introBlock, infoBlock);
+        introSection.append(stage);
       }
 
       function getStepFromHash() {
