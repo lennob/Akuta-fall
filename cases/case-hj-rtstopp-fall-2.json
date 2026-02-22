@@ -1,0 +1,448 @@
+{
+  "schemaVersion": 3,
+  "title": "Hjärtstopp fall 2",
+  "caseText": "S: 74-årig kvinna, plötslig kollaps i avdelning där du är AT-läkare \nB: Nyligen opererad höftfraktur, immobiliserad sedan dess. \nA: Patienten klagade på bröstsmärta och andfåddhet. Försämrades plötsligt och blev medvetandesänkt. Du kallades till rummet.",
+  "boxes": {
+    "oversikt": {
+      "label": "översikt",
+      "image": null,
+      "ecg": null,
+      "blodgas": null,
+      "subboxes": [
+        {
+          "name": "Identifiera att hjärtstopp är aktuellt",
+          "studentAction": "Identifierar hjärtstopp. Larmar först och startar kompressioner.",
+          "specialCase": "Patienten är medvetslös. Svarar inte på stimulering, och andas inte.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true
+        },
+        {
+          "name": "Agera som teamledare och ordinerar adekvata roller.",
+          "studentAction": "Informerar personal om \"Hjärtstopp vuxen\". Ber någon så snart som möjligt att ta över kompressioner, en som tar över luftvägen. Studenten kan också be att man larmar 50 000/hjärtstopplarm.",
+          "specialCase": "Tre sköterskor kommer in i rummet - \"Hallå vad händer?\"",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Studenten förklarar hur man kopplar defibrilatorn",
+          "studentAction": "Studenten visar korrekt vart man sätter elektroderna.",
+          "specialCase": "Vart sätter man elektroderna?",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "defibrilator": {
+      "label": "defibrillator",
+      "image": null,
+      "ecg": null,
+      "blodgas": null,
+      "subboxes": [
+        {
+          "name": "Defibrillator uppkopplad.",
+          "studentAction": "Studenten sätter på defibrillatorn. Ber kompressioner att pausa och analyserar rytm.",
+          "specialCase": "Nu är defibrillatorn uppkopplad. Nu får du sätta på den (studenten tar över datorn efter du har öppnat defibrillatorn).",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true,
+          "openCustomEmbed": true,
+          "openCustomEmbedLabel": "Visa defibrillator för studenten"
+        },
+        {
+          "name": "Studenten känner på pulsen",
+          "studentAction": "Studenten palperar rytm under analysen",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Studenten analyserar rytmen korrekt",
+          "studentAction": "Identifierar PEA.",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Studenten utför korrekt åtgärd.",
+          "studentAction": "Avstår från att defibrillera. Ordinerar 1 mg adrenalin (0,1mg/ml)",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true,
+          "completeOnEvent": "defib-sequence-complete",
+          "autoGradeOnEvent": "basic"
+        }
+      ],
+      "customEmbed": {
+        "type": "iframe",
+        "src": "./defib-workspace.html?embed=case&rhythm=pea&shockPlan=pea",
+        "title": "Defib Workspace",
+        "height": 960,
+        "display": "overlay"
+      }
+    },
+    "h4t4": {
+      "label": "4h och 4t",
+      "image": null,
+      "ecg": null,
+      "blodgas": null,
+      "subboxes": [
+        {
+          "name": "Undersöker tecken på hypoxi",
+          "studentAction": "Visar kunskap på att en fri luftväg behöver etableras samt behovet av syrgas.",
+          "specialCase": "Narkos är på plats i rummet. Vad rekommenderar du att de ska göra?",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersöker tecken på hypovolemi",
+          "studentAction": "Undersöker tecken på blödning.",
+          "specialCase": "Du har ett ultraljud tillgängligt i rummet.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersöker tecken på hyper/hypokalemi",
+          "studentAction": "Ordinerar blodgas.",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersöker tecken på hypotermi",
+          "studentAction": "",
+          "specialCase": "Temperatur 36.7°C",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersöker tecken på tryckpneumothorax",
+          "studentAction": "Undersöker tecken på pneumothorax med hjälp av ultraljud.",
+          "specialCase": "Lungsliding syns bilateralt. Igen lungpoint. Det vill säga inga tecken på pneumothorax.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersöker tecken på tamponad",
+          "studentAction": "Undersöker hjärtat med ultraljud efter tecken på tamponad.",
+          "specialCase": "Inga tecken på hjärttamponad.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersöker tecken på trombos",
+          "studentAction": "Undersöker hjärta och vena cava med hjälp av ultraljud.",
+          "specialCase": "Vid ultraljud syns en förstorad högerkammare, även vena cava verkar förstorad.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Undersöker tecken på inTox",
+          "studentAction": "Undersöker pupiller och känner på huden om patienten är kall/varm/torr/svettig",
+          "specialCase": "Normalstora pupiller. Patienten är lite kall perifert, inget anmärkningsvärt.",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    },
+    "reevaluering_signout": {
+      "label": "reevaluering & sign-out",
+      "image": null,
+      "ecg": null,
+      "blodgas": null,
+      "subboxes": [
+        {
+          "name": "Reevaluerar A-E",
+          "studentAction": "Visar kunskap på att massiv lungemboli kan vara en möjlig orsak.",
+          "specialCase": "Patienten har fortfarande samma rytm på defibrillatorn. Du har ett fynd på ultraljud, vad misstänker du för tillstånd?",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Ordinerar adekvat behandling",
+          "studentAction": "Överväger behandling med trombolys (50 mg bolus och 50 mg över 90 min).",
+          "specialCase": "Hur vill du behandla?",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true
+        },
+        {
+          "name": "Ordinerar adekvat vårdnivå",
+          "studentAction": "Ordinerar IVA-vård",
+          "specialCase": "Vart ska patienten nu?",
+          "tiers": [
+            "basic"
+          ],
+          "critical": true
+        }
+      ]
+    },
+    "blodgas": {
+      "label": "blodgas",
+      "image": null,
+      "ecg": null,
+      "blodgas": {
+        "schema": "blodgas-lab.v1",
+        "createdAt": "2026-02-22T10:23:39.762Z",
+        "settings": {
+          "baroKpa": 101.3,
+          "comment": "",
+          "showRef": "on",
+          "editTemplate": "off"
+        },
+        "sections": [
+          {
+            "id": "calc",
+            "label": "Beräknade värden",
+            "rows": [
+              {
+                "id": "chco3st",
+                "name": "cHCO₃⁻ (P,st)c",
+                "value": "14",
+                "unit": "mmol/L",
+                "refLow": 22,
+                "refHigh": 27
+              },
+              {
+                "id": "chco3",
+                "name": "cHCO₃⁻ (P)c",
+                "value": "16",
+                "unit": "mmol/L",
+                "refLow": 22,
+                "refHigh": 26
+              },
+              {
+                "id": "abec",
+                "name": "ABEc",
+                "value": "-17",
+                "unit": "mmol/L",
+                "refLow": -3,
+                "refHigh": 3
+              },
+              {
+                "id": "p50c",
+                "name": "p50c",
+                "value": "4,20",
+                "unit": "kPa",
+                "refLow": 3.3,
+                "refHigh": 3.9
+              }
+            ]
+          },
+          {
+            "id": "abg",
+            "label": "Blodgasvärden",
+            "rows": [
+              {
+                "id": "ph",
+                "name": "pH",
+                "value": "6,97",
+                "unit": "",
+                "refLow": null,
+                "refHigh": null
+              },
+              {
+                "id": "pco2",
+                "name": "pCO₂",
+                "value": "9,2",
+                "unit": "kPa",
+                "refLow": null,
+                "refHigh": null
+              },
+              {
+                "id": "po2",
+                "name": "pO₂",
+                "value": "5,8",
+                "unit": "kPa",
+                "refLow": null,
+                "refHigh": null
+              },
+              {
+                "id": "so2",
+                "name": "sO₂",
+                "value": "62",
+                "unit": "%",
+                "refLow": null,
+                "refHigh": null
+              }
+            ]
+          },
+          {
+            "id": "elec",
+            "label": "Elektrolytvärden",
+            "rows": [
+              {
+                "id": "na",
+                "name": "cNa⁺",
+                "value": "140",
+                "unit": "mmol/L",
+                "refLow": 137,
+                "refHigh": 145
+              },
+              {
+                "id": "k",
+                "name": "cK⁺",
+                "value": "5,9",
+                "unit": "mmol/L",
+                "refLow": 3.2,
+                "refHigh": 4.2
+              },
+              {
+                "id": "cl",
+                "name": "cCl⁻",
+                "value": "103",
+                "unit": "mmol/L",
+                "refLow": 98,
+                "refHigh": 106
+              },
+              {
+                "id": "ca",
+                "name": "cCa²⁺",
+                "value": "1,08",
+                "unit": "mmol/L",
+                "refLow": null,
+                "refHigh": null
+              },
+              {
+                "id": "ca74",
+                "name": "cCa²⁺(7.4)c",
+                "value": "1,12",
+                "unit": "mmol/L",
+                "refLow": 1.16,
+                "refHigh": 1.35
+              }
+            ]
+          },
+          {
+            "id": "met",
+            "label": "Metabolitvärden",
+            "rows": [
+              {
+                "id": "glu",
+                "name": "cGlu",
+                "value": "9,8",
+                "unit": "mmol/L",
+                "refLow": 4.2,
+                "refHigh": 6.3
+              },
+              {
+                "id": "lac",
+                "name": "cLac",
+                "value": "13,5",
+                "unit": "mmol/L",
+                "refLow": 0.5,
+                "refHigh": 1.6
+              }
+            ]
+          },
+          {
+            "id": "ox",
+            "label": "Oximetervärden",
+            "rows": [
+              {
+                "id": "hb",
+                "name": "ctHb",
+                "value": "127",
+                "unit": "g/L",
+                "refLow": null,
+                "refHigh": null
+              },
+              {
+                "id": "fo2",
+                "name": "FO₂Hb",
+                "value": "60",
+                "unit": "%",
+                "refLow": 95,
+                "refHigh": 99
+              },
+              {
+                "id": "fco",
+                "name": "FCOHb",
+                "value": "0,8",
+                "unit": "%",
+                "refLow": 0.5,
+                "refHigh": 2.5
+              },
+              {
+                "id": "fhhb",
+                "name": "FHHb",
+                "value": "38",
+                "unit": "%",
+                "refLow": 1,
+                "refHigh": 5
+              },
+              {
+                "id": "fmet",
+                "name": "FMetHb",
+                "value": "1,2",
+                "unit": "%",
+                "refLow": 0.4,
+                "refHigh": 1.5
+              }
+            ]
+          }
+        ]
+      },
+      "subboxes": [
+        {
+          "name": "Tolkar syra-basrubbning",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Tolkar elektrolyter",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        },
+        {
+          "name": "Tolkar laktat och metabol påverkan",
+          "studentAction": "",
+          "specialCase": "",
+          "tiers": [
+            "basic"
+          ],
+          "critical": false
+        }
+      ]
+    }
+  }
+}
