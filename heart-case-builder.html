@@ -70,6 +70,12 @@
         resize: vertical;
       }
 
+      .hb-field textarea.code {
+        min-height: 180px;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 0.9rem;
+      }
+
       .hb-section {
         border: 1px solid rgba(15, 23, 42, 0.14);
         border-radius: 10px;
@@ -175,6 +181,26 @@
             <label for="caseText">Case text</label>
             <textarea id="caseText" placeholder="S/B/A eller fri beskrivning"></textarea>
           </div>
+          <div class="hb-defib-settings">
+            <h2>Blodgas (valfritt)</h2>
+            <label class="hb-check">
+              <input id="includeBlodgas" type="checkbox" />
+              Inkludera blodgas-box i heart case
+            </label>
+            <div class="hb-field">
+              <label for="blodgasJsonFile">Ladda blodgas JSON-fil (fran blodgas-lab)</label>
+              <input id="blodgasJsonFile" type="file" accept=".json,application/json" />
+            </div>
+            <div class="hb-field">
+              <label for="blodgasJson">Blodgas JSON</label>
+              <textarea
+                id="blodgasJson"
+                class="code"
+                placeholder='Klistra in JSON fran blodgas-lab här'
+              ></textarea>
+            </div>
+            <p class="hb-status">Om du aktiverar blodgas maste JSON vara giltig.</p>
+          </div>
           <label class="hb-check">
             <input id="autoDefibCheck" type="checkbox" checked />
             Automarkera Defibrilator subbox 4 vid lyckad VF-defibrillering
@@ -265,6 +291,9 @@
       const statusEl = document.getElementById("status");
       const caseTitleEl = document.getElementById("caseTitle");
       const caseTextEl = document.getElementById("caseText");
+      const includeBlodgasEl = document.getElementById("includeBlodgas");
+      const blodgasJsonEl = document.getElementById("blodgasJson");
+      const blodgasJsonFileEl = document.getElementById("blodgasJsonFile");
       const autoDefibCheckEl = document.getElementById("autoDefibCheck");
       const startRhythmEl = document.getElementById("startRhythm");
       const requiredShocksEl = document.getElementById("requiredShocks");
@@ -302,6 +331,16 @@
         const n = Number.parseInt(String(value || "").trim(), 10);
         if (!Number.isFinite(n)) return 1;
         return Math.max(1, Math.min(10, n));
+      }
+
+      function parseOptionalJson(text, label) {
+        const raw = safeText(text).trim();
+        if (!raw) return null;
+        try {
+          return JSON.parse(raw);
+        } catch (err) {
+          throw new Error(`${label} JSON är ogiltig`);
+        }
       }
 
       function readShockPlanValues() {
@@ -461,6 +500,14 @@
         const rhythm = safeText(startRhythmEl?.value || "vfib").trim() || "vfib";
         const shockCount = clampShockCount(requiredShocksEl?.value || "1");
         const shockPlan = readShockPlanValues().slice(0, shockCount);
+        const includeBlodgas = Boolean(includeBlodgasEl?.checked);
+        const blodgasPayload = includeBlodgas
+          ? parseOptionalJson(blodgasJsonEl?.value, "Blodgas")
+          : null;
+
+        if (includeBlodgas && !blodgasPayload) {
+          throw new Error("Blodgas är aktiverad men ingen blodgas-JSON är ifylld");
+        }
 
         const boxes = {};
 
@@ -526,6 +573,38 @@
           boxes[section.id] = box;
         }
 
+        if (includeBlodgas && blodgasPayload) {
+          boxes.blodgas = {
+            label: "blodgas",
+            image: null,
+            ecg: null,
+            blodgas: blodgasPayload,
+            subboxes: [
+              {
+                name: "Tolkar syra-basrubbning",
+                studentAction: "",
+                specialCase: "",
+                tiers: ["basic"],
+                critical: false,
+              },
+              {
+                name: "Tolkar elektrolyter",
+                studentAction: "",
+                specialCase: "",
+                tiers: ["basic"],
+                critical: false,
+              },
+              {
+                name: "Tolkar laktat och metabol påverkan",
+                studentAction: "",
+                specialCase: "",
+                tiers: ["basic"],
+                critical: false,
+              },
+            ],
+          };
+        }
+
         return {
           schemaVersion: 3,
           title,
@@ -562,6 +641,24 @@
         requiredShocksEl.addEventListener("input", () => {
           const raw = safeText(requiredShocksEl.value).replace(/[^0-9]/g, "");
           requiredShocksEl.value = raw;
+        });
+      }
+
+      if (blodgasJsonFileEl && blodgasJsonEl) {
+        blodgasJsonFileEl.addEventListener("change", async (event) => {
+          const file = event.target && event.target.files ? event.target.files[0] : null;
+          if (!file) return;
+          try {
+            const text = await file.text();
+            parseOptionalJson(text, "Blodgas");
+            blodgasJsonEl.value = text;
+            if (includeBlodgasEl) includeBlodgasEl.checked = true;
+            statusEl.textContent = `Blodgas JSON laddad: ${safeText(file.name)}`;
+          } catch (err) {
+            statusEl.textContent = `Kunde inte läsa blodgas JSON: ${safeText(err && err.message)}`;
+          } finally {
+            event.target.value = "";
+          }
         });
       }
 
