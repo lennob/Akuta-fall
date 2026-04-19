@@ -225,6 +225,14 @@
               <label>Rytm efter varje lyckad stot</label>
               <div id="shockPlanHost" class="hb-seq-list" aria-label="Shock sequence editor"></div>
             </div>
+            <div class="hb-field">
+              <label for="phasePlan">Scenariofaser (valfritt)</label>
+              <input
+                id="phasePlan"
+                type="text"
+                placeholder="Exempel: vfib > vfib > sinus eller pea > pea > sinus"
+              />
+            </div>
             <p class="hb-status">Styr vilken rytm som visas nar defib-overlayn oppnas i caset.</p>
           </div>
         </div>
@@ -298,6 +306,7 @@
       const startRhythmEl = document.getElementById("startRhythm");
       const requiredShocksEl = document.getElementById("requiredShocks");
       const shockPlanHostEl = document.getElementById("shockPlanHost");
+      const phasePlanEl = document.getElementById("phasePlan");
       const RHYTHM_OPTIONS = [
         { value: "sinus", label: "Sinus" },
         { value: "vt", label: "VT" },
@@ -310,6 +319,10 @@
         { value: "defib-sequence-complete", label: "Defib-sekvens klar" },
         { value: "defib-success", label: "Defib lyckad (en stot)" },
         { value: "vf-defib-success", label: "VF till sinus lyckad" },
+        { value: "rhythm-analysis-correct", label: "Rytmanalys genomford" },
+        { value: "pulse-absent", label: "Puls kontrollerad: ingen puls" },
+        { value: "pulse-present", label: "Puls kontrollerad: puls finns" },
+        { value: "defib-clear-confirmed", label: "Alla klara bekräftat" },
         { value: "drug-adrenalin-correct", label: "Adrenalin korrekt" },
         { value: "drug-cordarone-adrenalin-correct", label: "Cordarone + Adrenalin korrekt" },
       ];
@@ -348,6 +361,14 @@
         return Array.from(shockPlanHostEl.querySelectorAll("select[data-shock-step]"))
           .map((el) => safeText(el.value).trim().toLowerCase())
           .filter(Boolean);
+      }
+
+      function readPhasePlanValue() {
+        return safeText(phasePlanEl?.value || "")
+          .split(/[>,|]/)
+          .map((value) => safeText(value).trim().toLowerCase())
+          .filter(Boolean)
+          .join(">");
       }
 
       function renderShockPlanEditors() {
@@ -500,6 +521,7 @@
         const rhythm = safeText(startRhythmEl?.value || "vfib").trim() || "vfib";
         const shockCount = clampShockCount(requiredShocksEl?.value || "1");
         const shockPlan = readShockPlanValues().slice(0, shockCount);
+        const phasePlan = readPhasePlanValue();
         const includeBlodgas = Boolean(includeBlodgasEl?.checked);
         const blodgasPayload = includeBlodgas
           ? parseOptionalJson(blodgasJsonEl?.value, "Blodgas")
@@ -563,7 +585,8 @@
               type: "iframe",
               src:
                 `./defib-workspace.html?embed=case&rhythm=${encodeURIComponent(rhythm)}` +
-                `&shockPlan=${encodeURIComponent(shockPlan.join(","))}`,
+                `&shockPlan=${encodeURIComponent(shockPlan.join(","))}` +
+                (phasePlan ? `&phasePlan=${encodeURIComponent(phasePlan)}` : ""),
               title: "Defib Workspace",
               height: 960,
               display: "overlay",

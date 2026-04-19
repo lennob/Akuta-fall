@@ -23,59 +23,40 @@
       body.defib-workspace {
         margin: 0;
         font-family: "Segoe UI", Tahoma, sans-serif;
-        background: radial-gradient(circle at 24% 0%, #dce4eb, #b5c1cd 58%, #99a8b7 100%);
+        background:
+          linear-gradient(180deg, rgba(8, 13, 18, 0.18), rgba(8, 13, 18, 0.42)),
+          url("./assets/hospital-background.jpg"),
+          radial-gradient(circle at 24% 0%, #dce4eb, #b5c1cd 58%, #99a8b7 100%);
+        background-size: cover, cover, cover;
+        background-position: center, center, center;
+        background-repeat: no-repeat;
         color: #e2e8f0;
         min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 16px;
+        overflow-x: hidden;
+        position: relative;
       }
 
-      body.defib-workspace.case-embed .workspace-status,
-      body.defib-workspace.case-embed .test-conditions,
-      body.defib-workspace.case-embed .sim-header {
-        display: none;
+      body.defib-workspace::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(ellipse at 50% 35%, transparent 0%, rgba(5, 10, 16, 0.14) 58%, rgba(5, 10, 16, 0.45) 100%),
+          linear-gradient(90deg, rgba(226, 232, 240, 0.16), transparent 28%, transparent 72%, rgba(15, 23, 42, 0.22));
+        z-index: 0;
       }
 
       .sim-wrap {
         width: min(1320px, 100%);
         display: grid;
         gap: 10px;
-      }
-
-      .sim-header {
-        background: #101821;
-        border: 1px solid #1f2a37;
-        border-radius: 12px;
-        padding: 10px 14px;
-        display: flex;
-        justify-content: space-between;
-        gap: 8px;
-        align-items: center;
-      }
-
-      .sim-header h1 {
-        margin: 0;
-        font-size: 1.08rem;
-        letter-spacing: 0.02em;
-      }
-
-      .sim-header p {
-        margin: 2px 0 0;
-        font-size: 0.86rem;
-        color: #95a3b5;
-      }
-
-      .tag {
-        background: rgba(45, 199, 92, 0.14);
-        color: #97eab1;
-        border: 1px solid rgba(45, 199, 92, 0.35);
-        padding: 4px 10px;
-        border-radius: 999px;
-        font-weight: 700;
-        font-size: 0.8rem;
-        white-space: nowrap;
+        position: relative;
+        z-index: 1;
       }
 
       .device {
@@ -90,6 +71,88 @@
         align-items: stretch;
       }
 
+      .game-layout {
+        display: grid;
+        grid-template-columns: 250px minmax(0, 1fr);
+        gap: 14px;
+        align-items: stretch;
+      }
+
+      .score-panel {
+        background: #101821;
+        border: 1px solid #1f2a37;
+        border-radius: 12px;
+        padding: 12px;
+        display: grid;
+        align-content: start;
+        gap: 12px;
+      }
+
+      .score-card,
+      .highscore-card {
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 8px;
+        background: #151d25;
+        padding: 12px;
+      }
+
+      .score-label,
+      .highscore-card h2 {
+        margin: 0 0 8px;
+        color: #9fb0c3;
+        font-size: 0.82rem;
+        font-weight: 900;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .big-score {
+        font-size: 4.5rem;
+        line-height: 1;
+        font-weight: 1000;
+        color: #ffffff;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .run-progress {
+        color: #dce7f5;
+        font-weight: 800;
+      }
+
+      .new-run-btn {
+        width: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 8px;
+        background: #1c4e87;
+        color: #fff;
+        font-weight: 900;
+        padding: 10px;
+      }
+
+      .highscore-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 6px;
+      }
+
+      .highscore-list li {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 7px 8px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.06);
+        font-weight: 800;
+      }
+
+      .highscore-empty {
+        margin: 0;
+        color: #9fb0c3;
+        font-size: 0.86rem;
+      }
+
       .monitor-shell {
         background: #111921;
         border: 2px solid #394653;
@@ -97,58 +160,13 @@
         padding: 10px;
         display: grid;
         gap: 8px;
-        min-height: 760px;
+        min-height: 0;
       }
 
       .status-row {
         display: flex;
         flex-wrap: wrap;
         gap: 6px;
-      }
-
-      .workspace-status {
-        background: #101821;
-        border: 1px solid #1f2a37;
-        border-radius: 10px;
-        padding: 8px;
-      }
-
-      .test-conditions {
-        background: #101821;
-        border: 1px solid #1f2a37;
-        border-radius: 10px;
-        padding: 10px;
-        display: grid;
-        gap: 8px;
-      }
-
-      .test-conditions h2 {
-        margin: 0;
-        font-size: 0.95rem;
-        color: #dce7f5;
-      }
-
-      .test-conditions p {
-        margin: 0;
-        font-size: 0.82rem;
-        color: #9fb0c3;
-      }
-
-      .condition-grid {
-        display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
-        gap: 8px;
-      }
-
-      .condition-btn {
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 8px;
-        background: linear-gradient(180deg, #1f252b, #11161b);
-        color: #e2ebf7;
-        font-weight: 800;
-        padding: 9px 8px;
-        text-transform: uppercase;
-        letter-spacing: 0.03em;
       }
 
       .chip {
@@ -179,8 +197,7 @@
         border: 1px solid rgba(255, 255, 255, 0.15);
         border-radius: 8px;
         overflow: hidden;
-        min-height: 680px;
-        height: 100%;
+        height: clamp(420px, 58vh, 680px);
       }
 
       .ecg-wrap canvas {
@@ -188,6 +205,141 @@
         height: 100%;
         display: block;
         aspect-ratio: auto;
+      }
+
+      .workflow-panel {
+        background: #101821;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 8px;
+        padding: 10px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .workflow-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+      }
+
+      .workflow-action {
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 8px;
+        color: #fff;
+        font-weight: 900;
+        font-size: 0.86rem;
+        min-height: 48px;
+        padding: 10px 12px;
+        text-transform: uppercase;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        line-height: 1.12;
+        white-space: normal;
+        text-align: center;
+        transition:
+          transform 160ms ease,
+          box-shadow 160ms ease,
+          border-color 160ms ease,
+          filter 160ms ease;
+      }
+
+      .workflow-action:not(:disabled):hover {
+        transform: translateY(-2px);
+        border-color: rgba(255, 255, 255, 0.48);
+        box-shadow: 0 10px 22px rgba(0, 0, 0, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+        filter: brightness(1.09) saturate(1.08);
+      }
+
+      .workflow-action:not(:disabled):active {
+        transform: translateY(1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22), inset 0 2px 6px rgba(0, 0, 0, 0.24);
+        filter: brightness(0.96);
+      }
+
+      .workflow-action:not(:disabled):hover .workflow-icon {
+        transform: scale(1.12);
+      }
+
+      .workflow-icon {
+        width: 18px;
+        height: 18px;
+        display: inline-block;
+        flex: 0 0 auto;
+        transition: transform 160ms ease;
+      }
+
+      .workflow-icon svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .workflow-action.clear {
+        background: linear-gradient(180deg, #d74248 0%, #9c2328 100%);
+      }
+
+      .workflow-action.cpr,
+      .workflow-action.pulse {
+        background: linear-gradient(180deg, #2a72b8 0%, #1c4e87 100%);
+      }
+
+      .workflow-action.drug {
+        background: linear-gradient(180deg, #b72b30 0%, #8f1f24 100%);
+      }
+
+      .workflow-action.end {
+        background: linear-gradient(180deg, #34a06f 0%, #1e7350 100%);
+      }
+
+      .workflow-action:disabled {
+        opacity: 0.58;
+        cursor: not-allowed;
+      }
+
+      .monitor-meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        min-height: 44px;
+        align-items: center;
+        color: #9fb0c3;
+        font-size: 0.82rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      #monitorStatusText {
+        display: block;
+        min-height: 2.2em;
+        max-height: 2.2em;
+        overflow: hidden;
+        line-height: 1.1;
+      }
+
+      .debug-label {
+        color: #97eab1;
+      }
+
+      .game-timer-track {
+        height: 14px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .game-timer-fill {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, #2dc75c, #e5ba41, #b72b30);
+        transform-origin: left center;
       }
 
       .shock-flash {
@@ -431,33 +583,87 @@
       .disabled { opacity: 0.58; }
 
       @media (max-width: 990px) {
+        .game-layout { grid-template-columns: 1fr; }
         .device { grid-template-columns: 1fr; }
-        .condition-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        .monitor-shell { min-height: 560px; }
-        .ecg-wrap { min-height: 500px; }
+        .workflow-actions { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+        .ecg-wrap { height: clamp(340px, 52vh, 520px); }
       }
     </style>
   </head>
   <body class="defib-workspace">
     <main class="sim-wrap">
-      <section class="sim-header">
-        <div>
-          <h1>Defib Simulator Workspace</h1>
-          <p>Trana pa realistiskt flode: strom pa, valj energi, analysera, ladda och ge stot.</p>
-        </div>
-        <div class="tag">TRAINING</div>
-      </section>
+      <section class="game-layout">
+        <aside class="score-panel" aria-label="Poang och highscore">
+          <section class="score-card">
+            <p class="score-label">Poang</p>
+            <div class="big-score" id="bigScoreEl">0</div>
+            <div class="run-progress" id="runProgressEl">Runda 0 / 10</div>
+          </section>
+          <section class="highscore-card">
+            <h2>Highscore</h2>
+            <ol class="highscore-list" id="highscoreList"></ol>
+            <p class="highscore-empty" id="highscoreEmpty">Ingen avslutad runda ännu.</p>
+          </section>
+          <button type="button" class="new-run-btn" id="newRunBtn">Nästa fall / starta om</button>
+        </aside>
 
-      <section class="device">
-        <section class="monitor-shell">
-          <div class="ecg-wrap">
-            <canvas id="ecgCanvas" width="1600" height="520"></canvas>
-            <div class="shock-flash" id="shockFlash" aria-hidden="true"></div>
-          </div>
-        </section>
+        <section class="device">
+          <section class="monitor-shell">
+            <div class="ecg-wrap">
+              <canvas id="ecgCanvas" width="1600" height="520"></canvas>
+              <div class="shock-flash" id="shockFlash" aria-hidden="true"></div>
+            </div>
+            <div class="workflow-panel" aria-label="Defib workflow">
+              <div class="monitor-meta">
+                <span id="monitorStatusText">Starta apparaten.</span>
+                <span class="debug-label" id="debugRhythmLabel" hidden></span>
+              </div>
+              <div class="workflow-actions">
+                <button type="button" class="workflow-action pulse" id="pulseBtn">
+                  <span class="workflow-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M4 13h3l2-5 4 10 2-5h5" /></svg>
+                  </span>
+                  <span>Känn puls</span>
+                </button>
+                <button type="button" class="workflow-action clear" id="clearBtn">
+                  <span class="workflow-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M12 3v5" /><path d="M5.6 5.6l3.5 3.5" /><path d="M18.4 5.6l-3.5 3.5" /><path d="M4 14h16" /><path d="M7 19h10" /></svg>
+                  </span>
+                  <span>Undan från patienten</span>
+                </button>
+                <button type="button" class="workflow-action cpr" id="continueCprBtn">
+                  <span class="workflow-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M12 5v14" /><path d="M8 9l4-4 4 4" /><path d="M16 15l-4 4-4-4" /></svg>
+                  </span>
+                  <span>Fortsätt HLR</span>
+                </button>
+                <button type="button" class="workflow-action drug" id="adrenalinActionBtn">
+                  <span class="workflow-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M7 17l10-10" /><path d="M14 4l6 6" /><path d="M4 20l4-1 10-10-3-3L5 16z" /></svg>
+                  </span>
+                  <span>Adrenalin</span>
+                </button>
+                <button type="button" class="workflow-action drug" id="cordaroneActionBtn">
+                  <span class="workflow-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M8 5h8" /><path d="M9 5v5l-3 6a3 3 0 0 0 2.7 4h6.6A3 3 0 0 0 18 16l-3-6V5" /><path d="M8 15h8" /></svg>
+                  </span>
+                  <span>Cordarone</span>
+                </button>
+                <button type="button" class="workflow-action end" id="aeBtn">
+                  <span class="workflow-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" /><path d="M5 21v-2a7 7 0 0 1 14 0v2" /><path d="M9 15l3 3 3-3" /><path d="M12 18v3" /><path d="M18 4h4" /><path d="M20 2v4" /></svg>
+                  </span>
+                  <span>ROSC gör A-E</span>
+                </button>
+              </div>
+              <div class="game-timer-track" aria-hidden="true">
+                <div class="game-timer-fill" id="gameTimerFill"></div>
+              </div>
+            </div>
+          </section>
 
-        <section class="control-shell" id="controlShell">
-          <div class="control-panel">
+          <section class="control-shell" id="controlShell">
+            <div class="control-panel">
             <div class="top-row">
               <div class="icon-strip"><span>●</span><span>⚡</span><span>🔧</span></div>
               <button type="button" class="on-btn off" id="powerBtn"><span class="on-light" aria-hidden="true"></span><span>ON</span></button>
@@ -506,40 +712,14 @@
                   <button type="button" class="btn-wide" id="currentBtn">Current</button>
                   <button type="button" class="btn-wide" id="pauseBtn">Pause</button>
                 </div>
-                <div class="med-zone" hidden>
-                  <button type="button" class="btn-med" id="adrenalinBtn">Adrenalin</button>
-                  <button type="button" class="btn-med" id="cordaroneAdrenalinBtn">Cordarone + Adrenalin</button>
-                </div>
               </div>
             </div>
 
-          </div>
+            </div>
+          </section>
         </section>
       </section>
 
-      <section class="workspace-status" aria-label="Workspace status">
-        <div class="status-row">
-          <div class="chip" id="rhythmChip">Rytm: OFF</div>
-          <div class="chip" id="rateChip">HF: -</div>
-          <div class="chip" id="shockChip">Stotar: 0</div>
-          <div class="chip" id="chargeChip">Laddning: Ej laddad</div>
-          <div class="chip" id="scoreChip">Poang: 0</div>
-          <div class="chip" id="timerChip">Tid: 0.0 s</div>
-          <div class="chip" id="resultChip">Status: Maskin av</div>
-        </div>
-      </section>
-
-      <section class="test-conditions" aria-label="Patient conditions">
-        <h2>Testa patienttillstand</h2>
-        <p>Valj ett tillstand for att satta rytmen direkt i workspace-laget.</p>
-        <div class="condition-grid">
-          <button type="button" class="condition-btn" data-rhythm="sinus">Sinus</button>
-          <button type="button" class="condition-btn" data-rhythm="vt">VT</button>
-          <button type="button" class="condition-btn" data-rhythm="vfib">VF</button>
-          <button type="button" class="condition-btn" data-rhythm="pea">PEA</button>
-          <button type="button" class="condition-btn" data-rhythm="asystole">Asystole</button>
-        </div>
-      </section>
     </main>
 
     <script>
@@ -548,6 +728,8 @@
       const isCaseEmbed = urlParams.get("embed") === "case" || isIframeEmbed;
       const requestedCaseRhythm = String(urlParams.get("rhythm") || "").toLowerCase();
       const requestedShockPlan = String(urlParams.get("shockPlan") || "");
+      const requestedPhasePlan = String(urlParams.get("phasePlan") || "");
+      const observerMode = urlParams.get("observer") === "1" || urlParams.get("debug") === "1";
       if (isCaseEmbed) {
         document.body.classList.add("case-embed");
       }
@@ -564,8 +746,22 @@
       const scoreChip = document.getElementById("scoreChip");
       const timerChip = document.getElementById("timerChip");
       const energyValue = document.getElementById("energyValue");
+      const bigScoreEl = document.getElementById("bigScoreEl");
+      const runProgressEl = document.getElementById("runProgressEl");
+      const highscoreListEl = document.getElementById("highscoreList");
+      const highscoreEmptyEl = document.getElementById("highscoreEmpty");
+      const newRunBtn = document.getElementById("newRunBtn");
 
       const powerBtn = document.getElementById("powerBtn");
+      const monitorStatusText = document.getElementById("monitorStatusText");
+      const debugRhythmLabel = document.getElementById("debugRhythmLabel");
+      const pulseBtn = document.getElementById("pulseBtn");
+      const clearBtn = document.getElementById("clearBtn");
+      const continueCprBtn = document.getElementById("continueCprBtn");
+      const adrenalinActionBtn = document.getElementById("adrenalinActionBtn");
+      const cordaroneActionBtn = document.getElementById("cordaroneActionBtn");
+      const aeBtn = document.getElementById("aeBtn");
+      const gameTimerFill = document.getElementById("gameTimerFill");
       const chargeBtn = document.getElementById("chargeBtn");
       const defibBtn = document.getElementById("defibBtn");
       const analyzeBtn = document.getElementById("analyzeBtn");
@@ -582,8 +778,6 @@
       const rateBtn = document.getElementById("rateBtn");
       const currentBtn = document.getElementById("currentBtn");
       const pauseBtn = document.getElementById("pauseBtn");
-      const adrenalinBtn = document.getElementById("adrenalinBtn");
-      const cordaroneAdrenalinBtn = document.getElementById("cordaroneAdrenalinBtn");
       const controlShell = document.getElementById("controlShell");
       const conditionBtns = document.querySelectorAll("[data-rhythm]");
 
@@ -610,10 +804,34 @@
         rhythmBlend: null,
         caseShockPlan: [],
         caseShockIndex: 0,
+        scenarioPhases: [],
+        phaseIndex: 0,
+        cycleCount: 0,
+        clearArmed: false,
+        analysisCleanUntil: 0,
+        cprArtifactUntil: 0,
+        postShockArtifactUntil: 0,
+        pulsePresent: false,
+        criticalErrors: 0,
+        analyzedCount: 0,
+        pulseChecks: 0,
+        roscDeclared: false,
+        aeCompleted: false,
+        adrenalinGivenThisCycle: false,
+        cordaroneGivenAfterShock: {},
+        gameRoundStartedAt: 0,
+        gameLocked: true,
+        gameRoundMs: 10000,
+        runIndex: 0,
+        runSize: 10,
+        runFinished: false,
+        scenarioComplete: false,
+        casesCompleted: 0,
       };
 
       let audioCtx = null;
       const pxPerSec = 220;
+      const HIGHSCORE_KEY = "akuta.defibRhythmTrainer.highscores.v1";
 
       const rhythms = [
         { id: "sinus", hr: 82, label: "Sinus" },
@@ -622,6 +840,7 @@
         { id: "pea", hr: 45, label: "PEA" },
         { id: "asystole", hr: 0, label: "Asystoli" },
       ];
+      const gameRhythms = rhythms.filter((r) => r.id === "vt" || r.id === "vfib" || r.id === "pea" || r.id === "asystole");
 
       function rhythmHrFor(id) {
         if (id === "vt") return 170;
@@ -637,6 +856,68 @@
           .map((v) => String(v || "").trim().toLowerCase())
           .filter((v) => allowed.has(v))
           .slice(0, 10);
+      }
+
+      function parsePhasePlan(raw) {
+        const allowed = new Set(["sinus", "vt", "vfib", "pea", "asystole", "rosc"]);
+        return String(raw || "")
+          .split(/[>,|]/)
+          .map((v) => String(v || "").trim().toLowerCase())
+          .map((v) => (v === "vf" ? "vfib" : v))
+          .map((v) => (v === "asystoli" ? "asystole" : v))
+          .filter((v) => allowed.has(v))
+          .map((v) => (v === "rosc" ? "sinus" : v))
+          .slice(0, 12);
+      }
+
+      function setMonitorStatus(msg) {
+        if (monitorStatusText) monitorStatusText.textContent = msg;
+      }
+
+      function updateDebugLabel() {
+        if (!debugRhythmLabel) return;
+        debugRhythmLabel.hidden = !observerMode;
+        if (!observerMode) return;
+        const label = rhythms.find((r) => r.id === state.rhythm)?.label || state.rhythm;
+        debugRhythmLabel.textContent = `Observer: ${state.powerOn ? label : "OFF"}`;
+      }
+
+      function readHighscores() {
+        try {
+          const parsed = JSON.parse(localStorage.getItem(HIGHSCORE_KEY) || "[]");
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return [];
+        }
+      }
+
+      function writeHighscores(scores) {
+        localStorage.setItem(HIGHSCORE_KEY, JSON.stringify(Array.isArray(scores) ? scores.slice(0, 5) : []));
+      }
+
+      function renderHighscores() {
+        if (!highscoreListEl || !highscoreEmptyEl) return;
+        const scores = readHighscores();
+        highscoreListEl.replaceChildren();
+        highscoreEmptyEl.hidden = scores.length > 0;
+        scores.forEach((entry, index) => {
+          const li = document.createElement("li");
+          const rank = document.createElement("span");
+          const value = document.createElement("span");
+          rank.textContent = `${index + 1}. ${entry.date || ""}`;
+          value.textContent = `${Number(entry.score || 0)} p`;
+          li.append(rank, value);
+          highscoreListEl.append(li);
+        });
+      }
+
+      function saveHighscore() {
+        const scores = readHighscores();
+        const date = new Date().toLocaleDateString("sv-SE");
+        scores.push({ score: state.score, date });
+        scores.sort((a, b) => Number(b.score || 0) - Number(a.score || 0));
+        writeHighscores(scores);
+        renderHighscores();
       }
 
       function ensureAudio() {
@@ -773,15 +1054,25 @@
 
       function sampleAt(tSec) {
         if (!state.powerOn) return 0;
+        if (state.postShockArtifactUntil && performance.now() < state.postShockArtifactUntil) {
+          const flatPart = performance.now() > state.postShockArtifactUntil - 650;
+          return flatPart ? sampleAsystole(tSec) * 0.8 : sampleVFib(tSec) * 1.35;
+        }
         const blend = state.rhythmBlend;
-        if (!blend) return sampleByRhythm(state.rhythm, state.hr, tSec);
-        const pRaw = (performance.now() - blend.startMs) / Math.max(1, blend.durationMs);
-        const p = Math.max(0, Math.min(1, pRaw));
-        const s = p * p * (3 - 2 * p);
-        const from = sampleByRhythm(blend.fromRhythm, blend.fromHr, tSec);
-        const to = sampleByRhythm(blend.toRhythm, blend.toHr, tSec);
-        if (p >= 1) state.rhythmBlend = null;
-        return from * (1 - s) + to * s;
+        let value = !blend ? sampleByRhythm(state.rhythm, state.hr, tSec) : null;
+        if (blend) {
+          const pRaw = (performance.now() - blend.startMs) / Math.max(1, blend.durationMs);
+          const p = Math.max(0, Math.min(1, pRaw));
+          const s = p * p * (3 - 2 * p);
+          const from = sampleByRhythm(blend.fromRhythm, blend.fromHr, tSec);
+          const to = sampleByRhythm(blend.toRhythm, blend.toHr, tSec);
+          if (p >= 1) state.rhythmBlend = null;
+          value = from * (1 - s) + to * s;
+        }
+        if (state.cprArtifactUntil && performance.now() < state.cprArtifactUntil && performance.now() > state.analysisCleanUntil) {
+          value += 0.24 * noise(tSec * 22) + 0.14 * Math.sin(2 * Math.PI * 2.1 * tSec);
+        }
+        return value;
       }
 
       function resizeCanvasToDisplaySize() {
@@ -797,6 +1088,7 @@
       }
 
       function setResult(msg, kind = "") {
+        if (!resultChip) return;
         resultChip.textContent = `Status: ${msg}`;
         resultChip.className = `chip ${kind}`;
       }
@@ -806,14 +1098,20 @@
         if (!charged) state.chargeExpireAt = 0;
         defibBtn.disabled = !(state.powerOn && state.charged);
         if (state.charged) {
-          chargeChip.textContent = "Laddning: Laddad";
-          chargeChip.className = "chip warn";
+          if (chargeChip) {
+            chargeChip.textContent = "Laddning: Laddad";
+            chargeChip.className = "chip warn";
+          }
         } else if (state.chargingUntil) {
-          chargeChip.textContent = "Laddning: Laddar";
-          chargeChip.className = "chip warn";
+          if (chargeChip) {
+            chargeChip.textContent = "Laddning: Laddar";
+            chargeChip.className = "chip warn";
+          }
         } else {
-          chargeChip.textContent = "Laddning: Ej laddad";
-          chargeChip.className = "chip";
+          if (chargeChip) {
+            chargeChip.textContent = "Laddning: Ej laddad";
+            chargeChip.className = "chip";
+          }
         }
       }
 
@@ -835,8 +1133,12 @@
           rateBtn,
           currentBtn,
           pauseBtn,
-          adrenalinBtn,
-          cordaroneAdrenalinBtn,
+          pulseBtn,
+          clearBtn,
+          continueCprBtn,
+          adrenalinActionBtn,
+          cordaroneActionBtn,
+          aeBtn,
         ];
         ids.forEach((el) => { el.disabled = off; });
         controlShell.classList.toggle("disabled", off);
@@ -844,25 +1146,32 @@
       }
 
       function updateChips() {
+        if (bigScoreEl) bigScoreEl.textContent = String(state.score);
+        if (runProgressEl) {
+          runProgressEl.textContent = `Fall ${state.casesCompleted + 1} | Cykel ${Math.max(1, state.cycleCount + 1)} | Fel ${state.criticalErrors}`;
+        }
+        updateDebugLabel();
         if (!state.powerOn) {
-          rhythmChip.textContent = "Rytm: OFF";
-          rateChip.textContent = "HF: -";
-          scoreChip.textContent = `Poang: ${state.score}`;
-          timerChip.textContent = `Tid: ${state.timer.toFixed(1)} s`;
-          shockChip.textContent = `Stotar: ${state.shocks}`;
+          if (rhythmChip) rhythmChip.textContent = "Rytm: OFF";
+          if (rateChip) rateChip.textContent = "HF: -";
+          if (scoreChip) scoreChip.textContent = `Poang: ${state.score}`;
+          if (timerChip) timerChip.textContent = `Tid: -`;
+          if (shockChip) shockChip.textContent = `Stotar: ${state.shocks}`;
           energyValue.textContent = `${state.energy} J`;
           return;
         }
 
         const shockable = state.rhythm === "vfib" || state.rhythm === "vt";
         const label = rhythms.find((r) => r.id === state.rhythm)?.label || state.rhythm;
-        rhythmChip.textContent = `Rytm: ${label}`;
-        rhythmChip.className = `chip ${shockable ? "warn" : state.rhythm === "sinus" ? "good" : ""}`;
+        if (rhythmChip) {
+          rhythmChip.textContent = `Rytm: ${label}`;
+          rhythmChip.className = `chip ${shockable ? "warn" : state.rhythm === "sinus" ? "good" : ""}`;
+        }
 
-        rateChip.textContent = `HF: ${state.rhythm === "vfib" || state.rhythm === "asystole" ? "-" : state.hr}`;
-        shockChip.textContent = `Stotar: ${state.shocks}`;
-        scoreChip.textContent = `Poang: ${state.score}`;
-        timerChip.textContent = `Tid: ${state.timer.toFixed(1)} s`;
+        if (rateChip) rateChip.textContent = `HF: ${state.rhythm === "vfib" || state.rhythm === "asystole" ? "-" : state.hr}`;
+        if (shockChip) shockChip.textContent = `Stotar: ${state.shocks}`;
+        if (scoreChip) scoreChip.textContent = `Poang: ${state.score}`;
+        if (timerChip) timerChip.textContent = `Tid: ${state.timer.toFixed(1)} s`;
         energyValue.textContent = `${state.energy} J`;
       }
 
@@ -877,14 +1186,177 @@
         state.lastBeepBeatIndex = null;
         if (!on) {
           state.timer = 0;
+          state.gameLocked = true;
           powerBtn.classList.add("off");
           setResult("Maskin av");
+          setMonitorStatus("Starta apparaten.");
         } else {
           powerBtn.classList.remove("off");
-          setResult("Monitor aktiv", "good");
+          setMonitorStatus("");
         }
         updateCoreUiEnabled();
+        syncGameControls();
         updateChips();
+      }
+
+      function startNewRun() {
+        const shouldResetScore = state.runFinished;
+        if (shouldResetScore) {
+          state.score = 0;
+          state.casesCompleted = 0;
+        }
+        state.scenarioComplete = false;
+        state.criticalErrors = 0;
+        state.analyzedCount = 0;
+        state.pulseChecks = 0;
+        state.roscDeclared = false;
+        state.aeCompleted = false;
+        state.timer = 0;
+        state.cycleCount = 0;
+        state.clearArmed = false;
+        state.adrenalinGivenThisCycle = false;
+        state.cordaroneGivenAfterShock = {};
+        state.shocks = 0;
+        state.runIndex = 0;
+        state.runFinished = false;
+        state.gameLocked = true;
+        state.gameRoundStartedAt = 0;
+        setCharge(false);
+        if (!state.powerOn) {
+          setPower(true);
+        }
+        startNextScenario();
+      }
+
+      function startNextScenario() {
+        const next = pickGameRhythm() || rhythms.find((r) => r.id === "vfib");
+        state.scenarioComplete = false;
+        state.runFinished = false;
+        state.running = true;
+        state.shocks = 0;
+        state.criticalErrors = 0;
+        state.analyzedCount = 0;
+        state.pulseChecks = 0;
+        state.roscDeclared = false;
+        state.aeCompleted = false;
+        state.timer = 0;
+        state.cycleCount = 0;
+        state.clearArmed = false;
+        state.adrenalinGivenThisCycle = false;
+        state.cordaroneGivenAfterShock = {};
+        state.phaseIndex = 0;
+        state.caseShockIndex = 0;
+        state.scenarioPhases = next.id === "pea" || next.id === "asystole"
+          ? [next.id, next.id, "sinus"]
+          : [next.id, next.id, "sinus"];
+        setCharge(false);
+        applyRhythm(next.id, "");
+        setResult("Nytt fall startat", next.id === "vfib" || next.id === "vt" ? "warn" : "");
+        syncGameControls();
+        updateChips();
+      }
+
+      function endRunForMistake(message, payload = {}) {
+        if (state.runFinished) return;
+        state.criticalErrors += 1;
+        state.runFinished = true;
+        state.scenarioComplete = false;
+        state.running = false;
+        setCharge(false);
+        saveHighscore();
+        setResult("Fel beslut - rundan avslutad", "warn");
+        setMonitorStatus(message || "Fel beslut. Starta om för att försöka igen.");
+        emitCaseEvent("defib-run-failed", {
+          score: state.score,
+          timer: state.timer,
+          criticalErrors: state.criticalErrors,
+          rhythm: state.rhythm,
+          ...payload,
+        });
+        syncGameControls();
+        updateChips();
+      }
+
+      function pickGameRhythm() {
+        if (!gameRhythms.length) return rhythms.find((r) => r.id === "vfib");
+        const next = gameRhythms[Math.floor(Math.random() * gameRhythms.length)];
+        if (state.powerOn && next.id === state.rhythm && gameRhythms.length > 1) return pickGameRhythm();
+        return next;
+      }
+
+      function getGameRemainingMs() {
+        if (!state.powerOn || state.gameLocked || !state.gameRoundStartedAt) return state.gameRoundMs;
+        return Math.max(0, state.gameRoundMs - (performance.now() - state.gameRoundStartedAt));
+      }
+
+      function syncGameControls() {
+        const disabled = !state.powerOn || state.runFinished || state.scenarioComplete;
+        [pulseBtn, clearBtn, continueCprBtn, adrenalinActionBtn, cordaroneActionBtn, aeBtn].forEach((el) => {
+          if (el) el.disabled = disabled;
+        });
+        if (gameTimerFill) {
+          const progress = state.powerOn ? Math.min(1, (state.timer % 120) / 120) : 0;
+          gameTimerFill.style.transform = `scaleX(${progress})`;
+        }
+      }
+
+      function startGameRound() {
+        if (state.runFinished) return;
+        const next = pickGameRhythm();
+        if (!next) return;
+        state.postShockRecoveryAt = 0;
+        state.postShockSourceRhythm = "";
+        state.rhythmBlend = null;
+        state.rhythm = next.id;
+        state.hr = next.hr;
+        state.lastBeepBeatIndex = null;
+        state.gameRoundStartedAt = performance.now();
+        state.gameLocked = false;
+        setCharge(false);
+        setResult(`Rytm: ${next.label}. Valj atgard.`, next.id === "vfib" || next.id === "vt" ? "warn" : "");
+        syncGameControls();
+        updateChips();
+      }
+
+      function finishRun() {
+        state.runFinished = true;
+        state.gameLocked = true;
+        saveHighscore();
+        setResult(`Run klar: ${state.score} poang av ${state.runSize}.`, "good");
+        syncGameControls();
+        updateChips();
+      }
+
+      function completeGameAnswer(wantsShock, reason = "answer") {
+        if (!state.powerOn || state.gameLocked) return;
+        state.gameLocked = true;
+        const shouldShock = isShockable();
+        const correct = wantsShock === shouldShock;
+        state.score += correct ? 1 : -1;
+        state.runIndex = Math.min(state.runIndex + 1, state.runSize);
+
+        if (reason === "timeout") {
+          setResult("Tiden gick ut.", "warn");
+        } else if (correct) {
+          setResult("Ratt beslut.", "good");
+          if (wantsShock) {
+            emitCaseEvent("defib-rhythm-correct", { rhythm: state.rhythm, score: state.score });
+          } else {
+            emitCaseEvent("compressions-rhythm-correct", { rhythm: state.rhythm, score: state.score });
+          }
+        } else if (shouldShock) {
+          setResult("Fel beslut - denna rytm ska defibrilleras.", "warn");
+        } else {
+          setResult("Fel beslut - fortsatt kompressioner ar ratt.", "warn");
+        }
+
+        syncGameControls();
+        updateChips();
+        setTimeout(() => {
+          if (!state.powerOn) return;
+          if (state.runIndex >= state.runSize) finishRun();
+          else startGameRound();
+        }, 900);
       }
 
       function isShockable() {
@@ -905,20 +1377,91 @@
         );
       }
 
-      function emitEmbedHeight() {
-        if (!window.parent || window.parent === window) return;
-        const h = Math.max(
-          document.documentElement ? document.documentElement.scrollHeight : 0,
-          document.body ? document.body.scrollHeight : 0,
-        );
-        window.parent.postMessage(
-          {
-            source: "defib-workspace",
-            type: "akuta-embed-height",
-            height: h,
-          },
-          "*",
-        );
+      function applyRhythm(rhythmId, message = "") {
+        const next = rhythms.find((r) => r.id === rhythmId);
+        if (!next) return;
+        state.rhythm = next.id;
+        state.hr = next.hr;
+        state.pulsePresent = next.id === "sinus";
+        state.lastBeepBeatIndex = null;
+        if (message) setMonitorStatus(message);
+        updateChips();
+      }
+
+      function advanceScenario(defaultRhythm = "sinus") {
+        let targetRhythm = defaultRhythm;
+        if (Array.isArray(state.scenarioPhases) && state.scenarioPhases.length) {
+          state.phaseIndex = Math.min(state.phaseIndex + 1, state.scenarioPhases.length - 1);
+          targetRhythm = state.scenarioPhases[state.phaseIndex] || defaultRhythm;
+        } else if (Array.isArray(state.caseShockPlan) && state.caseShockPlan.length > 0) {
+          const idx = Math.max(0, Math.min(state.caseShockIndex, state.caseShockPlan.length - 1));
+          targetRhythm = state.caseShockPlan[idx] || defaultRhythm;
+          state.caseShockIndex = Math.min(state.caseShockIndex + 1, state.caseShockPlan.length);
+        }
+        return targetRhythm;
+      }
+
+      function currentCycleNeedsAdrenalin() {
+        return (state.rhythm === "pea" || state.rhythm === "asystole") && state.cycleCount > 0 && state.cycleCount % 2 === 0;
+      }
+
+      function currentShockNeedsCordarone() {
+        return (state.rhythm === "vfib" || state.rhythm === "vt") && (state.shocks === 3 || state.shocks === 5);
+      }
+
+      function finishScenario(reason) {
+        if (!state.powerOn || state.runFinished) return;
+        const roscRhythm = state.rhythm === "sinus";
+        if (reason === "rosc" && !roscRhythm) {
+          state.score -= 4;
+          endRunForMistake("ROSC markerades utan puls/organiserad cirkulation. Rundan är avslutad.", { reason: "false-rosc" });
+          return;
+        }
+        if (reason === "ae" && !roscRhythm && !state.roscDeclared) {
+          state.score -= 4;
+          endRunForMistake("A-E avslutades innan patienten hade ROSC. Rundan är avslutad.", { reason: "ae-too-early" });
+          return;
+        }
+        const timeLimitSec = 180;
+        const remainingSec = Math.max(0, timeLimitSec - state.timer);
+        const timeBonus = Math.ceil(remainingSec / 10);
+        let finalDelta = timeBonus;
+
+        if (reason === "rosc") {
+          state.roscDeclared = true;
+          finalDelta += roscRhythm ? 8 : -8;
+          finalDelta += state.pulseChecks > 0 ? 3 : -3;
+        }
+
+        if (reason === "ae") {
+          state.aeCompleted = true;
+          finalDelta += roscRhythm || state.roscDeclared ? 8 : -5;
+          finalDelta += state.pulseChecks > 0 ? 2 : -2;
+          finalDelta += state.analyzedCount > 0 ? 2 : -2;
+        }
+
+        finalDelta -= state.criticalErrors * 5;
+        state.score += finalDelta;
+        state.scenarioComplete = true;
+        state.running = false;
+        setCharge(false);
+        if (reason === "ae") {
+          state.casesCompleted += 1;
+          saveHighscore();
+        }
+        const label = reason === "ae" ? "A-E avslutad" : "ROSC markerad";
+        setResult(`${label}: ${state.score} poang`, finalDelta >= 0 ? "good" : "warn");
+        setMonitorStatus(`Fall klart. Tidsbonus ${timeBonus} p. Tryck Ny runda för nästa fall.`);
+        emitCaseEvent(reason === "ae" ? "defib-ae-complete" : "defib-rosc-declared", {
+          score: state.score,
+          finalDelta,
+          timeBonus,
+          timer: state.timer,
+          criticalErrors: state.criticalErrors,
+          rhythm: state.rhythm,
+        });
+        syncGameControls();
+        updateChips();
       }
 
       function setScenarioRhythm(rhythmId) {
@@ -928,20 +1471,33 @@
         state.postShockSourceRhythm = "";
         state.rhythmBlend = null;
         state.caseShockIndex = 0;
-        state.rhythm = next.id;
-        state.hr = next.hr;
+        state.phaseIndex = 0;
+        state.runFinished = false;
+        state.running = state.powerOn;
+        state.analyzedCount = 0;
+        state.pulseChecks = 0;
+        state.roscDeclared = false;
+        state.aeCompleted = false;
+        applyRhythm(next.id);
         state.lastBeepBeatIndex = null;
         setCharge(false);
-        setResult(`Scenario: ${next.label}`, (next.id === "vfib" || next.id === "vt") ? "warn" : "");
+        setResult("Scenario laddat", (next.id === "vfib" || next.id === "vt") ? "warn" : "");
+        setMonitorStatus("");
         updateChips();
       }
 
       function analyze() {
         if (!state.powerOn) return;
+        state.analyzedCount += 1;
+        state.analysisCleanUntil = performance.now() + 2600;
         if (isShockable()) {
           setResult("Shock advised", "warn");
+          setMonitorStatus("Analys klar. Välj energi, ladda, säg alla klara och ge stöt.");
+          emitCaseEvent("rhythm-analysis-correct", { rhythm: state.rhythm, shockAdvised: true });
         } else {
           setResult("No shock advised", "good");
+          setMonitorStatus("Ingen stöt rekommenderas. Fortsätt HLR och behandla reversibla orsaker.");
+          emitCaseEvent("rhythm-analysis-correct", { rhythm: state.rhythm, shockAdvised: false });
         }
       }
 
@@ -960,42 +1516,48 @@
 
       function giveAdrenalin() {
         if (!state.powerOn) return;
-        const correct = state.rhythm === "pea" || state.rhythm === "asystole";
+        const correct = currentCycleNeedsAdrenalin();
         if (correct) {
           state.score += 1;
-          setResult("Adrenalin givet korrekt", "good");
+          state.adrenalinGivenThisCycle = true;
+          setResult("Adrenalin givet vid ratt cykel", "good");
           emitCaseEvent("drug-adrenalin-correct", {
             rhythm: state.rhythm,
-            shocks: state.shocks,
+            cycle: state.cycleCount,
           });
         } else {
           state.score -= 1;
-          setResult("Adrenalin ej forstahandsatgard i denna rytm", "warn");
+          setResult("Adrenalin fel tajmad eller ej indicerad nu", "warn");
           emitCaseEvent("drug-adrenalin-incorrect", {
             rhythm: state.rhythm,
-            shocks: state.shocks,
+            cycle: state.cycleCount,
           });
+          endRunForMistake("Fel läkemedelstiming. Rundan är avslutad.", { reason: "wrong-adrenalin" });
+          return;
         }
         updateChips();
       }
 
       function giveCordaroneAdrenalin() {
         if (!state.powerOn) return;
-        const correct = state.rhythm === "vfib" || state.rhythm === "vt";
+        const correct = currentShockNeedsCordarone();
         if (correct) {
           state.score += 1;
-          setResult("Cordarone + Adrenalin givet korrekt", "good");
+          state.cordaroneGivenAfterShock[state.shocks] = true;
+          setResult("Cordarone givet vid ratt shockfas", "good");
           emitCaseEvent("drug-cordarone-adrenalin-correct", {
             rhythm: state.rhythm,
             shocks: state.shocks,
           });
         } else {
           state.score -= 1;
-          setResult("Cordarone + Adrenalin ej ratt atgard i denna rytm", "warn");
+          setResult("Cordarone fel tajmad eller ej indicerad nu", "warn");
           emitCaseEvent("drug-cordarone-adrenalin-incorrect", {
             rhythm: state.rhythm,
             shocks: state.shocks,
           });
+          endRunForMistake("Cordarone gavs vid fel tidpunkt. Rundan är avslutad.", { reason: "wrong-cordarone" });
+          return;
         }
         updateChips();
       }
@@ -1007,8 +1569,16 @@
           setResult("Ladda innan stot", "warn");
           return;
         }
+        if (!state.clearArmed) {
+          state.score -= 3;
+          emitCaseEvent("defib-critical-error", { reason: "shock-without-clear", rhythm: state.rhythm });
+          setResult("Kritiskt fel: stot utan Alla klara", "warn");
+          endRunForMistake("Säkerhetsfel: stöt utan att säkerställa att alla är undan.", { reason: "shock-without-clear" });
+          return;
+        }
 
         setCharge(false);
+        state.clearArmed = false;
         state.shocks += 1;
         scoreShockDecision(true);
 
@@ -1018,11 +1588,15 @@
         beep(1600, 85, 0.03);
 
         if (isShockable()) {
-          state.postShockRecoveryAt = performance.now() + 1800;
+          state.postShockArtifactUntil = performance.now() + 1350;
+          state.postShockRecoveryAt = performance.now() + 1850;
           state.postShockSourceRhythm = state.rhythm;
-          setResult("Stot levererad, analyserar rytm...", "warn");
+          setResult("Stot levererad, aterupptar HLR...", "warn");
+          setMonitorStatus("Stöt given.");
         } else {
           setResult("Icke-shockbar rytm, fortsatt HLR", "warn");
+          endRunForMistake("Stöt gavs på icke-shockbar rytm. Rundan är avslutad.", { reason: "shock-nonshockable" });
+          return;
         }
 
         updateChips();
@@ -1083,6 +1657,7 @@
           setCharge(false);
           scoreShockDecision(false);
           setResult("Laddning timeout", "warn");
+          endRunForMistake("Laddningen hann gå ut utan åtgärd. Rundan är avslutad.", { reason: "charge-timeout" });
         }
 
         if (state.powerOn && state.postShockRecoveryAt && performance.now() >= state.postShockRecoveryAt) {
@@ -1090,17 +1665,10 @@
           state.postShockRecoveryAt = 0;
           state.postShockSourceRhythm = "";
           const sourceHr = rhythmHrFor(source || state.rhythm);
-          let targetRhythm = "sinus";
-          let sequenceCompleted = false;
-
-          if (isShockable() && Array.isArray(state.caseShockPlan) && state.caseShockPlan.length > 0) {
-            const idx = Math.max(0, Math.min(state.caseShockIndex, state.caseShockPlan.length - 1));
-            targetRhythm = state.caseShockPlan[idx] || "sinus";
-            state.caseShockIndex = Math.min(state.caseShockIndex + 1, state.caseShockPlan.length);
-            sequenceCompleted = state.caseShockIndex >= state.caseShockPlan.length;
-          } else {
-            sequenceCompleted = true;
-          }
+          const targetRhythm = advanceScenario("sinus");
+          const sequenceCompleted =
+            state.phaseIndex >= Math.max(0, state.scenarioPhases.length - 1) &&
+            state.caseShockIndex >= Math.max(0, state.caseShockPlan.length);
 
           const targetHr = rhythmHrFor(targetRhythm);
           state.rhythmBlend = {
@@ -1117,10 +1685,13 @@
           const shockableNext = targetRhythm === "vfib" || targetRhythm === "vt";
           if (targetRhythm === "sinus") {
             setResult("ROSC efter stot, rytm stabiliseras...", "good");
+            setMonitorStatus("");
           } else if (shockableNext) {
-            setResult(`Rytm efter stot: ${targetRhythm.toUpperCase()} - ny analys/stot behovs`, "warn");
+            setResult("Fortsatt shockbar rytm efter stot", "warn");
+            setMonitorStatus("Fortsatt hjärtstopp.");
           } else {
-            setResult(`Rytm efter stot: ${targetRhythm.toUpperCase()} - fortsatt HLR/atgarder`, "warn");
+            setResult("Icke-shockbar rytm efter stot", "warn");
+            setMonitorStatus("Fortsatt hjartstopp. Fortsatt HLR och behandla reversibla orsaker.");
           }
           emitCaseEvent("defib-success", {
             shocks: state.shocks,
@@ -1169,6 +1740,7 @@
         }
 
         maybeBeep();
+        syncGameControls();
         updateChips();
         requestAnimationFrame(drawFrame);
       }
@@ -1176,7 +1748,11 @@
       powerBtn.addEventListener("click", () => {
         ensureAudio();
         state.soundEnabled = true;
-        setPower(!state.powerOn);
+        if (!state.powerOn && state.runFinished) {
+          startNewRun();
+        } else {
+          setPower(!state.powerOn);
+        }
       });
 
       chargeBtn.addEventListener("click", () => {
@@ -1190,11 +1766,81 @@
 
       defibBtn.addEventListener("click", defib);
       analyzeBtn.addEventListener("click", analyze);
+      newRunBtn.addEventListener("click", () => {
+        ensureAudio();
+        state.soundEnabled = true;
+        if (!state.powerOn) setPower(true);
+        startNewRun();
+      });
 
       cprBtn.addEventListener("click", () => {
         if (!state.powerOn) return;
-        setResult("CPR aktiv", "good");
+        state.cprArtifactUntil = performance.now() + 7000;
+        state.cycleCount += 1;
+        state.clearArmed = false;
+        const correct = !isShockable();
+        state.score += correct ? 1 : -1;
+        if (!correct) {
+          emitCaseEvent("compressions-rhythm-incorrect", {
+            rhythm: state.rhythm,
+            cycle: state.cycleCount,
+          });
+          endRunForMistake("HLR valdes som huvudåtgärd trots shockbar rytm. Rundan är avslutad.", { reason: "cpr-on-shockable" });
+          return;
+        }
+        if (currentCycleNeedsAdrenalin() && !state.adrenalinGivenThisCycle) {
+          setResult("HLR aktiv - adrenalin bor overvägas denna cykel", "warn");
+        } else {
+          setResult("HLR aktiv", correct ? "good" : "warn");
+        }
+        setMonitorStatus("Kompressioner skapar artefakt. Pausa kort vid analys.");
+        if (correct && Array.isArray(state.scenarioPhases) && state.phaseIndex < state.scenarioPhases.length - 1) {
+          const fromRhythm = state.rhythm;
+          const targetRhythm = advanceScenario(state.rhythm);
+          state.rhythmBlend = {
+            fromRhythm,
+            fromHr: rhythmHrFor(fromRhythm),
+            toRhythm: targetRhythm,
+            toHr: rhythmHrFor(targetRhythm),
+            startMs: performance.now() + 900,
+            durationMs: 1700,
+          };
+          applyRhythm(targetRhythm);
+        }
+        emitCaseEvent(correct ? "compressions-rhythm-correct" : "compressions-rhythm-incorrect", {
+          rhythm: state.rhythm,
+          cycle: state.cycleCount,
+        });
+        state.adrenalinGivenThisCycle = false;
+        updateChips();
       });
+
+      continueCprBtn.addEventListener("click", () => cprBtn.click());
+
+      clearBtn.addEventListener("click", () => {
+        if (!state.powerOn) return;
+        state.clearArmed = true;
+        state.score += 1;
+        setResult("Alla klara bekräftat", "good");
+        setMonitorStatus("Alla har gått undan från patienten.");
+        emitCaseEvent("defib-clear-confirmed", { rhythm: state.rhythm });
+        updateChips();
+      });
+
+      pulseBtn.addEventListener("click", () => {
+        if (!state.powerOn) return;
+        state.pulseChecks += 1;
+        const hasPulse = state.rhythm === "sinus";
+        state.pulsePresent = hasPulse;
+        setResult(hasPulse ? "Puls palpabel" : "Ingen palpabel puls", hasPulse ? "good" : "warn");
+        setMonitorStatus(hasPulse ? "Puls finns." : "Ingen puls.");
+        emitCaseEvent(hasPulse ? "pulse-present" : "pulse-absent", { rhythm: state.rhythm });
+        updateChips();
+      });
+
+      adrenalinActionBtn.addEventListener("click", giveAdrenalin);
+      cordaroneActionBtn.addEventListener("click", giveCordaroneAdrenalin);
+      aeBtn.addEventListener("click", () => finishScenario("ae"));
 
       eventBtn.addEventListener("click", () => {
         if (!state.powerOn) return;
@@ -1263,9 +1909,6 @@
         setResult("Pacer paus", "warn");
       });
 
-      adrenalinBtn.addEventListener("click", giveAdrenalin);
-      cordaroneAdrenalinBtn.addEventListener("click", giveCordaroneAdrenalin);
-
       conditionBtns.forEach((btn) => {
         btn.addEventListener("click", () => {
           if (!state.powerOn) {
@@ -1294,22 +1937,29 @@
       }, { once: true });
 
       window.addEventListener("resize", resizeCanvasToDisplaySize);
-      window.addEventListener("resize", emitEmbedHeight);
-      window.addEventListener("load", emitEmbedHeight);
-      setTimeout(emitEmbedHeight, 0);
-      setTimeout(emitEmbedHeight, 250);
-      setTimeout(emitEmbedHeight, 800);
 
       if (isCaseEmbed) {
         const allowed = ["sinus", "vt", "vfib", "pea", "asystole"];
         const startRhythm = allowed.includes(requestedCaseRhythm) ? requestedCaseRhythm : "vfib";
         state.caseShockPlan = parseShockPlan(requestedShockPlan);
+        state.scenarioPhases = parsePhasePlan(requestedPhasePlan);
+        if (!state.scenarioPhases.length) {
+          state.scenarioPhases = [startRhythm, ...state.caseShockPlan];
+        }
+        if (!state.scenarioPhases.length) state.scenarioPhases = [startRhythm];
         state.caseShockIndex = 0;
-        setScenarioRhythm(startRhythm);
+        state.phaseIndex = 0;
+        applyRhythm(state.scenarioPhases[0] || startRhythm);
         const startLabel = rhythms.find((r) => r.id === startRhythm)?.label || startRhythm;
-        setResult(`Patient i ${startLabel}`, startRhythm === "vfib" || startRhythm === "vt" ? "warn" : "");
+        setResult(`Patient kopplad: ${startLabel}`, startRhythm === "vfib" || startRhythm === "vt" ? "warn" : "");
+        setPower(false);
+      } else {
+        state.scenarioPhases = parsePhasePlan(requestedPhasePlan);
+        if (!state.scenarioPhases.length) state.scenarioPhases = ["vfib", "vfib", "sinus"];
+        setPower(false);
       }
-      setPower(false);
+      renderHighscores();
+      updateChips();
       requestAnimationFrame(drawFrame);
     </script>
   </body>

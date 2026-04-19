@@ -1678,7 +1678,7 @@
         if (safeText(data.type) === "akuta-embed-height") {
           const frame = embedFrameByWindow.get(event.source);
           const h = Number(data.height);
-          if (frame && Number.isFinite(h) && h > 0) {
+          if (frame && !frame.classList.contains("embed-frame-overlay") && Number.isFinite(h) && h > 0) {
             frame.style.height = `${Math.max(360, Math.floor(h))}px`;
           }
           return;
