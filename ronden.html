@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ronden • Akuta fall</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="icon" type="image/png" href="favicon.png">
+  </head>
+  <body class="ronden-page">
+    <div class="page">
+      <header class="site-header">
+        <a class="site-brand" href="./index.html#step=1" aria-label="Akuta fall startsida">
+          <span class="brand-mark">AF</span>
+          <span>
+            <span class="brand-title">Akuta fall</span>
+            <span class="brand-subtitle">Ronden</span>
+          </span>
+        </a>
+        <nav class="site-nav" aria-label="Huvudnavigering">
+          <a href="./index.html#step=1">Start</a>
+          <a href="./compendium.html">Kompendium</a>
+          <a href="./ecg-lab.html">EKG-labb</a>
+          <a href="./blodgas.html">Blodgas-labb</a>
+        </nav>
+      </header>
+
+      <main class="card ronden-card">
+        <section class="ronden-hero">
+          <div>
+            <p class="eyebrow">Avdelningen</p>
+            <h1>Gå rond genom sjukhuset.</h1>
+            <p>
+              Klicka på ett rum för att träna den del av avdelningsarbetet som hör hemma där.
+              Börja i patientrummet, skriv klart i läkarrummet och samla teamet i rondrummet.
+            </p>
+          </div>
+          <a class="btn-primary btn-large" href="./index.html#step=2">Starta fallträning</a>
+        </section>
+
+        <section class="ward-board" aria-label="Interaktiv avdelningskarta">
+          <div class="hospital-map" aria-label="Sjukhus med klickbara rum">
+            <button class="ward-room room-patient" type="button" data-room="patient">
+              <span class="room-label">Patientrummet</span>
+              <span class="room-fixture sink"></span>
+              <span class="room-fixture monitor"></span>
+              <span class="room-bed bed-one"></span>
+              <span class="room-bed bed-two"></span>
+              <span class="room-window window-one"></span>
+              <span class="room-window window-two"></span>
+            </button>
+
+            <div class="ward-room room-empty room-observation" aria-hidden="true">
+              <span class="room-label">Vårdplats</span>
+              <span class="room-fixture cabinet"></span>
+              <span class="room-bed bed-one"></span>
+              <span class="room-bed bed-two"></span>
+              <span class="room-window window-one"></span>
+              <span class="room-window window-two"></span>
+            </div>
+
+            <div class="ward-room room-empty room-treatment" aria-hidden="true">
+              <span class="room-label">Behandling</span>
+              <span class="room-fixture sink"></span>
+              <span class="room-fixture cart"></span>
+              <span class="room-bed bed-one"></span>
+              <span class="room-bed bed-two"></span>
+              <span class="room-window window-one"></span>
+              <span class="room-window window-two"></span>
+            </div>
+
+            <div class="ward-corridor">
+              <span>Central korridor</span>
+            </div>
+
+            <button class="ward-room room-doctor" type="button" data-room="doctor">
+              <span class="room-label">Läkarrummet</span>
+              <span class="room-desk desk-one"></span>
+              <span class="room-desk desk-two"></span>
+              <span class="room-desk desk-three"></span>
+              <span class="room-shelf shelf-one"></span>
+              <span class="room-chair chair-one"></span>
+              <span class="room-chair chair-two"></span>
+              <span class="room-chair chair-three"></span>
+            </button>
+
+            <button class="ward-room room-round" type="button" data-room="round">
+              <span class="room-label">Rondrummet</span>
+              <span class="room-table"></span>
+              <span class="room-screen"></span>
+              <span class="room-chair chair-one"></span>
+              <span class="room-chair chair-two"></span>
+              <span class="room-chair chair-three"></span>
+              <span class="room-chair chair-four"></span>
+              <span class="room-chair chair-five"></span>
+              <span class="room-chair chair-six"></span>
+            </button>
+          </div>
+
+          <aside class="room-learning-panel" aria-live="polite">
+            <p class="eyebrow" id="roomKicker">Ronden</p>
+            <h2 id="roomTitle">Välj ett rum i avdelningen</h2>
+            <p id="roomIntro">
+              Klicka på ett rum i sjukhuskartan för att fokusera på miljön och öppna det moment som hör till rummet.
+            </p>
+            <div class="room-lessons" id="roomLessons"></div>
+            <button class="btn-secondary room-overview-btn" type="button" id="roomOverviewBtn" hidden>Visa avdelningen</button>
+          </aside>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const roomContent = {
+        overview: {
+          kicker: "Ronden",
+          title: "Välj ett rum i avdelningen",
+          intro:
+            "Klicka på ett rum i sjukhuskartan för att fokusera på miljön och öppna det moment som hör till rummet.",
+          lessons: [
+            {
+              title: "Patientrummet",
+              text: "Träna undersökningsmetodik, anamnes och hur du sammanfattar kliniska fynd.",
+            },
+            {
+              title: "Läkarrummet",
+              text: "Öva remiss, daganteckning och epikris med tydlig klinisk fråga och plan.",
+            },
+            {
+              title: "Rondrummet",
+              text: "Samla teamet kring SBAR, NEWS2 och praktisk fysiobedömning.",
+            },
+          ],
+        },
+        patient: {
+          kicker: "Patientrummet",
+          title: "Undersökningsmetodik och anamnes",
+          intro:
+            "Här tränar du på att möta patienten, skapa struktur och samla kliniskt relevant information utan att tappa helhetsbilden.",
+          lessons: [
+            {
+              title: "Undersök med riktning",
+              text: "Börja brett, gå sedan mot det som är farligast först. Säg vad du letar efter och koppla fynden till nästa beslut.",
+            },
+            {
+              title: "Anamnes som styr åtgärd",
+              text: "Fokusera på debut, förlopp, riskfaktorer, läkemedel, allergier och patientens baslinje. Ta med det som ändrar prioritering.",
+            },
+            {
+              title: "Sammanfatta högt",
+              text: "Avsluta mötet med en kort syntes: vad talar för, vad talar emot och vad måste uteslutas nu.",
+            },
+          ],
+        },
+        doctor: {
+          kicker: "Läkarrummet",
+          title: "Remiss, epikris och daganteckning",
+          intro:
+            "Här övar du på att skriva så att nästa person snabbt förstår läget, planen och vad som fortfarande är osäkert.",
+          lessons: [
+            {
+              title: "Remiss",
+              text: "Skriv frågan först. Lägg därefter till relevant bakgrund, aktuella fynd, vitalparametrar och vad du redan har gjort.",
+            },
+            {
+              title: "Daganteckning",
+              text: "Dokumentera förändring över tid: status nu, bedömning, plan och tydliga kontroller. Undvik långa listor utan beslut.",
+            },
+            {
+              title: "Epikris",
+              text: "Berätta vårdförloppet i rätt ordning och skriv vad mottagaren behöver följa upp efter utskrivning.",
+            },
+          ],
+        },
+        round: {
+          kicker: "Rondrummet",
+          title: "SBAR, NEWS2 och fysiobedömning",
+          intro:
+            "Här samlas teamet. Målet är att presentera skarpt, prioritera risk och fördela nästa steg utan oklarheter.",
+          lessons: [
+            {
+              title: "SBAR",
+              text: "Situation, Bakgrund, Aktuellt tillstånd och Rekommendation. Håll det kort och avsluta med vad du vill ska hända.",
+            },
+            {
+              title: "NEWS2",
+              text: "Använd poängen som varningssystem, inte facit. Kombinera vitalparametrar med klinisk blick och trend.",
+            },
+            {
+              title: "Fysiobedömning",
+              text: "Beskriv funktion, mobilisering, andning, fallrisk och rehabiliteringsmål så att planen blir praktiskt genomförbar.",
+            },
+          ],
+        },
+      };
+
+      const roomButtons = Array.from(document.querySelectorAll(".ward-room[data-room]"));
+      const hospitalMap = document.querySelector(".hospital-map");
+      const roomKicker = document.getElementById("roomKicker");
+      const roomTitle = document.getElementById("roomTitle");
+      const roomIntro = document.getElementById("roomIntro");
+      const roomLessons = document.getElementById("roomLessons");
+      const roomOverviewBtn = document.getElementById("roomOverviewBtn");
+
+      function renderRoom(roomId, shouldFocus = true) {
+        const content = roomContent[roomId] || roomContent.overview;
+        roomButtons.forEach((button) => {
+          button.classList.toggle("is-active", button.dataset.room === roomId);
+        });
+        hospitalMap.classList.toggle("is-room-focused", shouldFocus);
+        roomOverviewBtn.hidden = !shouldFocus;
+        roomKicker.textContent = content.kicker;
+        roomTitle.textContent = content.title;
+        roomIntro.textContent = content.intro;
+        roomLessons.replaceChildren(
+          ...content.lessons.map((lesson) => {
+            const item = document.createElement("article");
+            item.className = "room-lesson";
+            const title = document.createElement("h3");
+            title.textContent = lesson.title;
+            const text = document.createElement("p");
+            text.textContent = lesson.text;
+            item.append(title, text);
+            return item;
+          }),
+        );
+      }
+
+      roomButtons.forEach((button) => {
+        button.addEventListener("click", () => renderRoom(button.dataset.room));
+      });
+
+      roomOverviewBtn.addEventListener("click", () => {
+        hospitalMap.classList.remove("is-room-focused");
+        roomButtons.forEach((button) => button.classList.remove("is-active"));
+        roomOverviewBtn.hidden = true;
+        renderRoom("overview", false);
+      });
+
+      renderRoom("overview", false);
+    </script>
+  </body>
+</html>
