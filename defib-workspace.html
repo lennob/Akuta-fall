@@ -593,9 +593,9 @@
   <body class="defib-workspace">
     <main class="sim-wrap">
       <section class="game-layout">
-        <aside class="score-panel" aria-label="Poang och highscore">
+        <aside class="score-panel" aria-label="Poäng och highscore">
           <section class="score-card">
-            <p class="score-label">Poang</p>
+            <p class="score-label">Poäng</p>
             <div class="big-score" id="bigScoreEl">0</div>
             <div class="run-progress" id="runProgressEl">Runda 0 / 10</div>
           </section>
@@ -1154,7 +1154,7 @@
         if (!state.powerOn) {
           if (rhythmChip) rhythmChip.textContent = "Rytm: OFF";
           if (rateChip) rateChip.textContent = "HF: -";
-          if (scoreChip) scoreChip.textContent = `Poang: ${state.score}`;
+          if (scoreChip) scoreChip.textContent = `Poäng: ${state.score}`;
           if (timerChip) timerChip.textContent = `Tid: -`;
           if (shockChip) shockChip.textContent = `Stotar: ${state.shocks}`;
           energyValue.textContent = `${state.energy} J`;
@@ -1170,7 +1170,7 @@
 
         if (rateChip) rateChip.textContent = `HF: ${state.rhythm === "vfib" || state.rhythm === "asystole" ? "-" : state.hr}`;
         if (shockChip) shockChip.textContent = `Stotar: ${state.shocks}`;
-        if (scoreChip) scoreChip.textContent = `Poang: ${state.score}`;
+        if (scoreChip) scoreChip.textContent = `Poäng: ${state.score}`;
         if (timerChip) timerChip.textContent = `Tid: ${state.timer.toFixed(1)} s`;
         energyValue.textContent = `${state.energy} J`;
       }
@@ -1322,7 +1322,7 @@
         state.runFinished = true;
         state.gameLocked = true;
         saveHighscore();
-        setResult(`Run klar: ${state.score} poang av ${state.runSize}.`, "good");
+        setResult(`Run klar: ${state.score} poäng av ${state.runSize}.`, "good");
         syncGameControls();
         updateChips();
       }
@@ -1450,7 +1450,7 @@
           saveHighscore();
         }
         const label = reason === "ae" ? "A-E avslutad" : "ROSC markerad";
-        setResult(`${label}: ${state.score} poang`, finalDelta >= 0 ? "good" : "warn");
+        setResult(`${label}: ${state.score} poäng`, finalDelta >= 0 ? "good" : "warn");
         setMonitorStatus(`Fall klart. Tidsbonus ${timeBonus} p. Tryck Ny runda för nästa fall.`);
         emitCaseEvent(reason === "ae" ? "defib-ae-complete" : "defib-rosc-declared", {
           score: state.score,

@@ -20,14 +20,24 @@
   gtag('config', 'G-MXR0EE17S7');
 </script>
 
-      <main class="card">
-        <header>
-          <div class="page-title-row">
-            <h1>Akuta fall</h1>
-            <a class="btn-secondary header-compendium-btn" id="headerCompendiumBtn" href="./compendium.html">Kompendium</a>
-          </div>
-        </header>
-        <nav class="step-nav" aria-label="Steg">
+      <header class="site-header">
+        <a class="site-brand" href="./index.html#step=1" aria-label="Akuta fall startsida">
+          <span class="brand-mark">AF</span>
+          <span>
+            <span class="brand-title">Akuta fall</span>
+            <span class="brand-subtitle">Simuleringsträning</span>
+          </span>
+        </a>
+        <nav class="site-nav" aria-label="Huvudnavigering">
+          <a href="./index.html#step=1" aria-current="page">Start</a>
+          <a id="headerCompendiumBtn" href="./compendium.html">Kompendium</a>
+          <a href="./ecg-lab.html">EKG-labb</a>
+          <a href="./blodgas.html">Blodgas-labb</a>
+        </nav>
+      </header>
+
+      <main class="card app-card">
+        <nav class="step-nav" aria-label="Träningsflöde">
           <div class="step-nav-row">
             <div class="step-info-buttons">
               <div class="steps" id="stepsList"></div>
@@ -35,11 +45,40 @@
           </div>
         </nav>
         <section class="content" data-step="1" id="step-1">
-          <div class="about-guide">
-            <div class="about-guide-head step-head">
-              <h2>Hur du använder hemsidan</h2>
-              <p>Rör musen mellan varje del för att se vad varje del gör. När du är färdig kan du gå till "Förberedelser"</p>
+          <div class="home-dashboard">
+            <div class="home-copy">
+              <p class="eyebrow">Akutmedicinsk fallträning</p>
+              <h1>Öva akuta fall steg för steg.</h1>
+              <p>
+                En person leder fallet som bedömare och en person tränar som undersökande läkare.
+                Börja med förberedelser, få ett slumpat scenario och kör sedan fallet strukturerat.
+              </p>
+              <div class="home-actions">
+                <button type="button" class="btn-primary btn-large" id="randomCaseBtn">Starta träning</button>
+                <a class="btn-secondary btn-large" href="./compendium.html">Välj fall i kompendium</a>
+              </div>
             </div>
+            <div class="home-guide-panel" aria-label="Så fungerar det">
+              <h2>Så fungerar det</h2>
+              <ol>
+                <li>Förbered roller och material.</li>
+                <li>Slumpa ett fall och läs scenariot.</li>
+                <li>Kör fallet och avsluta med feedback.</li>
+              </ol>
+            </div>
+          </div>
+
+          <button type="button" class="help-fab" id="interfaceGuideOpen" aria-label="Visa gränssnittsguide">?</button>
+          <div class="interface-guide-overlay" id="interfaceGuideOverlay" hidden>
+            <div class="interface-guide-panel" role="dialog" aria-modal="true" aria-labelledby="interfaceGuideTitle">
+              <div class="interface-guide-head">
+                <div>
+                  <h2 id="interfaceGuideTitle">Gränssnittsguide</h2>
+                  <p>Rör musen mellan varje del för att se vad varje del gör.</p>
+                </div>
+                <button type="button" class="btn-icon media-close" id="interfaceGuideClose" aria-label="Stäng guide">×</button>
+              </div>
+              <div class="about-guide">
             <div class="about-guide-layout">
               <div class="about-guide-visual" id="aboutGuideVisual" aria-label="Forhandsvisning av korlaget">
                 <div
@@ -127,36 +166,42 @@
                 </div>
               </div>
             </div>
+              </div>
+            </div>
           </div>
         </section>
         <section class="content" data-step="2" id="step-2"></section>
         <section class="content" data-step="3" id="step-3">
-          <div class="step-stage" aria-label="Navigering mellan steg">
-            <button type="button" class="step-side-btn" id="step2PrevBtn" aria-label="Föregående steg">←</button>
-            <div class="case-card">
-              <div class="step-head">
-                <h2>Slumpat fall</h2>
-                <p>Läs scenariot, fördela roller och starta när ni är redo.</p>
-              </div>
-              <div class="case-title-row">
-                <h2 class="case-title" id="caseTitle">Slumpar fall...</h2>
+          <div class="step-stage training-stage scenario-stage" aria-label="Navigering mellan steg">
+            <div class="case-card training-panel scenario-panel">
+              <div class="training-panel-header scenario-header">
+                <div class="step-head">
+                  <h2>Slumpat fall</h2>
+                  <p>Läs scenariot, fördela roller och starta när ni är redo.</p>
+                </div>
                 <button type="button" class="btn-icon" id="refreshCaseBtn" aria-label="Slumpa nytt fall">
                   ⟳
                 </button>
               </div>
+              <div class="training-panel-body scenario-body">
+              <div class="case-title-row">
+                <h2 class="case-title" id="caseTitle">Slumpar fall...</h2>
+              </div>
              <div class="case-text" id="caseText" aria-live="polite"></div>
               <p class="status" id="caseStatus"></p>
-              <div class="row start-row">
+              </div>
+              <div class="training-actions scenario-actions">
+                <button type="button" class="btn-secondary step-side-btn" id="step2PrevBtn" aria-label="Föregående steg">Tillbaka</button>
                 <div class="timer-centered">
                   <div class="timer" aria-label="Timer (startar när du trycker börja)">
                     <span class="label">Timer</span>
                     <span class="value" id="timerPreview">00:00</span>
                   </div>
                 </div>
-                <button type="button" class="btn-primary btn-start" id="startBtn">Börja</button>
+                <button type="button" class="btn-primary btn-start sr-compatible" id="startBtn" tabindex="-1" aria-hidden="true">Börja</button>
+                <button type="button" class="btn-primary step-side-btn" id="step2NextBtn" aria-label="Starta fallet">Börja</button>
               </div>
             </div>
-            <button type="button" class="step-side-btn" id="step2NextBtn" aria-label="Nästa steg">→</button>
           </div>
         </section>
         <section class="content" data-step="4" id="step-4">
@@ -196,7 +241,7 @@
       };
 
       const steps = [
-        { id: 1, title: "Om sidan", desc: "Se grannssnittet och komponenterna" },
+        { id: 1, title: "Start", desc: "Starta fall eller hitta material" },
         { id: 2, title: "Förberedelser", desc: "Samla material och forsta syftet" },
         { id: 3, title: "Slumpat fall", desc: "SBAR och bedomning i A-E" },
         { id: 4, title: "Kör fallet", desc: "Kor boxarna och samla lardomar" },
@@ -260,11 +305,11 @@
 
       function renderSteps(activeStep) {
         stepsList.innerHTML = "";
-        for (const step of steps) {
+        for (const step of steps.filter((item) => item.id > 1)) {
           const button = document.createElement("button");
           button.type = "button";
           button.className = "step-btn";
-          button.textContent = `${step.id}. ${step.title}`;
+          button.textContent = `${step.id - 1}. ${step.title}`;
           button.setAttribute("aria-current", step.id === activeStep ? "step" : "false");
           button.addEventListener("click", () => {
             const nextHash = `#step=${step.id}`;
@@ -285,6 +330,7 @@
           section.dataset.active = isActive ? "true" : "false";
         });
         if (pageEl) pageEl.classList.toggle("step4-wide", Number(activeStep) === 4);
+        if (pageEl) pageEl.classList.toggle("is-training-flow", Number(activeStep) > 1);
         renderSteps(activeStep);
         onStepActivated(activeStep);
       }
@@ -1042,18 +1088,24 @@
 
       function startCountdownThenGo() {
         if (!startBtn || countdownHandle) return;
+        const setStartButtons = (text, disabled) => {
+          [startBtn, step2NextBtn].forEach((btn) => {
+            if (!btn) return;
+            btn.disabled = disabled;
+            btn.textContent = text;
+          });
+        };
         let remaining = 3;
-        startBtn.disabled = true;
-        startBtn.textContent = String(remaining);
+        setStartButtons(String(remaining), true);
         countdownHandle = setInterval(() => {
           remaining -= 1;
           if (remaining <= 0) {
             clearInterval(countdownHandle);
             countdownHandle = null;
-            startBtn.textContent = "Startar...";
+            setStartButtons("Startar...", true);
             startTimerAndGo();
           } else {
-            startBtn.textContent = String(remaining);
+            setStartButtons(String(remaining), true);
           }
         }, 1000);
       }
@@ -1554,7 +1606,14 @@
         const existing = force ? null : readSelectedCase();
         if (existing) {
           renderSelectedCaseIntoStep2(existing);
-          if (startBtn) startBtn.disabled = false;
+          if (startBtn) {
+            startBtn.disabled = false;
+            startBtn.textContent = "Börja";
+          }
+          if (step2NextBtn) {
+            step2NextBtn.disabled = false;
+            step2NextBtn.textContent = "Börja";
+          }
           return existing;
         }
 
@@ -1567,6 +1626,10 @@
           if (startBtn) {
             startBtn.disabled = true;
             startBtn.title = "Kräver http:// för att kunna slumpa fall från cases/.";
+          }
+          if (step2NextBtn) {
+            step2NextBtn.disabled = true;
+            step2NextBtn.title = "Kräver http:// för att kunna slumpa fall från cases/.";
           }
           return null;
         }
@@ -1603,6 +1666,10 @@
         if (startBtn) {
           startBtn.disabled = false;
           startBtn.textContent = "Börja";
+        }
+        if (step2NextBtn) {
+          step2NextBtn.disabled = false;
+          step2NextBtn.textContent = "Börja";
         }
         return caseData;
       }
@@ -1796,47 +1863,60 @@
         introSection.replaceChildren();
 
         const stage = document.createElement("div");
-        stage.className = "step-stage";
+        stage.className = "step-stage training-stage";
         stage.setAttribute("aria-label", "Navigering mellan steg");
 
         const prevBtn = document.createElement("button");
         prevBtn.type = "button";
-        prevBtn.className = "step-side-btn";
+        prevBtn.className = "btn-secondary step-side-btn";
         prevBtn.id = "step1PrevBtn";
         prevBtn.setAttribute("aria-label", "Föregående steg");
-        prevBtn.textContent = "←";
+        prevBtn.textContent = "Tillbaka";
 
         const nextBtn = document.createElement("button");
         nextBtn.type = "button";
-        nextBtn.className = "step-side-btn";
+        nextBtn.className = "btn-primary step-side-btn";
         nextBtn.id = "step1NextBtn";
         nextBtn.setAttribute("aria-label", "Nästa steg");
-        nextBtn.textContent = "→";
+        nextBtn.textContent = "Nästa";
 
         const panel = document.createElement("div");
-        panel.className = "step-panel";
+        panel.className = "step-panel training-panel";
 
         const panelTop = document.createElement("div");
-        panelTop.className = "step-panel-top";
+        panelTop.className = "training-panel-header";
 
         const introHead = document.createElement("div");
         introHead.className = "step-head";
-        introHead.innerHTML = "<h2>Förberedelser</h2><p>Innan ni börjar:</p>";
+        introHead.innerHTML = "<h2>Förberedelser</h2><p>Kom överens om roller och hur ni ska använda skärmen innan scenariot startar.</p>";
 
         const introBlock = document.createElement("div");
-        introBlock.className = "intro";
-        introBlock.innerHTML = `${instructions.prep}`;
+        introBlock.className = "training-panel-body prep-grid";
+        introBlock.innerHTML = `
+          <article class="prep-item">
+            <div class="prep-index">1</div>
+            <h3>Roller</h3>
+            <p>En person agerar bedömare och styr informationen. En person tränar som undersökande läkare.</p>
+          </article>
+          <article class="prep-item">
+            <div class="prep-index">2</div>
+            <h3>Skärmhantering</h3>
+            <p>Den undersökande läkaren ska inte se hela fallet. Visa bara blodgas och EKG när det är relevant.</p>
+          </article>
+          <article class="prep-item">
+            <div class="prep-index">3</div>
+            <h3>Feedback</h3>
+            <p>Efter fallet får ni poäng och missade moment. Kritiska missar räknas som underkänt fall.</p>
+          </article>
+        `;
 
         const infoBlock = document.createElement("div");
-        infoBlock.className = "intro-info";
-        infoBlock.innerHTML =
-          "" +
-          instructions.doing.map((item) => `<p>${item}</p>`).join("");
-
-        stage.append(prevBtn, panel, nextBtn);
+        infoBlock.className = "training-actions";
+        infoBlock.append(prevBtn, nextBtn);
 
         panelTop.append(introHead);
         panel.append(panelTop, introBlock, infoBlock);
+        stage.append(panel);
         introSection.append(stage);
       }
 
@@ -1907,10 +1987,39 @@
         });
       }
 
+      function setupInterfaceGuideOverlay() {
+        const openBtn = document.getElementById("interfaceGuideOpen");
+        const overlay = document.getElementById("interfaceGuideOverlay");
+        const closeBtn = document.getElementById("interfaceGuideClose");
+        if (!openBtn || !overlay || !closeBtn) return;
+
+        const closeGuide = () => {
+          overlay.hidden = true;
+          document.body.classList.remove("has-modal");
+          openBtn.focus();
+        };
+
+        const openGuide = () => {
+          overlay.hidden = false;
+          document.body.classList.add("has-modal");
+          closeBtn.focus();
+        };
+
+        openBtn.addEventListener("click", openGuide);
+        closeBtn.addEventListener("click", closeGuide);
+        overlay.addEventListener("click", (event) => {
+          if (event.target === overlay) closeGuide();
+        });
+        window.addEventListener("keydown", (event) => {
+          if (event.key === "Escape" && !overlay.hidden) closeGuide();
+        });
+      }
+
       function init() {
         renderIntro();
         refreshStepButtons();
         setupAboutGuideHover();
+        setupInterfaceGuideOverlay();
         if (aboutNextBtn) aboutNextBtn.addEventListener("click", () => (location.hash = "#step=2"));
         if (step1PrevBtn) step1PrevBtn.addEventListener("click", () => (location.hash = "#step=1"));
         if (step1NextBtn) step1NextBtn.addEventListener("click", () => (location.hash = "#step=3"));
@@ -1918,12 +2027,9 @@
         if (step2NextBtn) step2NextBtn.addEventListener("click", startCountdownThenGo);
         if (randomCaseBtn)
           randomCaseBtn.addEventListener("click", () => {
-            if (location.hash !== "#step=3") {
-              location.hash = "#step=3";
+            if (location.hash !== "#step=2") {
+              location.hash = "#step=2";
             }
-            loadRandomCaseIfNeeded().catch((err) => {
-              setCaseStatus(`Kunde inte ladda fall. (${safeText(err && err.message)})`);
-            });
           });
         if (refreshCaseBtn)
           refreshCaseBtn.addEventListener("click", () => {
