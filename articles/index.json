@@ -1,0 +1,52 @@
+{
+  "sites": [
+    {
+      "id": "pubmed",
+      "name": "PubMed",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/",
+      "description": "Sök medicinska och biomedicinska forskningsartiklar."
+    },
+    {
+      "id": "cochrane",
+      "name": "Cochrane Library",
+      "url": "https://www.cochranelibrary.com/",
+      "description": "Systematiska översikter och evidens inom hälso- och sjukvård."
+    },
+    {
+      "id": "nejm",
+      "name": "The New England Journal of Medicine",
+      "url": "https://www.nejm.org/",
+      "description": "Klinisk forskning, översikter och medicinska nyheter."
+    },
+    {
+      "id": "internetmedicin",
+      "name": "Internetmedicin",
+      "url": "https://www.internetmedicin.se/",
+      "description": "Kliniskt kunskapsstöd med diagnoser, behandlingar och medicinska översikter."
+    },
+    {
+      "id": "orto",
+      "name": "Orto.nu",
+      "url": "https://www.orto.nu/",
+      "description": "Kunskapsresurs inom ortopedi och muskuloskeletala tillstånd."
+    },
+    {
+      "id": "janusinfo",
+      "name": "Janusinfo",
+      "url": "https://janusinfo.se/",
+      "description": "Regionalt kunskapsstöd om läkemedel, terapier och rationell läkemedelsanvändning."
+    },
+    {
+      "id": "skanelistan",
+      "name": "Skånelistan med bakgrundsmaterial",
+      "url": "https://vardgivare.skane.se/vardriktlinjer/lakemedel/skanelistan-med-bakgrundsmaterial/",
+      "description": "Rekommendationer för läkemedelsbehandling i Region Skåne med bakgrundsmaterial."
+    },
+    {
+      "id": "gips-y-kings",
+      "name": "Gips-Y-Kings",
+      "url": "https://akuten.li/gips-y-kings/",
+      "description": "Praktisk resurs om gipsning och ortopediskt handlag på akuten."
+    }
+  ]
+}

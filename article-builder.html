@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Artikelbyggare • Akuta fall</title>
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <style>
+      :root { --bg:#f5f7f8; --panel:#fff; --soft:#f4f6f7; --text:#29343d; --muted:#66737c; --accent:#23415f; --accent-warm:#d4775f; --highlight:#dce5eb; --danger:#b6533d; --border:#dfe5e8; }
+      * { box-sizing:border-box; }
+      body { margin:0; min-height:100vh; padding:22px; background:#f5f7f8; color:var(--text); font-family:Inter,"Segoe UI",system-ui,sans-serif; }
+      .page { max-width:1050px; margin:auto; display:grid; gap:18px; }
+      header { display:flex; justify-content:space-between; align-items:baseline; gap:16px; }
+      h1,h2,h3,p { margin-top:0; }
+      header h1 { margin-bottom:4px; font-size:24px; }
+      header p,.hint,.status { color:var(--muted); }
+      a { color:var(--accent); }
+      .card { padding:22px; border:1px solid var(--border); border-radius:18px; background:var(--panel); box-shadow:0 24px 70px rgba(15,23,42,.08); }
+      .intro { display:flex; justify-content:space-between; align-items:start; gap:20px; }
+      .steps { margin:0; padding-left:20px; color:var(--muted); line-height:1.7; }
+      .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+      .wide { grid-column:1/-1; }
+      label { display:grid; gap:7px; color:var(--muted); font-size:13px; font-weight:700; }
+      input,textarea { width:100%; padding:11px 12px; border:1px solid var(--border); border-radius:11px; background:var(--soft); color:var(--text); font:inherit; }
+      textarea { resize:vertical; }
+      button,.button { display:inline-flex; align-items:center; justify-content:center; padding:10px 13px; border:1px solid var(--border); border-radius:11px; background:var(--soft); color:var(--text); font:inherit; font-weight:700; cursor:pointer; text-decoration:none; }
+      button.primary { border-color:var(--accent); background:var(--accent); color:#fff; }
+      button.primary:hover { background:var(--accent-warm); border-color:var(--accent-warm); color:#000; }
+      .intro { border-top:4px solid var(--accent); }
+      .item { border-left:4px solid var(--accent); }
+      .item:nth-child(even) { border-left-color:var(--accent-warm); }
+      button.danger { color:var(--danger); }
+      .actions,.list-head,.item { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+      .actions { flex-wrap:wrap; margin-top:18px; }
+      .actions-left,.actions-right { display:flex; flex-wrap:wrap; gap:10px; }
+      #jsonFile { position:absolute; width:1px; height:1px; opacity:0; pointer-events:none; }
+      .list { display:grid; gap:10px; margin-top:16px; }
+      .item { padding:14px; border:1px solid var(--border); border-radius:13px; background:#fafbff; }
+      .item h3 { margin:0 0 5px; font-size:16px; }
+      .item p { margin:0; color:var(--muted); font-size:13px; }
+      .empty { padding:25px; border:1px dashed var(--border); border-radius:13px; color:var(--muted); text-align:center; }
+      @media(max-width:650px) { .grid{grid-template-columns:1fr}.wide{grid-column:auto}.intro,.list-head,.item{align-items:stretch;flex-direction:column}.item button{align-self:start} }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header>
+        <div><h1>Artikelbyggare</h1><p>Skapa den gemensamma listan över vetenskapliga webbplatser.</p></div>
+        <a href="./artiklar.html">Visa Artiklar</a>
+      </header>
+
+      <section class="card intro">
+        <div>
+          <h2>Arbetsflöde</h2>
+          <ol class="steps">
+            <li>Läs in den nuvarande <code>articles/index.json</code>.</li>
+            <li>Lägg till eller ta bort webbplatser.</li>
+            <li>Exportera och ersätt filen i GitHub.</li>
+          </ol>
+        </div>
+        <div>
+          <input id="jsonFile" type="file" accept="application/json,.json" />
+          <label class="button" for="jsonFile">Läs in JSON</label>
+        </div>
+      </section>
+
+      <form class="card" id="siteForm">
+        <h2>Lägg till webbplats</h2>
+        <div class="grid">
+          <label>Namn <input name="name" required maxlength="80" placeholder="Till exempel PubMed" /></label>
+          <label>Webbadress <input name="url" required type="url" placeholder="https://…" /></label>
+          <label class="wide">Kort beskrivning <textarea name="description" required rows="3" maxlength="240" placeholder="Beskriv vad besökaren hittar på webbplatsen."></textarea></label>
+        </div>
+        <div class="actions">
+          <span class="status" id="status" aria-live="polite">Den publicerade JSON-filen läses in automatiskt.</span>
+          <button class="primary" type="submit">Lägg till i listan</button>
+        </div>
+      </form>
+
+      <section class="card">
+        <div class="list-head">
+          <div><h2>Webbplatser</h2><p class="status" id="count"></p></div>
+          <div class="actions-right">
+            <button id="clearBtn" class="danger" type="button">Töm listan</button>
+            <button id="exportBtn" class="primary" type="button">Exportera index.json</button>
+          </div>
+        </div>
+        <div class="list" id="siteList"></div>
+      </section>
+    </main>
+
+    <script>
+      const DATA_PATH = "./articles/index.json";
+      const form = document.getElementById("siteForm");
+      const fileInput = document.getElementById("jsonFile");
+      const list = document.getElementById("siteList");
+      const count = document.getElementById("count");
+      const status = document.getElementById("status");
+      let sites = [];
+
+      function normalize(data) {
+        const entries = Array.isArray(data) ? data : data && data.sites;
+        if (!Array.isArray(entries)) throw new Error('JSON-filen måste innehålla { "sites": [...] }.');
+        return entries.map((site, index) => {
+          const parsed = new URL(String(site.url || ""));
+          if (!/^https?:$/.test(parsed.protocol) || !site.name) throw new Error(`Post ${index + 1} saknar giltigt namn eller URL.`);
+          return { id: String(site.id || makeId(site.name)), name: String(site.name), url: parsed.href, description: String(site.description || "") };
+        });
+      }
+
+      function makeId(name) {
+        const base = String(name).toLocaleLowerCase("sv").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+        let id = base || `webbplats-${Date.now()}`;
+        let suffix = 2;
+        while (sites.some((site) => site.id === id)) id = `${base}-${suffix++}`;
+        return id;
+      }
+
+      function render() {
+        list.replaceChildren();
+        count.textContent = `${sites.length} ${sites.length === 1 ? "webbplats" : "webbplatser"}`;
+        if (!sites.length) {
+          const empty = document.createElement("div");
+          empty.className = "empty";
+          empty.textContent = "Listan är tom.";
+          list.append(empty);
+          return;
+        }
+        sites.forEach((site) => {
+          const item = document.createElement("article");
+          item.className = "item";
+          const text = document.createElement("div");
+          const title = document.createElement("h3");
+          title.textContent = site.name;
+          const detail = document.createElement("p");
+          detail.textContent = `${new URL(site.url).hostname} — ${site.description}`;
+          text.append(title, detail);
+          const remove = document.createElement("button");
+          remove.className = "danger";
+          remove.type = "button";
+          remove.textContent = "Ta bort";
+          remove.addEventListener("click", () => { sites = sites.filter((entry) => entry.id !== site.id); render(); });
+          item.append(text, remove);
+          list.append(item);
+        });
+      }
+
+      function loadData(data, message) {
+        sites = normalize(data);
+        render();
+        status.textContent = message;
+      }
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const data = new FormData(form);
+        const name = String(data.get("name")).trim();
+        const parsedUrl = new URL(String(data.get("url")).trim());
+        if (!/^https?:$/.test(parsedUrl.protocol)) {
+          status.textContent = "Webbadressen måste börja med http:// eller https://.";
+          return;
+        }
+        const url = parsedUrl.href;
+        sites.push({ id: makeId(name), name, url, description: String(data.get("description")).trim() });
+        form.reset();
+        status.textContent = `${name} lades till. Exportera JSON när listan är klar.`;
+        render();
+      });
+
+      fileInput.addEventListener("change", async () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+        try { loadData(JSON.parse(await file.text()), `${file.name} lästes in.`); }
+        catch (error) { status.textContent = `Kunde inte läsa filen: ${error.message}`; }
+        fileInput.value = "";
+      });
+
+      document.getElementById("clearBtn").addEventListener("click", () => {
+        if (confirm("Vill du tömma hela listan?")) { sites = []; render(); status.textContent = "Listan tömdes."; }
+      });
+
+      document.getElementById("exportBtn").addEventListener("click", () => {
+        const blob = new Blob([JSON.stringify({ sites }, null, 2) + "\n"], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "index.json";
+        link.click();
+        URL.revokeObjectURL(url);
+        status.textContent = "index.json exporterades. Ersätt articles/index.json med filen i GitHub.";
+      });
+
+      fetch(DATA_PATH, { cache: "no-store" })
+        .then((response) => { if (!response.ok) throw new Error(`HTTP ${response.status}`); return response.json(); })
+        .then((data) => loadData(data, "Den publicerade listan lästes in."))
+        .catch(() => { render(); status.textContent = "Kunde inte läsa den publicerade filen. Du kan läsa in en JSON-fil manuellt."; });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Artiklar • Akuta fall</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+  </head>
+  <body class="articles-page">
+    <div class="page">
+      <header class="site-header">
+        <a class="site-brand" href="./index.html#step=1" aria-label="Akuta fall startsida">
+          <span class="brand-mark">AF</span>
+          <span>
+            <span class="brand-title">Akuta fall</span>
+            <span class="brand-subtitle">Kunskapsbanken</span>
+          </span>
+        </a>
+        <nav class="site-nav" aria-label="Huvudnavigering">
+          <a href="./index.html#step=1">Start</a>
+          <a href="./compendium.html">Kompendium</a>
+          <a href="./ecg-lab.html">EKG-labb</a>
+          <a href="./blodgas.html">Blodgas-labb</a>
+        </nav>
+      </header>
+
+      <main class="card articles-shell">
+        <section class="articles-hero">
+          <div>
+            <p class="eyebrow">Vetenskapliga resurser</p>
+            <h1>Kunskapsbanken</h1>
+            <p>Samla webbplatser där du hittar vetenskapliga tidskrifter och medicinsk forskning.</p>
+          </div>
+          <a class="btn-secondary" href="./article-builder.html">Administrera webbplatser</a>
+        </section>
+
+        <section class="articles-content" aria-labelledby="siteListTitle">
+          <div class="articles-toolbar">
+            <div>
+              <h2 id="siteListTitle">Vetenskapliga webbplatser</h2>
+              <p class="status" id="siteCount" aria-live="polite"></p>
+            </div>
+            <label class="articles-search">
+              <span>Sök</span>
+              <input id="siteSearch" type="search" placeholder="Sök webbplats…" />
+            </label>
+          </div>
+          <div class="article-site-grid" id="siteList"></div>
+          <p class="articles-empty" id="emptyState" hidden>Inga webbplatser matchar din sökning.</p>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const DATA_PATH = "./articles/index.json";
+      const list = document.getElementById("siteList");
+      const search = document.getElementById("siteSearch");
+      const count = document.getElementById("siteCount");
+      const empty = document.getElementById("emptyState");
+      let sites = [];
+
+      function renderSites() {
+        const query = search.value.trim().toLocaleLowerCase("sv");
+        const visible = sites.filter((site) => `${site.name} ${site.description}`.toLocaleLowerCase("sv").includes(query));
+        list.replaceChildren();
+        count.textContent = `${sites.length} ${sites.length === 1 ? "webbplats" : "webbplatser"} sparade`;
+        empty.hidden = visible.length !== 0;
+
+        visible.forEach((site) => {
+          const card = document.createElement("a");
+          card.className = "article-site-card";
+          card.href = site.url;
+          card.target = "_blank";
+          card.rel = "noopener noreferrer";
+          const domain = new URL(site.url).hostname.replace(/^www\./, "");
+          const copy = document.createElement("div");
+          const domainEl = document.createElement("p");
+          domainEl.className = "article-site-domain";
+          domainEl.textContent = domain;
+          const title = document.createElement("h3");
+          title.textContent = site.name;
+          const description = document.createElement("p");
+          description.className = "article-site-description";
+          description.textContent = site.description || "Vetenskaplig resurs";
+          copy.append(domainEl, title, description);
+
+          card.append(copy);
+          list.append(card);
+        });
+      }
+
+      search.addEventListener("input", renderSites);
+      fetch(DATA_PATH, { cache: "no-store" })
+        .then((response) => {
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          return response.json();
+        })
+        .then((data) => {
+          sites = Array.isArray(data) ? data : data.sites;
+          if (!Array.isArray(sites)) throw new Error("Felaktigt JSON-format");
+          renderSites();
+        })
+        .catch(() => {
+          count.textContent = "Kunde inte läsa webbplatserna.";
+          empty.textContent = "Kontrollera att articles/index.json finns och innehåller giltig JSON.";
+          empty.hidden = false;
+        });
+    </script>
+  </body>
+</html>
