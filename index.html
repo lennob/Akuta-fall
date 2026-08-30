@@ -30,9 +30,12 @@
         </a>
         <nav class="site-nav" aria-label="Huvudnavigering">
           <a href="./index.html#step=1" aria-current="page">Start</a>
+          <a href="./index.html#step=2">A-E</a>
+          <a href="./artiklar.html">Material</a>
+          <a href="./ronden.html">Ronden</a>
+          <a href="./index.html#step=1" data-scroll-target="labbet">Labbet</a>
+          <a href="./defib-workspace.html">Simulator</a>
           <a id="headerCompendiumBtn" href="./compendium.html">Kompendium</a>
-          <a href="./ecg-lab.html">EKG-labb</a>
-          <a href="./blodgas.html">Blodgas-labb</a>
         </nav>
       </header>
 
@@ -83,11 +86,11 @@
             </div>
             <div class="feature-dashboard feature-dashboard-beta">
               <a class="feature-card feature-card-ronden" href="./ronden.html">
-                <span class="feature-kicker">Träna fall</span>
+                <span class="feature-kicker">Avdelningen</span>
                 <span class="feature-title">Ronden</span>
                 <span class="feature-text">Vad är en rond? Hur gör jag ett bukstatus? Hur skriver jag anteckningar? En resurs med tips till avdelningsarbetet!</span>
               </a>
-              <div class="feature-card feature-card-labbet">
+              <div class="feature-card feature-card-labbet" id="labbet">
                 <span class="feature-kicker">Labbar</span>
                 <span class="feature-title">Labbet</span>
                 <span class="feature-text">Skapa din egen blodgas eller EKG för dina flashcards!</span>
@@ -2056,6 +2059,16 @@
         refreshStepButtons();
         setupAboutGuideHover();
         setupInterfaceGuideOverlay();
+        const labbetShortcut = document.querySelector('[data-scroll-target="labbet"]');
+        if (labbetShortcut)
+          labbetShortcut.addEventListener("click", (event) => {
+            event.preventDefault();
+            showStep(1);
+            if (location.hash !== "#step=1") location.hash = "#step=1";
+            requestAnimationFrame(() => {
+              document.getElementById("labbet")?.scrollIntoView({ behavior: "smooth", block: "center" });
+            });
+          });
         if (aboutNextBtn) aboutNextBtn.addEventListener("click", () => (location.hash = "#step=2"));
         if (step1PrevBtn) step1PrevBtn.addEventListener("click", () => (location.hash = "#step=1"));
         if (step1NextBtn) step1NextBtn.addEventListener("click", () => (location.hash = "#step=3"));
@@ -2093,6 +2106,7 @@
         if (prevBoxBtn) prevBoxBtn.addEventListener("click", () => goRelative(-1));
         if (nextBoxBtn) nextBoxBtn.addEventListener("click", () => goRelative(1));
 
+        const shouldScrollToLabbet = location.hash === "#labbet";
         const applyStep = () => showStep(getStepFromHash());
         window.addEventListener("hashchange", applyStep);
         if (!location.hash) {
@@ -2100,6 +2114,10 @@
         } else {
           applyStep();
         }
+        if (shouldScrollToLabbet)
+          requestAnimationFrame(() => {
+            document.getElementById("labbet")?.scrollIntoView({ behavior: "smooth", block: "center" });
+          });
       }
 
       init();
