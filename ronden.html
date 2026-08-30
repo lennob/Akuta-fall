@@ -40,61 +40,53 @@
 
         <section class="ward-board" aria-label="Interaktiv avdelningskarta">
           <div class="hospital-map" aria-label="Sjukhus med klickbara rum">
-            <button class="ward-room room-patient" type="button" data-room="patient">
-              <span class="room-label">Patientrummet</span>
-              <span class="room-fixture sink"></span>
-              <span class="room-fixture monitor"></span>
-              <span class="room-bed bed-one"></span>
-              <span class="room-bed bed-two"></span>
-              <span class="room-window window-one"></span>
-              <span class="room-window window-two"></span>
-            </button>
-
-            <div class="ward-room room-empty room-observation" aria-hidden="true">
-              <span class="room-label">Vårdplats</span>
-              <span class="room-fixture cabinet"></span>
-              <span class="room-bed bed-one"></span>
-              <span class="room-bed bed-two"></span>
-              <span class="room-window window-one"></span>
-              <span class="room-window window-two"></span>
-            </div>
-
-            <div class="ward-room room-empty room-treatment" aria-hidden="true">
-              <span class="room-label">Behandling</span>
-              <span class="room-fixture sink"></span>
-              <span class="room-fixture cart"></span>
-              <span class="room-bed bed-one"></span>
-              <span class="room-bed bed-two"></span>
-              <span class="room-window window-one"></span>
-              <span class="room-window window-two"></span>
-            </div>
-
-            <div class="ward-corridor">
-              <span>Central korridor</span>
-            </div>
-
-            <button class="ward-room room-doctor" type="button" data-room="doctor">
-              <span class="room-label">Läkarrummet</span>
-              <span class="room-desk desk-one"></span>
-              <span class="room-desk desk-two"></span>
-              <span class="room-desk desk-three"></span>
-              <span class="room-shelf shelf-one"></span>
-              <span class="room-chair chair-one"></span>
-              <span class="room-chair chair-two"></span>
-              <span class="room-chair chair-three"></span>
-            </button>
-
-            <button class="ward-room room-round" type="button" data-room="round">
-              <span class="room-label">Rondrummet</span>
-              <span class="room-table"></span>
-              <span class="room-screen"></span>
-              <span class="room-chair chair-one"></span>
-              <span class="room-chair chair-two"></span>
-              <span class="room-chair chair-three"></span>
-              <span class="room-chair chair-four"></span>
-              <span class="room-chair chair-five"></span>
-              <span class="room-chair chair-six"></span>
-            </button>
+            <img
+              class="hospital-map-img"
+              src="./assets/ronden-hospital-map.png"
+              alt="Isometrisk sjukhusavdelning med patientrum, vårdplatser, behandlingsrum, läkarrum och rondrum"
+            />
+            <svg class="ronden-hotspots" viewBox="0 0 1000 1000" aria-label="Klickbara rum">
+              <polygon
+                class="ronden-hotspot"
+                data-room="patient"
+                tabindex="0"
+                role="button"
+                aria-label="Patientrummet"
+                points="44,183 282,43 497,172 348,326 42,313"
+              />
+              <polygon
+                class="ronden-hotspot"
+                data-room="doctor"
+                tabindex="0"
+                role="button"
+                aria-label="Läkarrummet"
+                points="502,164 688,54 957,190 880,354 611,318"
+              />
+              <polygon
+                class="ronden-hotspot"
+                data-room="observation"
+                tabindex="0"
+                role="button"
+                aria-label="Vårdplats"
+                points="63,459 315,337 536,455 356,628 55,577"
+              />
+              <polygon
+                class="ronden-hotspot"
+                data-room="round"
+                tabindex="0"
+                role="button"
+                aria-label="Rondrummet"
+                points="121,713 401,562 612,725 371,946 119,835"
+              />
+              <polygon
+                class="ronden-hotspot"
+                data-room="treatment"
+                tabindex="0"
+                role="button"
+                aria-label="Behandling"
+                points="603,696 792,578 958,665 875,864 609,747"
+              />
+            </svg>
           </div>
 
           <aside class="room-learning-panel" aria-live="polite">
@@ -123,6 +115,14 @@
               text: "Träna undersökningsmetodik, anamnes och hur du sammanfattar kliniska fynd.",
             },
             {
+              title: "Vårdplats",
+              text: "Följ vitalparametrar, trend och NEWS2 för att upptäcka försämring tidigt.",
+            },
+            {
+              title: "Behandling",
+              text: "Välj åtgärder, följ upp effekt och prioritera nästa kliniska steg.",
+            },
+            {
               title: "Läkarrummet",
               text: "Öva remiss, daganteckning och epikris med tydlig klinisk fråga och plan.",
             },
@@ -149,6 +149,46 @@
             {
               title: "Sammanfatta högt",
               text: "Avsluta mötet med en kort syntes: vad talar för, vad talar emot och vad måste uteslutas nu.",
+            },
+          ],
+        },
+        observation: {
+          kicker: "Vårdplats",
+          title: "Övervakning och trend",
+          intro:
+            "Här tränar du på att värdera vitalparametrar, följa förändring över tid och avgöra när patienten behöver tätare kontroll.",
+          lessons: [
+            {
+              title: "NEWS2 som varningssystem",
+              text: "Poängen är en signal, inte hela sanningen. Kombinera vitalparametrar med klinisk blick och tidigare status.",
+            },
+            {
+              title: "Trend före ögonblicksbild",
+              text: "En patient som långsamt försämras kan se stabil ut i stunden. Jämför alltid med föregående värden.",
+            },
+            {
+              title: "Tydlig eskalering",
+              text: "Bestäm vem som följer upp, när nästa kontroll ska göras och vilken förändring som ska trigga ny bedömning.",
+            },
+          ],
+        },
+        treatment: {
+          kicker: "Behandling",
+          title: "Åtgärd och utvärdering",
+          intro:
+            "Här tränar du på att koppla behandling till aktuellt problem, starta åtgärder i rätt ordning och utvärdera effekten.",
+          lessons: [
+            {
+              title: "Behandla det farliga först",
+              text: "Prioritera åtgärder som direkt påverkar luftväg, andning, cirkulation eller medvetande.",
+            },
+            {
+              title: "Parallella spår",
+              text: "Prover, behandling, monitorering och konsultation kan ofta starta samtidigt om rollerna är tydliga.",
+            },
+            {
+              title: "Reevaluera",
+              text: "Efter varje viktig åtgärd behöver du kontrollera om patienten faktiskt blev bättre.",
             },
           ],
         },
@@ -194,7 +234,7 @@
         },
       };
 
-      const roomButtons = Array.from(document.querySelectorAll(".ward-room[data-room]"));
+      const roomButtons = Array.from(document.querySelectorAll(".hospital-map [data-room]"));
       const hospitalMap = document.querySelector(".hospital-map");
       const roomKicker = document.getElementById("roomKicker");
       const roomTitle = document.getElementById("roomTitle");
@@ -228,6 +268,11 @@
 
       roomButtons.forEach((button) => {
         button.addEventListener("click", () => renderRoom(button.dataset.room));
+        button.addEventListener("keydown", (event) => {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          event.preventDefault();
+          renderRoom(button.dataset.room);
+        });
       });
 
       roomOverviewBtn.addEventListener("click", () => {

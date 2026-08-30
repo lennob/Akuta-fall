@@ -3920,6 +3920,42 @@ body {
   align-items: stretch;
 }
 
+.feature-group-beta {
+  margin-top: clamp(34px, 6vw, 68px);
+  padding-top: clamp(22px, 3vw, 34px);
+  border-top: 1px solid var(--border);
+}
+
+.feature-group-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.feature-group-heading h2 {
+  margin: 0;
+  font-size: 1rem;
+  letter-spacing: 0;
+}
+
+.feature-group-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 5px 9px;
+  border: 1px solid rgba(31, 95, 97, 0.2);
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+.feature-dashboard-beta {
+  margin-top: 14px;
+}
+
 .feature-card {
   aspect-ratio: 2.5 / 3.5;
   min-height: 0;
@@ -4060,6 +4096,275 @@ button.feature-card {
   }
 }
 
+/* Phone layout for the index dashboard */
+@media (max-width: 720px) {
+  .index-page {
+    display: block;
+    padding: 0 14px 28px;
+  }
+
+  .index-page .page {
+    width: 100%;
+    gap: 0;
+  }
+
+  .index-page .site-header {
+    position: relative;
+    width: calc(100% + 28px);
+    min-height: 0;
+    margin: 0 -14px;
+    padding: 10px 14px 9px;
+    gap: 9px;
+  }
+
+  .index-page .site-brand {
+    gap: 9px;
+  }
+
+  .index-page .brand-mark {
+    width: 34px;
+    height: 34px;
+  }
+
+  .index-page .brand-subtitle {
+    display: none;
+  }
+
+  .index-page .site-nav {
+    display: flex;
+    width: calc(100% + 14px);
+    margin-right: -14px;
+    padding: 3px 14px 3px 3px;
+    gap: 3px;
+    overflow-x: auto;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+  }
+
+  .index-page .site-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .index-page .site-nav a {
+    flex: 0 0 auto;
+    min-height: 38px;
+    padding: 8px 11px;
+    scroll-snap-align: start;
+    white-space: nowrap;
+  }
+
+  .index-page .app-card {
+    width: 100%;
+  }
+
+  .index-page .home-dashboard {
+    min-height: 0;
+    gap: 18px;
+  }
+
+  .index-page .home-copy {
+    padding: 30px 2px 0;
+  }
+
+  .index-page .home-copy h1 {
+    max-width: 12ch;
+    font-size: clamp(2.25rem, 11.5vw, 3.15rem);
+    line-height: 0.98;
+  }
+
+  .index-page .home-copy p:not(.eyebrow) {
+    margin-top: 16px;
+    font-size: 0.98rem;
+    line-height: 1.55;
+  }
+
+  .index-page .home-guide-panel {
+    max-width: none;
+    padding: 18px 2px 0;
+  }
+
+  .index-page .feature-dashboard {
+    margin-top: 30px;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .index-page .feature-group-beta {
+    margin-top: 32px;
+    padding-top: 22px;
+  }
+
+  .index-page .feature-dashboard-beta {
+    margin-top: 12px;
+  }
+
+  .index-page .feature-card {
+    width: 100%;
+    min-height: 132px;
+    aspect-ratio: auto;
+    padding: 16px 18px;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 5px;
+    border-radius: 12px;
+    text-align: left;
+    box-shadow: 0 8px 18px rgba(61, 48, 34, 0.075);
+  }
+
+  .index-page .feature-card:hover,
+  .index-page .feature-card:focus-visible {
+    transform: none;
+  }
+
+  .index-page .feature-title {
+    margin-top: 2px;
+    font-size: 1.45rem;
+  }
+
+  .index-page .feature-text {
+    max-width: 32rem;
+    font-size: 0.9rem;
+    line-height: 1.35;
+  }
+
+  .index-page .feature-links {
+    width: 100%;
+    margin-top: 5px;
+    justify-content: flex-start;
+  }
+
+  .index-page .feature-links a {
+    min-height: 38px;
+    padding: 8px 12px;
+  }
+
+  .index-page .help-fab {
+    right: 14px;
+    bottom: calc(14px + env(safe-area-inset-bottom));
+  }
+
+  .index-page .page.is-training-flow .app-card > .step-nav {
+    width: 100%;
+    margin: 16px 0 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .index-page .page.is-training-flow .app-card > .step-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .index-page .page.is-training-flow .app-card > .step-nav .steps {
+    width: max-content;
+    min-width: 100%;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+
+  .index-page .page.is-training-flow .app-card > .step-nav .step-btn {
+    flex: 0 0 auto;
+    min-height: 38px;
+    padding: 8px 12px;
+    white-space: nowrap;
+  }
+
+  .index-page .training-stage {
+    width: 100%;
+    margin-top: 14px;
+  }
+
+  .index-page .training-stage .training-panel.step-panel {
+    display: grid;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    grid-template-rows: auto auto auto;
+    overflow: hidden;
+  }
+
+  .index-page .training-panel-header,
+  .index-page .training-panel-body,
+  .index-page .training-actions {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .index-page .training-panel-header {
+    padding-top: 20px;
+    padding-bottom: 16px;
+  }
+
+  .index-page .training-panel-header .step-head h2 {
+    font-size: 1.55rem;
+  }
+
+  .index-page .training-panel-header .step-head p {
+    font-size: 0.92rem;
+  }
+
+  .index-page .training-panel-body {
+    padding-top: 16px;
+  }
+
+  .index-page .prep-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .index-page .prep-item {
+    min-height: 0;
+    padding: 16px;
+    grid-template-rows: 30px auto auto;
+    gap: 7px;
+  }
+
+  .index-page .prep-item h3 {
+    min-height: 0;
+  }
+
+  .index-page .training-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding-top: 16px;
+    padding-bottom: 18px;
+  }
+
+  .index-page .training-actions #step1PrevBtn,
+  .index-page .training-actions #step2PrevBtn,
+  .index-page .training-actions #step1NextBtn,
+  .index-page .training-actions #step2NextBtn {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 380px) {
+  .index-page {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .index-page .site-header {
+    width: calc(100% + 20px);
+    margin-right: -10px;
+    margin-left: -10px;
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .index-page .home-copy h1 {
+    font-size: 2.15rem;
+  }
+
+  .index-page .feature-card {
+    padding: 15px 16px;
+  }
+}
+
 /* Ronden ward page */
 .ronden-card {
   padding: clamp(18px, 3vw, 34px);
@@ -4097,29 +4402,33 @@ button.feature-card {
 }
 
 .hospital-map {
-  min-height: 680px;
-  padding: clamp(18px, 2.4vw, 28px);
-  border: 1px solid rgba(37, 45, 42, 0.14);
-  border-radius: 10px;
+  min-height: 720px;
+  padding: 10px;
+  border: 8px solid #2e3047;
+  border-radius: 3px;
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.18) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(255, 255, 255, 0.18) 1px, transparent 1px),
-    #86bfce;
+    linear-gradient(90deg, rgba(68, 93, 122, 0.26) 2px, transparent 2px),
+    linear-gradient(0deg, rgba(68, 93, 122, 0.26) 2px, transparent 2px),
+    #c7d6e4;
   background-size: 34px 34px;
   display: grid;
-  grid-template-columns: minmax(170px, 1fr) minmax(82px, 0.36fr) minmax(220px, 1.16fr);
-  grid-template-rows: repeat(3, minmax(150px, 1fr));
+  grid-template-columns: minmax(190px, 1fr) minmax(100px, 0.35fr) minmax(250px, 1.18fr);
+  grid-template-rows: minmax(190px, 1.05fr) minmax(170px, 0.95fr) minmax(210px, 1.15fr);
   gap: 0;
   box-shadow:
-    inset 0 0 0 8px rgba(255, 255, 255, 0.2),
-    inset 0 0 0 11px rgba(37, 45, 42, 0.07);
+    inset 0 0 0 4px rgba(255, 255, 255, 0.42),
+    0 22px 38px rgba(61, 48, 34, 0.12);
 }
 
 .ward-room,
 .ward-corridor {
-  border: 6px solid #77766f;
+  border: 8px solid #303149;
   border-radius: 0;
-  background: #d5d0c4;
+  background:
+    linear-gradient(90deg, rgba(208, 169, 139, 0.16) 2px, transparent 2px),
+    linear-gradient(0deg, rgba(208, 169, 139, 0.16) 2px, transparent 2px),
+    #fbf2e9;
+  background-size: 32px 32px;
   color: #111817;
   position: relative;
   overflow: hidden;
@@ -4154,10 +4463,10 @@ button.ward-room:focus-visible {
 
 .room-label {
   position: absolute;
-  top: 12px;
-  left: 14px;
+  top: 13px;
+  left: 15px;
   z-index: 2;
-  color: rgba(17, 24, 23, 0.66);
+  color: rgba(32, 36, 53, 0.72);
   font-size: clamp(0.78rem, 1vw, 0.92rem);
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -4171,19 +4480,27 @@ button.ward-room:focus-visible {
 .room-table,
 .room-fixture,
 .room-shelf,
-.room-screen {
+.room-screen,
+.room-equipment,
+.room-board,
+.room-person,
+.corridor-chair,
+.corridor-plant {
   position: absolute;
   display: block;
   z-index: 1;
 }
 
 .room-bed {
-  width: 25%;
-  height: 31%;
-  background: #c7d8e8;
-  border: 6px solid #f3efe6;
-  border-radius: 4px;
-  box-shadow: inset 0 -10px 0 rgba(95, 143, 201, 0.12);
+  width: 26%;
+  height: 34%;
+  background:
+    linear-gradient(180deg, #f8fbfb 0 22%, #7fd0cc 22% 100%);
+  border: 5px solid #ffffff;
+  border-radius: 7px;
+  box-shadow:
+    inset 0 -8px 0 rgba(36, 125, 139, 0.13),
+    0 2px 0 rgba(48, 49, 73, 0.16);
 }
 
 .room-window {
@@ -4231,9 +4548,10 @@ button.ward-room:focus-visible {
   bottom: 12%;
   width: 26%;
   height: 30%;
-  background: #c3d5ee;
-  border: 6px solid #f3efe6;
-  border-radius: 4px;
+  background:
+    linear-gradient(180deg, #f8fbfb 0 22%, #7fd0cc 22% 100%);
+  border: 5px solid #ffffff;
+  border-radius: 7px;
 }
 
 .room-observation::after,
@@ -4244,19 +4562,22 @@ button.ward-room:focus-visible {
   bottom: 12%;
   width: 26%;
   height: 30%;
-  background: #c3d5ee;
-  border: 6px solid #f3efe6;
-  border-radius: 4px;
+  background:
+    linear-gradient(180deg, #f8fbfb 0 22%, #7fd0cc 22% 100%);
+  border: 5px solid #ffffff;
+  border-radius: 7px;
 }
 
 .ward-corridor {
   grid-column: 2;
   grid-row: 1 / 4;
-  border-left: 0;
-  border-right: 0;
+  border-left: 8px solid #303149;
+  border-right: 8px solid #303149;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 38%, rgba(255, 255, 255, 0.14)),
-    #bab6aa;
+    linear-gradient(90deg, rgba(68, 93, 122, 0.22) 2px, transparent 2px),
+    linear-gradient(0deg, rgba(68, 93, 122, 0.22) 2px, transparent 2px),
+    #c7d6e4;
+  background-size: 34px 34px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4271,45 +4592,55 @@ button.ward-room:focus-visible {
 .room-patient {
   grid-column: 1;
   grid-row: 1;
-  border-right-width: 0;
+  border-right-width: 8px;
 }
 
 .room-observation {
   grid-column: 1;
   grid-row: 2;
   border-top-width: 0;
-  border-right-width: 0;
+  border-right-width: 8px;
 }
 
 .room-treatment {
   grid-column: 1;
   grid-row: 3;
   border-top-width: 0;
-  border-right-width: 0;
+  border-right-width: 8px;
 }
 
 .room-doctor {
   grid-column: 3;
   grid-row: 1;
-  border-left-width: 0;
-  background: #d0cabd;
+  border-left-width: 8px;
+  background:
+    linear-gradient(90deg, rgba(208, 169, 139, 0.16) 2px, transparent 2px),
+    linear-gradient(0deg, rgba(208, 169, 139, 0.16) 2px, transparent 2px),
+    #fbf2e9;
+  background-size: 32px 32px;
 }
 
 .room-round {
   grid-column: 3;
   grid-row: 3;
   border-top-width: 0;
-  border-left-width: 0;
-  background: #d0cabd;
+  border-left-width: 8px;
+  background:
+    linear-gradient(90deg, rgba(208, 169, 139, 0.16) 2px, transparent 2px),
+    linear-gradient(0deg, rgba(208, 169, 139, 0.16) 2px, transparent 2px),
+    #fbf2e9;
+  background-size: 32px 32px;
 }
 
 .room-desk {
   top: 20%;
   width: 30%;
   height: 20%;
-  background: #9f5b24;
+  background: #9c653b;
   border-radius: 3px;
-  box-shadow: inset 0 5px 0 rgba(255, 255, 255, 0.11);
+  box-shadow:
+    inset 0 5px 0 rgba(255, 255, 255, 0.13),
+    0 2px 0 rgba(48, 49, 73, 0.18);
 }
 
 .desk-one {
@@ -4350,19 +4681,20 @@ button.ward-room:focus-visible {
 }
 
 .room-chair {
-  width: 32px;
-  height: 26px;
-  background: #252828;
+  width: 30px;
+  height: 27px;
+  background: #6272b7;
   border-radius: 3px;
+  box-shadow: inset 0 -5px 0 rgba(48, 49, 73, 0.18);
 }
 
 .room-table {
-  left: 31%;
-  bottom: 18%;
-  width: 38%;
-  height: 50%;
-  background: #9f5b24;
-  border-radius: 8px;
+  left: 30%;
+  bottom: 20%;
+  width: 40%;
+  height: 42%;
+  background: #a76a3e;
+  border-radius: 10px;
   box-shadow: inset 0 7px 0 rgba(255, 255, 255, 0.12);
 }
 
@@ -4447,6 +4779,227 @@ button.ward-room:focus-visible {
   background: #2f3433;
   border: 5px solid #ece8dd;
   border-radius: 3px;
+}
+
+.wall-panel {
+  top: 16%;
+  right: 13%;
+  width: 38px;
+  height: 28px;
+  border-radius: 4px;
+  background:
+    linear-gradient(90deg, #ef6a56 0 48%, #ffffff 48% 53%, #5e84d6 53% 100%);
+  border: 4px solid #ffffff;
+  box-shadow: 0 2px 0 rgba(48, 49, 73, 0.18);
+}
+
+.med-cart,
+.cart {
+  right: 13px;
+  bottom: 18px;
+  width: 42px;
+  height: 34px;
+  background:
+    linear-gradient(180deg, #ef6a56 0 34%, #ffffff 34% 46%, #7fa766 46% 100%);
+  border: 3px solid rgba(48, 49, 73, 0.14);
+}
+
+.iv-stand {
+  left: 42%;
+  top: 19%;
+  width: 4px;
+  height: 50px;
+  background: #6b7480;
+}
+
+.iv-stand::before {
+  content: "";
+  position: absolute;
+  left: -8px;
+  top: 0;
+  width: 20px;
+  height: 18px;
+  border-radius: 4px;
+  background: rgba(126, 198, 210, 0.72);
+  border: 2px solid #ffffff;
+}
+
+.bookcase {
+  left: 10%;
+  bottom: 10%;
+  width: 30%;
+  height: 12%;
+  border-radius: 2px;
+  background:
+    repeating-linear-gradient(90deg, #667c42 0 5px, #f1e2bc 5px 9px, #a14e44 9px 14px, #394f7c 14px 19px);
+}
+
+.coffee {
+  right: 14%;
+  top: 16%;
+  width: 28px;
+  height: 22px;
+  border-radius: 4px;
+  background: #e9e1d2;
+  border: 3px solid rgba(48, 49, 73, 0.14);
+}
+
+.room-board {
+  border: 4px solid #e8d1a3;
+  border-radius: 4px;
+  background:
+    linear-gradient(90deg, #df6b50 0 48%, #2f7d7b 48% 100%);
+  box-shadow: 0 2px 0 rgba(48, 49, 73, 0.18);
+}
+
+.note-board {
+  top: 10%;
+  left: 44%;
+  width: 34%;
+  height: 16%;
+}
+
+.planning-board {
+  top: 12%;
+  left: 11%;
+  width: 30%;
+  height: 15%;
+}
+
+.room-person {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #f0b083;
+  box-shadow:
+    0 18px 0 -4px #2f7d7b,
+    0 28px 0 -8px rgba(48, 49, 73, 0.22);
+}
+
+.room-person::before,
+.room-person::after {
+  content: "";
+  position: absolute;
+  top: 18px;
+  width: 7px;
+  height: 16px;
+  border-radius: 999px;
+  background: #e8f0ee;
+}
+
+.room-person::before {
+  left: 2px;
+  transform: rotate(18deg);
+}
+
+.room-person::after {
+  right: 2px;
+  transform: rotate(-18deg);
+}
+
+.person-patient {
+  left: 19%;
+  top: 40%;
+  transform: rotate(90deg);
+  box-shadow:
+    0 18px 0 -4px #dd8e5f,
+    0 28px 0 -8px rgba(48, 49, 73, 0.22);
+}
+
+.person-doctor {
+  right: 34%;
+  top: 47%;
+}
+
+.person-nurse {
+  right: 20%;
+  top: 46%;
+  box-shadow:
+    0 18px 0 -4px #5f8fc9,
+    0 28px 0 -8px rgba(48, 49, 73, 0.22);
+}
+
+.person-visitor {
+  left: 40%;
+  top: 44%;
+  box-shadow:
+    0 18px 0 -4px #b26f45,
+    0 28px 0 -8px rgba(48, 49, 73, 0.22);
+}
+
+.room-doctor .person-doctor {
+  right: 43%;
+  top: 42%;
+}
+
+.room-doctor .person-nurse {
+  right: 18%;
+  top: 62%;
+}
+
+.room-round .person-doctor {
+  left: 18%;
+  top: 38%;
+}
+
+.room-round .person-nurse {
+  right: 18%;
+  top: 39%;
+}
+
+.room-round .person-student {
+  left: 46%;
+  bottom: 14%;
+  box-shadow:
+    0 18px 0 -4px #d98a4a,
+    0 28px 0 -8px rgba(48, 49, 73, 0.22);
+}
+
+.corridor-chair {
+  width: 34px;
+  height: 28px;
+  border-radius: 7px 7px 3px 3px;
+  background: #5c6cb0;
+  box-shadow: inset 0 -6px 0 rgba(48, 49, 73, 0.18);
+}
+
+.chair-a {
+  top: 11%;
+  left: 25%;
+}
+
+.chair-b {
+  top: 20%;
+  left: 25%;
+}
+
+.chair-c {
+  bottom: 20%;
+  right: 25%;
+}
+
+.chair-d {
+  bottom: 11%;
+  right: 25%;
+}
+
+.corridor-plant {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 50% 50%, #4f7f35 0 22%, transparent 23%),
+    conic-gradient(from 0deg, #4ba15c, #8bcf72, #4ba15c, #2f7d4c, #4ba15c);
+}
+
+.plant-a {
+  top: 6%;
+  right: 16%;
+}
+
+.plant-b {
+  bottom: 6%;
+  left: 16%;
 }
 
 .hospital-map.is-room-focused {
@@ -4582,5 +5135,636 @@ button.ward-room:focus-visible {
   .hospital-map.is-room-focused .ward-room.is-active {
     grid-column: 1;
     grid-row: 1 / 7;
+  }
+}
+
+/* Isometric Ronden hospital scene */
+.ronden-page .ward-board {
+  grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.55fr);
+}
+
+.ronden-page .hospital-map {
+  min-height: 0;
+  height: clamp(620px, 64vw, 880px);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: #86d4eb;
+  background-image: none;
+  display: block;
+  position: relative;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+.ronden-page .hospital-map::before {
+  content: "";
+  position: absolute;
+  inset: 4% 5% 4% 4%;
+  background:
+    linear-gradient(130deg, transparent 0 12%, #ffffff 12% 16%, transparent 16% 100%),
+    linear-gradient(28deg, transparent 0 39%, #ffffff 39% 43%, transparent 43% 100%),
+    linear-gradient(150deg, transparent 0 62%, rgba(195, 197, 198, 0.72) 62% 66%, transparent 66% 100%);
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.ronden-page .ward-room,
+.ronden-page .ward-corridor {
+  position: absolute;
+  border: 0;
+  border-radius: 0;
+  background: #18a8bd;
+  background-image: none;
+  overflow: visible;
+  box-shadow: 18px 24px 0 rgba(166, 170, 170, 0.92);
+  clip-path: polygon(9% 0, 100% 11%, 91% 100%, 0 88%);
+}
+
+.ronden-page .ward-room::before,
+.ronden-page .ward-corridor::before {
+  content: "";
+  position: absolute;
+  left: 4%;
+  right: 3%;
+  top: -22px;
+  height: 30px;
+  z-index: 0;
+  background: #f8f8f6;
+  transform: skewX(-36deg);
+  box-shadow: inset 0 -7px 0 #c8c9c7;
+}
+
+.ronden-page .ward-room::after,
+.ronden-page .ward-corridor::after {
+  content: "";
+  position: absolute;
+  right: -22px;
+  top: 5%;
+  width: 30px;
+  height: 88%;
+  z-index: 0;
+  background: #c7c8c6;
+  transform: skewY(-35deg);
+  box-shadow: inset 7px 0 0 #ffffff;
+}
+
+.ronden-page .ward-room:hover,
+.ronden-page .ward-room:focus-visible,
+.ronden-page .ward-room.is-active {
+  transform: translateY(-5px);
+  box-shadow:
+    20px 29px 0 rgba(145, 151, 151, 0.9),
+    0 18px 34px rgba(48, 49, 73, 0.18);
+}
+
+.ronden-page .room-label {
+  top: 8%;
+  left: 11%;
+  color: rgba(255, 255, 255, 0.86);
+  text-shadow: 0 1px 1px rgba(48, 49, 73, 0.24);
+}
+
+.ronden-page .room-patient {
+  left: 5%;
+  top: 8%;
+  width: 35%;
+  height: 23%;
+}
+
+.ronden-page .room-doctor {
+  left: 56%;
+  top: 9%;
+  width: 36%;
+  height: 24%;
+}
+
+.ronden-page .room-observation {
+  left: 9%;
+  top: 40%;
+  width: 33%;
+  height: 23%;
+}
+
+.ronden-page .room-round {
+  left: 9%;
+  top: 69%;
+  width: 37%;
+  height: 20%;
+}
+
+.ronden-page .room-treatment {
+  left: 59%;
+  top: 61%;
+  width: 35%;
+  height: 25%;
+}
+
+.ronden-page .ward-corridor {
+  left: 37%;
+  top: 31%;
+  width: 28%;
+  height: 42%;
+  background: #1aa9bd;
+  box-shadow: 16px 20px 0 rgba(166, 170, 170, 0.85);
+}
+
+.ronden-page .ward-corridor > span:first-child {
+  display: none;
+}
+
+.ronden-page .room-bed {
+  width: 30%;
+  height: 22%;
+  border: 4px solid #ffffff;
+  border-radius: 4px;
+  background:
+    linear-gradient(90deg, #0955a7 0 68%, #ffffff 68% 100%);
+  box-shadow: 0 4px 0 rgba(48, 49, 73, 0.18);
+}
+
+.ronden-page .bed-one {
+  left: 12%;
+  top: 47%;
+}
+
+.ronden-page .bed-two {
+  right: 13%;
+  top: 47%;
+}
+
+.ronden-page .room-observation .bed-one {
+  top: 28%;
+}
+
+.ronden-page .room-observation .bed-two {
+  top: 61%;
+}
+
+.ronden-page .room-treatment .bed-one {
+  left: 15%;
+  top: 55%;
+}
+
+.ronden-page .room-treatment .bed-two {
+  right: 14%;
+  top: 22%;
+}
+
+.ronden-page .room-window {
+  top: 15%;
+  width: 17%;
+  height: 30%;
+  border: 4px solid #ffffff;
+  background:
+    linear-gradient(90deg, #239ed9 0 45%, #70cff2 45% 100%);
+}
+
+.ronden-page .window-one {
+  left: 12%;
+}
+
+.ronden-page .window-two {
+  right: 13%;
+}
+
+.ronden-page .room-fixture,
+.ronden-page .room-equipment,
+.ronden-page .room-board,
+.ronden-page .room-desk,
+.ronden-page .room-shelf,
+.ronden-page .room-screen,
+.ronden-page .room-chair,
+.ronden-page .room-person,
+.ronden-page .corridor-chair,
+.ronden-page .corridor-plant {
+  z-index: 2;
+}
+
+.ronden-page .wall-panel {
+  top: 19%;
+  right: 28%;
+  width: 26%;
+  height: 18%;
+  background: #ffffff;
+  border: 4px solid #dc8f18;
+}
+
+.ronden-page .wall-panel::before {
+  content: "";
+  position: absolute;
+  inset: 18% 16%;
+  background:
+    radial-gradient(circle at 32% 50%, #e84848 0 24%, transparent 25%),
+    radial-gradient(circle at 68% 50%, #f4c542 0 24%, transparent 25%);
+}
+
+.ronden-page .monitor {
+  left: 70%;
+  top: 34%;
+  background: #ffffff;
+  border: 4px solid #d8e5ea;
+}
+
+.ronden-page .sink {
+  right: 10%;
+  bottom: 12%;
+  background: #f8f8f6;
+}
+
+.ronden-page .med-cart,
+.ronden-page .cart,
+.ronden-page .cabinet {
+  right: 11%;
+  bottom: 22%;
+  width: 15%;
+  height: 22%;
+  background: #f04747;
+  border: 4px solid rgba(255, 255, 255, 0.84);
+}
+
+.ronden-page .room-desk {
+  width: 34%;
+  height: 20%;
+  background: #8f4f2d;
+}
+
+.ronden-page .desk-one {
+  left: 12%;
+  top: 27%;
+}
+
+.ronden-page .desk-two {
+  right: 10%;
+  top: 26%;
+}
+
+.ronden-page .desk-three {
+  left: 15%;
+  bottom: 18%;
+}
+
+.ronden-page .bookcase {
+  bottom: 10%;
+  left: 48%;
+  width: 35%;
+  height: 9%;
+}
+
+.ronden-page .note-board,
+.ronden-page .planning-board {
+  top: 16%;
+  left: 17%;
+  width: 28%;
+  height: 20%;
+  background:
+    linear-gradient(90deg, #d64c4c 0 50%, #efc44e 50% 100%);
+}
+
+.ronden-page .room-table {
+  left: 30%;
+  top: 39%;
+  width: 38%;
+  height: 28%;
+  background: #9f5b24;
+  border-radius: 5px;
+}
+
+.ronden-page .room-screen {
+  top: 18%;
+  right: 16%;
+  width: 25%;
+  height: 13%;
+  background: #ffffff;
+  border-color: #d8e5ea;
+}
+
+.ronden-page .room-chair,
+.ronden-page .corridor-chair {
+  background: #3556a4;
+  border-radius: 10px 10px 4px 4px;
+}
+
+.ronden-page .corridor-chair {
+  width: 28px;
+  height: 24px;
+}
+
+.ronden-page .chair-a {
+  left: 14%;
+  top: 16%;
+}
+
+.ronden-page .chair-b {
+  left: 31%;
+  top: 20%;
+}
+
+.ronden-page .chair-c {
+  right: 17%;
+  bottom: 19%;
+}
+
+.ronden-page .chair-d {
+  right: 34%;
+  bottom: 15%;
+}
+
+.ronden-page .plant-a {
+  right: 12%;
+  top: 11%;
+}
+
+.ronden-page .plant-b {
+  left: 12%;
+  bottom: 12%;
+}
+
+.ronden-page .room-person {
+  width: 18px;
+  height: 18px;
+  transform: none;
+}
+
+.ronden-page .person-patient {
+  left: 17%;
+  top: 50%;
+  transform: rotate(90deg);
+}
+
+.ronden-page .person-doctor {
+  right: 36%;
+  top: 50%;
+}
+
+.ronden-page .person-nurse {
+  right: 27%;
+  top: 58%;
+}
+
+.ronden-page .room-doctor .person-doctor {
+  right: 22%;
+  top: 57%;
+}
+
+.ronden-page .room-doctor .person-nurse {
+  right: 35%;
+  top: 63%;
+}
+
+.ronden-page .room-round .person-doctor {
+  left: 27%;
+  top: 47%;
+}
+
+.ronden-page .room-round .person-nurse {
+  right: 28%;
+  top: 47%;
+}
+
+.ronden-page .room-round .person-student {
+  left: 50%;
+  bottom: 18%;
+}
+
+.ronden-page .person-visitor {
+  left: 46%;
+  top: 48%;
+}
+
+.ronden-page .hospital-map.is-room-focused .ward-room:not(.is-active),
+.ronden-page .hospital-map.is-room-focused .ward-corridor {
+  opacity: 0.18;
+  transform: scale(0.96);
+  filter: saturate(0.7);
+}
+
+.ronden-page .hospital-map.is-room-focused .ward-room.is-active {
+  left: 10%;
+  top: 11%;
+  width: 78%;
+  height: 74%;
+  z-index: 9;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  transform: none;
+  box-shadow:
+    28px 34px 0 rgba(149, 154, 154, 0.92),
+    0 28px 54px rgba(48, 49, 73, 0.2);
+}
+
+.ronden-page .hospital-map.is-room-focused .ward-room.is-active .room-label {
+  top: 8%;
+  left: 10%;
+}
+
+@media (max-width: 980px) {
+  .ronden-page .ward-board {
+    grid-template-columns: 1fr;
+  }
+
+  .ronden-page .hospital-map {
+    height: clamp(560px, 118vw, 760px);
+  }
+}
+
+@media (max-width: 640px) {
+  .ronden-page .hospital-map {
+    min-height: 0;
+    height: 640px;
+  }
+}
+
+/* SVG isometric hospital map */
+.ronden-page .hospital-map {
+  height: clamp(620px, 62vw, 900px);
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: #86d4eb;
+  overflow: hidden;
+  position: relative;
+  display: block;
+  box-shadow: none;
+}
+
+.hospital-iso {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.iso-room {
+  cursor: pointer;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    opacity 0.18s ease,
+    filter 0.18s ease,
+    transform 0.18s ease;
+}
+
+.iso-room .iso-floor {
+  fill: #1aa9bd;
+}
+
+.iso-room .iso-wall-left,
+.iso-room .iso-wall-back {
+  fill: #f8f8f5;
+}
+
+.iso-room .iso-wall-right {
+  fill: #c8c9c7;
+}
+
+.iso-room text {
+  fill: rgba(255, 255, 255, 0.94);
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 1.4px;
+  paint-order: stroke;
+  stroke: rgba(31, 95, 97, 0.28);
+  stroke-width: 3px;
+}
+
+.iso-room:hover,
+.iso-room:focus-visible,
+.iso-room.is-active {
+  filter: drop-shadow(0 18px 16px rgba(48, 49, 73, 0.22));
+  transform: translateY(-7px);
+}
+
+.iso-room:focus-visible {
+  outline: none;
+}
+
+.iso-room:focus-visible .iso-floor,
+.iso-room.is-active .iso-floor {
+  stroke: rgba(255, 255, 255, 0.86);
+  stroke-width: 5px;
+}
+
+.iso-corridor {
+  opacity: 1;
+}
+
+.ronden-page .hospital-map.is-room-focused .iso-room:not(.is-active),
+.ronden-page .hospital-map.is-room-focused .iso-corridor {
+  opacity: 0.22;
+  filter: saturate(0.72);
+}
+
+.ronden-page .hospital-map.is-room-focused .iso-room.is-active {
+  opacity: 1;
+  filter: drop-shadow(0 28px 22px rgba(48, 49, 73, 0.28));
+  transform: translateY(-12px) scale(1.05);
+}
+
+.ronden-page .hospital-map.is-room-focused .ward-room,
+.ronden-page .hospital-map.is-room-focused .ward-corridor {
+  opacity: initial;
+  transform: initial;
+  filter: initial;
+}
+
+@media (max-width: 980px) {
+  .ronden-page .hospital-map {
+    height: clamp(560px, 108vw, 780px);
+  }
+}
+
+@media (max-width: 640px) {
+  .ronden-page .hospital-map {
+    height: 560px;
+  }
+}
+
+/* Image-backed Ronden map with room hotspots */
+.ronden-page .hospital-map {
+  aspect-ratio: 1 / 1;
+  height: auto;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: #86d4eb;
+  position: relative;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+.hospital-map-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  filter: saturate(0.9) contrast(0.96) brightness(1.01);
+  transition:
+    filter 0.18s ease,
+    opacity 0.18s ease;
+}
+
+.ronden-hotspots {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.ronden-hotspot {
+  fill: rgba(255, 255, 255, 0);
+  stroke: rgba(255, 255, 255, 0);
+  stroke-width: 4;
+  cursor: pointer;
+  outline: none;
+  transition:
+    fill 0.18s ease,
+    stroke 0.18s ease,
+    filter 0.18s ease;
+}
+
+.ronden-hotspot:hover,
+.ronden-hotspot:focus-visible {
+  fill: rgba(255, 255, 255, 0.06);
+  stroke: rgba(255, 255, 255, 0.72);
+  filter: drop-shadow(0 3px 5px rgba(31, 95, 97, 0.22));
+}
+
+.ronden-page .hospital-map.is-room-focused .hospital-map-img {
+  filter: saturate(0.88) contrast(0.95) brightness(0.98);
+}
+
+.ronden-page .hospital-map.is-room-focused .ronden-hotspot:not(.is-active) {
+  fill: rgba(255, 255, 255, 0);
+  stroke: rgba(255, 255, 255, 0);
+}
+
+.ronden-hotspot.is-active {
+  fill: rgba(255, 255, 255, 0.07);
+  stroke: rgba(255, 255, 255, 0.88);
+  filter:
+    drop-shadow(0 0 4px rgba(255, 255, 255, 0.62))
+    drop-shadow(0 4px 6px rgba(31, 95, 97, 0.24));
+}
+
+.ronden-page .hospital-map.is-room-focused .iso-room,
+.ronden-page .hospital-map.is-room-focused .iso-corridor {
+  opacity: initial;
+  filter: initial;
+  transform: initial;
+}
+
+@media (max-width: 980px) {
+  .ronden-page .hospital-map {
+    height: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .ronden-page .hospital-map {
+    height: auto;
   }
 }

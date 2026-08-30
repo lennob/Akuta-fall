@@ -47,53 +47,61 @@
         <section class="content" data-step="1" id="step-1">
           <div class="home-dashboard">
             <div class="home-copy">
-              <p class="eyebrow">Akutmedicinsk fallträning</p>
-              <h1>Öva akuta fall steg för steg.</h1>
-              <p>
-                En person leder fallet som bedömare och en person tränar som undersökande läkare.
-                Börja med förberedelser, få ett slumpat scenario och kör sedan fallet strukturerat.
-              </p>
+              <p class="eyebrow">Akutmedicinsk träning</p>
+              <h1>Träna akutmedicin på ditt sätt.</h1>
+              <p>Ett verktyg för att uppmuntra eget lärande.</p>
             </div>
-            <div class="home-guide-panel" aria-label="Så fungerar det">
-              <h2>Så fungerar det</h2>
+            <div class="home-guide-panel" aria-label="Kom igång">
+              <h2>Kom igång</h2>
               <ol>
-                <li>Förbered roller och material.</li>
-                <li>Slumpa ett fall och läs scenariot.</li>
-                <li>Kör fallet och avsluta med feedback.</li>
+                <li>Träna strukturerat med A-E.</li>
+                <li>Fördjupa dig i våra artiklar.</li>
+                <li>Utforska verktygen som är under utveckling.</li>
               </ol>
             </div>
           </div>
 
-          <section class="feature-dashboard" aria-label="Funktioner">
-            <a class="feature-card feature-card-ronden" href="./ronden.html">
-              <span class="feature-kicker">Träna fall</span>
-              <span class="feature-title">Ronden</span>
-              <span class="feature-text">Slumpa ett akut scenario och gå igenom fallet strukturerat.</span>
-            </a>
-            <a class="feature-card feature-card-ae" href="./index.html#step=2">
-              <span class="feature-kicker">Metod</span>
-              <span class="feature-title">A-E</span>
-              <span class="feature-text">Förbered roller, material och kör simulatorn steg för steg.</span>
-            </a>
-            <a class="feature-card feature-card-artiklar" href="./compendium.html">
-              <span class="feature-kicker">Kunskap</span>
-              <span class="feature-title">Artiklar</span>
-              <span class="feature-text">Läs fall, scenarier och fördjupande akutmedicinskt material.</span>
-            </a>
-            <div class="feature-card feature-card-labbet">
-              <span class="feature-kicker">Labbar</span>
-              <span class="feature-title">Labbet</span>
-              <span class="feature-text">EKG, blodgas och praktiska verktyg för snabb klinisk träning.</span>
-              <span class="feature-links" aria-label="Labblänkar">
-                <a href="./ecg-lab.html">EKG</a>
-                <a href="./blodgas.html">Blodgas</a>
-              </span>
+          <section class="feature-group feature-group-primary" aria-label="Huvudfunktioner">
+            <div class="feature-dashboard feature-dashboard-primary">
+              <a class="feature-card feature-card-ae" href="./index.html#step=2">
+                <span class="feature-kicker">Metod</span>
+                <span class="feature-title">A-E</span>
+                <span class="feature-text">Förbered roller, material och kör simulatorn steg för steg.</span>
+              </a>
+              <a class="feature-card feature-card-artiklar" href="./compendium.html">
+                <span class="feature-kicker">Kunskap</span>
+                <span class="feature-title">Artiklar</span>
+                <span class="feature-text">Läs fall, scenarier och fördjupande akutmedicinskt material.</span>
+              </a>
             </div>
-            <a class="feature-card feature-card-simulator" href="./defib-workspace.html">
-              <span class="feature-kicker">Verktyg</span>
-              <span class="feature-title">Simulator</span>
-              <span class="feature-text">Öva defibrillator, rytmtolkning och beslut under tidspress.</span>
-            </a>
+          </section>
+
+          <section class="feature-group feature-group-beta" aria-labelledby="betaCategoryTitle">
+            <div class="feature-group-heading">
+              <span class="feature-group-badge">BETA</span>
+              <h2 id="betaCategoryTitle">Under utveckling</h2>
+            </div>
+            <div class="feature-dashboard feature-dashboard-beta">
+              <a class="feature-card feature-card-ronden" href="./ronden.html">
+                <span class="feature-kicker">Träna fall</span>
+                <span class="feature-title">Ronden</span>
+                <span class="feature-text">Slumpa ett akut scenario och gå igenom fallet strukturerat.</span>
+              </a>
+              <div class="feature-card feature-card-labbet">
+                <span class="feature-kicker">Labbar</span>
+                <span class="feature-title">Labbet</span>
+                <span class="feature-text">EKG, blodgas och praktiska verktyg för snabb klinisk träning.</span>
+                <span class="feature-links" aria-label="Labblänkar">
+                  <a href="./ecg-lab.html">EKG</a>
+                  <a href="./blodgas.html">Blodgas</a>
+                </span>
+              </div>
+              <a class="feature-card feature-card-simulator" href="./defib-workspace.html">
+                <span class="feature-kicker">Verktyg</span>
+                <span class="feature-title">Simulator</span>
+                <span class="feature-text">Öva defibrillator, rytmtolkning och beslut under tidspress.</span>
+              </a>
+            </div>
           </section>
 
           <button type="button" class="help-fab" id="interfaceGuideOpen" aria-label="Visa gränssnittsguide">?</button>
