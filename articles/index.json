@@ -47,6 +47,24 @@
       "name": "Gips-Y-Kings",
       "url": "https://akuten.li/gips-y-kings/",
       "description": "Praktisk resurs om gipsning och ortopediskt handlag på akuten."
+    },
+    {
+      "id": "kardiologi",
+      "name": "Kardiologi.se",
+      "url": "https://www.kardiologi.se/",
+      "description": "Praktisk kardiologi för klinisk vardag"
+    },
+    {
+      "id": "giftinformationscentralen",
+      "name": "Giftinformationscentralen",
+      "url": "https://giftinformation.se/",
+      "description": "GIC:s huvuduppgift är att per telefon informera om risker, symtom och behandling vid olika typer av akut förgiftning med bland annat läkemedel, kemiska produkter och biologiska toxiner."
+    },
+    {
+      "id": "Uptodate",
+      "name": "UpToDate",
+      "url": "https://www.uptodate.com/contents/search",
+      "description": "Evidensbaserat stöd för sjukvården"
     }
   ]
 }
