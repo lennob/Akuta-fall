@@ -29,8 +29,8 @@
           </span>
         </a>
         <nav class="site-nav" aria-label="Huvudnavigering">
-          <a href="./index.html#step=1" aria-current="page">Start</a>
-          <a href="./index.html#step=2">A-E</a>
+          <a id="headerStartBtn" href="./index.html#step=1" aria-current="page">Start</a>
+          <a id="headerAeBtn" href="./index.html#step=2">A-E</a>
           <a href="./artiklar.html">Material</a>
           <a href="./ronden.html">Ronden</a>
           <a href="./index.html#step=1" data-scroll-target="labbet">Labbet</a>
@@ -363,6 +363,16 @@
       }
 
       function showStep(activeStep) {
+        const startShortcut = document.getElementById("headerStartBtn");
+        const aeShortcut = document.getElementById("headerAeBtn");
+        if (startShortcut) {
+          if (Number(activeStep) === 1) startShortcut.setAttribute("aria-current", "page");
+          else startShortcut.removeAttribute("aria-current");
+        }
+        if (aeShortcut) {
+          if (Number(activeStep) > 1) aeShortcut.setAttribute("aria-current", "page");
+          else aeShortcut.removeAttribute("aria-current");
+        }
         sections.forEach((section) => {
           const idMatch = Number(section.dataset.step);
           const isActive = idMatch === activeStep;

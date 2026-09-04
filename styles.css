@@ -5715,6 +5715,9 @@ button.ward-room:focus-visible {
 /* Image-backed Ronden map with room hotspots */
 .ronden-page .hospital-map {
   aspect-ratio: 754 / 627;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   height: auto;
   min-height: 0;
   padding: 0;
@@ -5724,6 +5727,7 @@ button.ward-room:focus-visible {
   position: relative;
   overflow: hidden;
   box-shadow: none;
+  box-sizing: border-box;
 }
 
 .hospital-map-img {
@@ -5809,6 +5813,24 @@ button.ward-room:focus-visible {
   --articles-ink: #29343d;
   background: #f5f7f8;
   color: var(--articles-ink);
+}
+
+@media (min-width: 981px) {
+  .ronden-page .ward-board {
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
+    align-items: start;
+  }
+
+  .ronden-page .hospital-map {
+    justify-self: stretch;
+    contain: layout paint;
+  }
+
+  .ronden-page .room-learning-panel {
+    min-width: 0;
+  }
 }
 
 /* Named learning areas on the Ronden map */
