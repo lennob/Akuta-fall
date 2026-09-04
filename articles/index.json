@@ -65,6 +65,12 @@
       "name": "UpToDate",
       "url": "https://www.uptodate.com/contents/search",
       "description": "Evidensbaserat stöd för sjukvården"
-    }
+    },
+    {
+      "id": "barnfrakturkompendium",
+      "name": "Barnfrakturer och luxationer i öppenvård",
+      "url": "https://swepem.barnlakarforeningen.se/riktlinjer/barnfrakturer-och-luxationer-i-oppenvard/",
+      "description": "Handläggning av de vanligaste barnfrakturerna, luxationerna och distorsionerna, vårdprogram vid Astrid Lindgrens Barnsjukhus"
+    }  
   ]
 }
