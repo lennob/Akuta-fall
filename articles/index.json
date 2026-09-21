@@ -71,6 +71,21 @@
       "name": "Barnfrakturer och luxationer i öppenvård",
       "url": "https://swepem.barnlakarforeningen.se/riktlinjer/barnfrakturer-och-luxationer-i-oppenvard/",
       "description": "Handläggning av de vanligaste barnfrakturerna, luxationerna och distorsionerna, vårdprogram vid Astrid Lindgrens Barnsjukhus"
-    }  
+    },
+    {
+      "id": "gipsa",
+      "name": "Gipsa.se",
+      "url": "https://www.gipsa.se/",
+      "description": "klinisk vägledning om gips och andra ortopediska tekniker för vanliga ortopediska skador. Hemsidan är inte tänkt att ersätta PM eller annan evidens, utan ska ses som ett stöd i den kliniska vardagen."
+    },
+    {
+      "id": "aosurgeryreference",
+      "name": "AO Surgery reference",
+      "url": "https://surgeryreference.aofoundation.org/",
+      "description": "Resurs med information om handläggning vid ortopediska skador. Användbar om man vill veta steg för steg operationsprocedurer"
+    }
+      
+
+
   ]
 }
